@@ -1,0 +1,703 @@
+diff --git a/include/binder/MemoryHeapIon.SPRD.h b/include/binder/MemoryHeapIon.SPRD.h
+new file mode 100644
+index 0000000..3e155f4
+--- /dev/null
++++ b/include/binder/MemoryHeapIon.SPRD.h
+@@ -0,0 +1,71 @@
++/*
++ * Copyright (C) 2008 The Android Open Source Project
++ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef ANDROID_MEMORY_HEAP_ION_H
++#define ANDROID_MEMORY_HEAP_ION_H
++
++#include <stdlib.h>
++#include <stdint.h>
++
++#include <binder/MemoryHeapBase.h>
++#include <binder/IMemory.h>
++#include <utils/SortedVector.h>
++#include <utils/threads.h>
++
++struct ion_handle;
++
++namespace android {
++
++class MemoryHeapBase;
++
++// ---------------------------------------------------------------------------
++
++class MemoryHeapIon : public MemoryHeapBase
++{
++public:
++    MemoryHeapIon(const char*, size_t, uint32_t, long unsigned int);
++    MemoryHeapIon();
++    ~MemoryHeapIon();
++
++    status_t mapIonFd(int fd, size_t size, unsigned long memory_type, int flags);
++
++    status_t ionInit(int ionFd, void *base, int size, int flags,
++                                const char* device, struct ion_handle *handle,
++                                int ionMapFd);
++    int get_phy_addr_from_ion(int *phy_addr, int *size);
++    int flush_ion_buffer(void *v_addr, void *p_addr,int size);
++    int get_gsp_iova(int *mmu_addr, int *size);
++    int free_gsp_iova(int mmu_addr, int size);
++    int get_mm_iova(int *mmu_addr, int *size);
++    int free_mm_iova(int mmu_addr, int size);
++    static int Get_gsp_iova(int buffer_fd, int *mmu_addr, int *size);
++    static int Free_gsp_iova(int buffer_fd, int mmu_addr, int size);
++    static int Get_mm_iova(int buffer_fd,int *mmu_addr, int *size);
++    static int Free_mm_iova(int buffer_fd,int mmu_addr, int size);
++    static int Get_phy_addr_from_ion(int fd, int *phy_addr, int *size);/*fd is "fd of the corresponding ion hanlde"*/
++    static int Flush_ion_buffer(int buffer_fd, void *v_addr,void *p_addr, int size);
++    static bool Gsp_iommu_is_enabled(void);
++    static bool Mm_iommu_is_enabled(void);
++
++private:
++    int mIonDeviceFd;  /*fd we get from open("/dev/ion")*/
++    struct ion_handle *mIonHandle;  /*handle we get from ION_IOC_ALLOC*/ };
++
++// ---------------------------------------------------------------------------
++}; // namespace android
++
++#endif // ANDROID_MEMORY_HEAP_ION_H
+diff --git a/include/media/openmax/OMX_Audio.h b/include/media/openmax/OMX_Audio.h
+index a516df8..c51d810 100644
+--- a/include/media/openmax/OMX_Audio.h
++++ b/include/media/openmax/OMX_Audio.h
+@@ -375,7 +375,6 @@ typedef struct OMX_AUDIO_PARAM_FLACTYPE {
+                                    to 8 (highest compression */
+ } OMX_AUDIO_PARAM_FLACTYPE;
+ 
+-
+ /** WMA Version */
+ typedef enum OMX_AUDIO_WMAFORMATTYPE {
+   OMX_AUDIO_WMAFormatUnused = 0, /**< format unused or unknown */
+diff --git a/include/media/openmax/OMX_IVCommon.h b/include/media/openmax/OMX_IVCommon.h
+index a5b9d18..d57afa1 100644
+--- a/include/media/openmax/OMX_IVCommon.h
++++ b/include/media/openmax/OMX_IVCommon.h
+@@ -169,6 +169,9 @@ typedef enum OMX_COLOR_FORMATTYPE {
+     OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03,
+     OMX_SEC_COLOR_FormatNV12Tiled = 0x7FC00002,
+     OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar32m = 0x7FA30C04,
++#ifdef SPRD_HARDWARE
++    OMX_SPRD_COLOR_FormatYVU420SemiPlanar = 0x7FD00001,
++#endif
+     OMX_COLOR_FormatMax = 0x7FFFFFFF
+ } OMX_COLOR_FORMATTYPE;
+ 
+diff --git a/include/media/openmax/OMX_Index.h b/include/media/openmax/OMX_Index.h
+index 1a2a548..45f9515 100644
+--- a/include/media/openmax/OMX_Index.h
++++ b/include/media/openmax/OMX_Index.h
+@@ -134,6 +134,10 @@ typedef enum OMX_INDEXTYPE {
+     OMX_IndexParamAudioSmv,                 /**< reference: OMX_AUDIO_PARAM_SMVTYPE */
+     OMX_IndexParamAudioVorbis,              /**< reference: OMX_AUDIO_PARAM_VORBISTYPE */
+     OMX_IndexParamAudioFlac,                /**< reference: OMX_AUDIO_PARAM_FLACTYPE */
++#ifdef MTK_HARDWARE
++    OMX_IndexParamAudioRaw,
++    OMX_IndexParamAudioWmaProfile,
++#endif
+ 
+     OMX_IndexConfigAudioMidiImmediateEvent, /**< reference: OMX_AUDIO_CONFIG_MIDIIMMEDIATEEVENTTYPE */
+     OMX_IndexConfigAudioMidiControl,        /**< reference: OMX_AUDIO_CONFIG_MIDICONTROLTYPE */
+@@ -262,6 +266,23 @@ typedef enum OMX_INDEXTYPE {
+        private indexes are not guaranteed unique and therefore should
+        only be sent to the appropriate component. */
+ 
++#ifdef SPRD_HARDWARE
++    /* for Android Native Window */
++#define SPRD_INDEX_PARAM_ENABLE_ANB "OMX.google.android.index.enableAndroidNativeBuffers"
++    OMX_IndexParamEnableAndroidBuffers         = 0x7F000011,
++#define SPRD_INDEX_PARAM_GET_ANB "OMX.google.android.index.getAndroidNativeBufferUsage"
++    OMX_IndexParamGetAndroidNativeBuffer       = 0x7F000012,
++#define SPRD_INDEX_PARAM_USE_ANB "OMX.google.android.index.useAndroidNativeBuffer2"
++    OMX_IndexParamUseAndroidNativeBuffer2      = 0x7F000013,
++    /* for Android Store Metadata Inbuffer */
++#define SPRD_INDEX_PARAM_STORE_METADATA_BUFFER "OMX.google.android.index.storeMetaDataInBuffers"
++    OMX_IndexParamStoreMetaDataBuffer          = 0x7F000014,
++#define SPRD_INDEX_PARAM_PREPEND_SPSPPS_TO_IDR "OMX.google.android.index.prependSPSPPSToIDRFrames"
++    OMX_IndexParamPrependSPSPPSToIDR           = 0x7F000015,
++#define SPRD_INDEX_CONFIG_THUMBNAIL_MODE "OMX.sprd.index.ThumbnailMode"
++    OMX_IndexConfigThumbnailMode               = 0x7F000016,
++#endif
++
+     OMX_IndexMax = 0x7FFFFFFF
+ 
+ } OMX_INDEXTYPE;
+diff --git a/include/ui/PixelFormat.h b/include/ui/PixelFormat.h
+index ed7c1d8..8528a8b 100644
+--- a/include/ui/PixelFormat.h
++++ b/include/ui/PixelFormat.h
+@@ -65,6 +65,9 @@ enum {
+     PIXEL_FORMAT_RGBA_4444   = 7,                            // 16-bit ARGB
+     PIXEL_FORMAT_sRGB_A_8888 = HAL_PIXEL_FORMAT_sRGB_A_8888, // 4x8-bit sRGB + A
+     PIXEL_FORMAT_sRGB_X_8888 = HAL_PIXEL_FORMAT_sRGB_X_8888, // 4x8-bit sRGB, no A
++#ifdef SPRD_HARDWARE
++    PIXEL_FORMAT_YCbCr_420_SP= 25,
++#endif
+ };
+ 
+ typedef int32_t PixelFormat;
+diff --git a/libs/binder/Android.mk b/libs/binder/Android.mk
+index 9a789ee..2e98703 100644
+--- a/libs/binder/Android.mk
++++ b/libs/binder/Android.mk
+@@ -46,6 +46,11 @@ sources += \
+     MemoryHeapIon.cpp
+ endif
+ 
++ifeq ($(BOARD_NEEDS_MEMORYHEAPION_SPRD),true)
++sources += \
++    MemoryHeapIon.SPRD.cpp
++endif
++
+ LOCAL_PATH:= $(call my-dir)
+ 
+ include $(CLEAR_VARS)
+@@ -70,8 +75,10 @@ LOCAL_SRC_FILES := $(sources)
+ ifeq ($(BOARD_NEEDS_MEMORYHEAPPMEM),true)
+ LOCAL_C_INCLUDES += \
+     $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
+-LOCAL_ADDITIONAL_DEPENDENCIES := \
+-    $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
++ifeq ($(BOARD_NEEDS_MEMORYHEAPION_SPRD),true)
++LOCAL_C_INCLUDES += \
++    $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
+ endif
+ ifneq ($(TARGET_USES_64_BIT_BINDER),true)
+ ifneq ($(TARGET_IS_64_BIT),true)
+@@ -103,8 +110,10 @@ LOCAL_SRC_FILES := $(sources)
+ ifeq ($(BOARD_NEEDS_MEMORYHEAPPMEM),true)
+ LOCAL_C_INCLUDES += \
+     $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
+-LOCAL_ADDITIONAL_DEPENDENCIES := \
+-    $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
++ifeq ($(BOARD_NEEDS_MEMORYHEAPION_SPRD),true)
++LOCAL_C_INCLUDES += \
++    $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
+ endif
+ ifneq ($(TARGET_USES_64_BIT_BINDER),true)
+ ifneq ($(TARGET_IS_64_BIT),true)
+diff --git a/libs/binder/MemoryHeapIon.SPRD.cpp b/libs/binder/MemoryHeapIon.SPRD.cpp
+new file mode 100644
+index 0000000..48b68db
+--- /dev/null
++++ b/libs/binder/MemoryHeapIon.SPRD.cpp
+@@ -0,0 +1,499 @@
++/*
++ * Copyright (C) 2008 The Android Open Source Project
++ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#define LOG_TAG "MemoryHeapIon"
++
++#include <stdlib.h>
++#include <stdint.h>
++#include <unistd.h>
++#include <fcntl.h>
++#include <errno.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <sys/ioctl.h>
++
++#include <cutils/log.h>
++
++#include <binder/MemoryHeapIon.SPRD.h>
++#include <binder/MemoryHeapBase.h>
++
++#ifdef USE_TARGET_SIMULATOR_MODE
++#include <linux/ion.h>
++//modify for make sdk
++struct ion_phys_data {
++    int fd_buffer;
++    unsigned long phys;
++    size_t size;
++};
++
++struct ion_msync_data {
++    int fd_buffer;
++    void *vaddr;
++    void *paddr;
++    size_t size;
++};
++
++enum ION_SPRD_CUSTOM_CMD {
++    ION_SPRD_CUSTOM_PHYS,
++    ION_SPRD_CUSTOM_MSYNC
++};
++#else
++#include <linux/ion.h>
++#include <video/ion_sprd.h>
++#endif
++
++namespace android {
++
++int  MemoryHeapIon::Get_phy_addr_from_ion(int buffer_fd, int *phy_addr, int *size){
++    int fd = open("/dev/ion", O_SYNC);
++    if(fd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_phys_data phys_data;
++        struct ion_custom_data  custom_data;
++        phys_data.fd_buffer = buffer_fd;
++        custom_data.cmd = ION_SPRD_CUSTOM_PHYS;
++        custom_data.arg = (unsigned long)&phys_data;
++        ret = ioctl(fd,ION_IOC_CUSTOM,&custom_data);
++        *phy_addr = phys_data.phys;
++        *size = phys_data.size;
++        close(fd);
++        if(ret)
++        {
++            ALOGE("%s: Getphyaddr error!",__func__);
++            return -2;
++        }
++    }
++    return 0;
++}
++
++int MemoryHeapIon::get_phy_addr_from_ion(int *phy_addr, int *size){
++    if(mIonDeviceFd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_phys_data phys_data;
++        struct ion_custom_data  custom_data;
++        phys_data.fd_buffer = MemoryHeapBase::getHeapID();
++        custom_data.cmd = ION_SPRD_CUSTOM_PHYS;
++        custom_data.arg = (unsigned long)&phys_data;
++        ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
++        *phy_addr = phys_data.phys;
++        *size = phys_data.size;
++        if(ret)
++        {
++            ALOGE("%s: getphyaddr error!",__func__);
++            return -2;
++        }
++     }
++    return 0;
++}
++
++int MemoryHeapIon::get_gsp_iova(int *mmu_addr, int *size){
++    if(mIonDeviceFd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_mmu_data mmu_data;
++        struct ion_custom_data  custom_data;
++        mmu_data.fd_buffer = MemoryHeapBase::getHeapID();
++        custom_data.cmd = ION_SPRD_CUSTOM_GSP_MAP;
++        custom_data.arg = (unsigned long)&mmu_data;
++        ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
++        *mmu_addr = mmu_data.iova_addr;
++        *size = mmu_data.iova_size;
++        if(ret)
++        {
++            ALOGE("%s: get gsp iova error!",__func__);
++            return -2;
++        }
++     }
++    return 0;
++}
++
++int MemoryHeapIon::free_gsp_iova(int mmu_addr, int size){
++    if(mIonDeviceFd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_mmu_data mmu_data;
++        struct ion_custom_data  custom_data;
++        mmu_data.fd_buffer = MemoryHeapBase::getHeapID();
++        mmu_data.iova_addr = mmu_addr;
++        mmu_data.iova_size = size;
++        custom_data.cmd = ION_SPRD_CUSTOM_GSP_UNMAP;
++        custom_data.arg = (unsigned long)&mmu_data;
++        ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
++        if(ret)
++        {
++            ALOGE("%s: free gsp iova error!",__func__);
++            return -2;
++        }
++     }
++    return 0;
++}
++
++int MemoryHeapIon::get_mm_iova(int *mmu_addr, int *size){
++    if(mIonDeviceFd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_mmu_data mmu_data;
++        struct ion_custom_data  custom_data;
++        mmu_data.fd_buffer = MemoryHeapBase::getHeapID();
++        custom_data.cmd = ION_SPRD_CUSTOM_MM_MAP;
++        custom_data.arg = (unsigned long)&mmu_data;
++        ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
++        *mmu_addr = mmu_data.iova_addr;
++        *size = mmu_data.iova_size;
++        if(ret)
++        {
++            ALOGE("%s: get mm iova error!",__func__);
++            return -2;
++        }
++     }
++    return 0;
++}
++
++int MemoryHeapIon::free_mm_iova(int mmu_addr, int size){
++    if(mIonDeviceFd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_mmu_data mmu_data;
++        struct ion_custom_data  custom_data;
++        mmu_data.fd_buffer = MemoryHeapBase::getHeapID();
++        mmu_data.iova_addr = mmu_addr;
++        mmu_data.iova_size = size;
++        custom_data.cmd = ION_SPRD_CUSTOM_MM_UNMAP;
++        custom_data.arg = (unsigned long)&mmu_data;
++        ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
++        if(ret)
++        {
++            ALOGE("%s: free mm iova error!",__func__);
++            return -2;
++        }
++     }
++    return 0;
++}
++int MemoryHeapIon::Get_gsp_iova(int buffer_fd,int *mmu_addr, int *size){
++    int fd = open("/dev/ion", O_SYNC);
++    if(fd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_mmu_data mmu_data;
++        struct ion_custom_data  custom_data;
++
++        mmu_data.fd_buffer = buffer_fd;
++        custom_data.cmd = ION_SPRD_CUSTOM_GSP_MAP;
++        custom_data.arg = (unsigned long)&mmu_data;
++        ret = ioctl(fd,ION_IOC_CUSTOM,&custom_data);
++        *mmu_addr = mmu_data.iova_addr;
++        *size = mmu_data.iova_size;
++        close(fd);
++        if(ret)
++        {
++            ALOGE("%s: Get gsp iova error!",__func__);
++            return -2;
++        }
++    }
++    return 0;
++}
++int MemoryHeapIon::Get_mm_iova(int buffer_fd,int *mmu_addr, int *size){
++    int fd = open("/dev/ion", O_SYNC);
++    if(fd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_mmu_data mmu_data;
++        struct ion_custom_data  custom_data;
++
++        mmu_data.fd_buffer =  buffer_fd;
++        custom_data.cmd = ION_SPRD_CUSTOM_MM_MAP;
++        custom_data.arg = (unsigned long)&mmu_data;
++        ret = ioctl(fd,ION_IOC_CUSTOM,&custom_data);
++        *mmu_addr = mmu_data.iova_addr;
++        *size = mmu_data.iova_size;
++        close(fd);
++        if(ret)
++        {
++            ALOGE("%s: Get mm iova error!",__func__);
++            return -2;
++        }
++    }
++    return 0;
++}
++
++int MemoryHeapIon::Free_gsp_iova(int buffer_fd,int mmu_addr, int size){
++    int fd = open("/dev/ion", O_SYNC);
++    if(fd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_mmu_data mmu_data;
++        struct ion_custom_data  custom_data;
++
++        mmu_data.fd_buffer = buffer_fd;
++        mmu_data.iova_addr = mmu_addr;
++        mmu_data.iova_size = size;
++        custom_data.cmd = ION_SPRD_CUSTOM_GSP_UNMAP;
++        custom_data.arg = (unsigned long)&mmu_data;
++        ret = ioctl(fd,ION_IOC_CUSTOM,&custom_data);
++        close(fd);
++        if(ret)
++        {
++            ALOGE("%s: Free gsp iova error!",__func__);
++            return -2;
++        }
++    }
++    return 0;
++}
++int MemoryHeapIon::Free_mm_iova(int buffer_fd,int mmu_addr, int size){
++    int fd = open("/dev/ion", O_SYNC);
++    if(fd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_mmu_data mmu_data;
++        struct ion_custom_data  custom_data;
++
++        mmu_data.fd_buffer = buffer_fd;
++        mmu_data.iova_addr = mmu_addr;
++        mmu_data.iova_size = size;
++        custom_data.cmd = ION_SPRD_CUSTOM_MM_UNMAP;
++        custom_data.arg = (unsigned long)&mmu_data;
++        ret = ioctl(fd,ION_IOC_CUSTOM,&custom_data);
++        close(fd);
++        if(ret)
++        {
++            ALOGE("%s: Free mm iova error!",__func__);
++            return -2;
++        }
++    }
++    return 0;
++}
++
++bool MemoryHeapIon::Gsp_iommu_is_enabled(void)
++{
++	if(access("/dev/sprd_iommu_gsp",F_OK)<0)
++	{
++		return false;
++	}
++	return true;
++}
++
++bool MemoryHeapIon::Mm_iommu_is_enabled(void)
++{
++	if(access("/dev/sprd_iommu_mm",F_OK)<0)
++	{
++		return false;
++	}
++	return true;
++}
++
++int  MemoryHeapIon::Flush_ion_buffer(int buffer_fd, void *v_addr,void *p_addr,int size){
++       int fd = open("/dev/ion", O_SYNC);
++    if(fd<0){
++        ALOGE("%s:open dev ion error!",__func__);
++        return -1;
++    }else{
++        int ret;
++        struct ion_msync_data msync_data;
++        struct ion_custom_data  custom_data;
++
++        msync_data.fd_buffer = buffer_fd;
++        msync_data.vaddr = v_addr;
++        msync_data.paddr = p_addr;
++        msync_data.size = size;
++        custom_data.cmd = ION_SPRD_CUSTOM_MSYNC;
++        custom_data.arg = (unsigned long)&msync_data;
++        ret = ioctl(fd,ION_IOC_CUSTOM,&custom_data);
++        close(fd);
++        if(ret)
++        {
++            ALOGE("%s: Flush ion buffer error!",__func__);
++            return -2;
++        }
++    }
++    return 0;
++}
++
++int MemoryHeapIon::flush_ion_buffer(void *v_addr, void *p_addr,int size){
++    if(mIonDeviceFd<0){
++        return -1;
++    }else{
++        int ret;
++        struct ion_msync_data msync_data;
++        struct ion_custom_data  custom_data;
++
++        if ((v_addr<MemoryHeapBase::getBase())  ||  (((char *)v_addr)+size>((char *)MemoryHeapBase::getBase())+MemoryHeapBase::getSize())){
++             ALOGE("flush_ion_buffer error  mBase=0x%x,mSize=0x%x",MemoryHeapBase::getBase(), MemoryHeapBase::getSize());
++             ALOGE("flush_ion_buffer error  v_addr=0x%x,p_addr=0x%x,size=0x%x",v_addr,p_addr,size);
++             return -3;
++        }
++        msync_data.fd_buffer = MemoryHeapBase::getHeapID();
++        msync_data.vaddr = v_addr;
++        msync_data.paddr = p_addr;
++        msync_data.size = size;
++        custom_data.cmd = ION_SPRD_CUSTOM_MSYNC;
++        custom_data.arg = (unsigned long)&msync_data;
++        ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
++        if(ret)
++        {
++            ALOGE("%s:flush ion buffer error!",__func__);
++            return -2;
++        }
++     }
++    return 0;
++}
++
++MemoryHeapIon::MemoryHeapIon() : mIonDeviceFd(-1), mIonHandle(NULL)
++{
++}
++
++MemoryHeapIon::MemoryHeapIon(const char* device, size_t size,
++    uint32_t flags, unsigned long memory_types)
++    : MemoryHeapBase()
++{
++    int open_flags = O_RDONLY;
++    if (flags & NO_CACHING)
++         open_flags |= O_SYNC;
++
++    int fd = open(device, open_flags);
++    if (fd >= 0) {
++            const size_t pagesize = getpagesize();
++            size = ((size + pagesize-1) & ~(pagesize-1));
++            if (mapIonFd(fd, size, memory_types, flags) == NO_ERROR) {
++                MemoryHeapBase::setDevice(device);
++            }
++    }else {
++        ALOGE("open ion fail");
++    }
++}
++
++status_t MemoryHeapIon::ionInit(int ionFd, void *base, int size, int flags,
++                const char* device, struct ion_handle *handle,
++                int ionMapFd) {
++    mIonDeviceFd = ionFd;
++    mIonHandle = handle;
++    MemoryHeapBase::init(ionMapFd, base, size, flags, device);
++    return NO_ERROR;
++}
++
++
++status_t MemoryHeapIon::mapIonFd(int fd, size_t size, unsigned long memory_type, int uflags)
++{
++    /* If size is 0, just fail the mmap. There is no way to get the size
++     * with ion
++     */
++    int map_fd;
++
++    struct ion_allocation_data data;
++    struct ion_fd_data fd_data;
++    struct ion_handle_data handle_data;
++    void *base = NULL;
++
++    data.len = size;
++    data.align = getpagesize();
++#if (ION_DRIVER_VERSION == 1)
++    data.heap_mask = memory_type;
++    //if cached buffer , force set the lowest two bits 11
++    if((memory_type&(1<<31)))
++    {
++        data.flags = ((memory_type&(1<<31)) | 3);
++    }
++    else
++    {
++        data.flags = 0;
++    }
++#else
++    data.flags = memory_type;
++#endif
++
++    if (ioctl(fd, ION_IOC_ALLOC, &data) < 0) {
++        ALOGE("%s: ION_IOC_ALLOC error!",__func__);
++        close(fd);
++        return -errno;
++    }
++
++    if ((uflags & DONT_MAP_LOCALLY) == 0) {
++        int flags = 0;
++
++        fd_data.handle = data.handle;
++
++        if (ioctl(fd, ION_IOC_SHARE, &fd_data) < 0) {
++            ALOGE("%s: ION_IOC_SHARE error!",__func__);
++            handle_data.handle = data.handle;
++            ioctl(fd, ION_IOC_FREE, &handle_data);
++            close(fd);
++            return -errno;
++        }
++
++        base = (uint8_t*)mmap(0, size,
++                PROT_READ|PROT_WRITE, MAP_SHARED|flags, fd_data.fd, 0);
++        if (base == MAP_FAILED) {
++            ALOGE("mmap(fd=%d, size=%u) failed (%s)",
++                    fd, uint32_t(size), strerror(errno));
++            handle_data.handle = data.handle;
++            ioctl(fd, ION_IOC_FREE, &handle_data);
++            close(fd);
++            return -errno;
++        }
++    }
++    mIonHandle = data.handle;
++    mIonDeviceFd = fd;
++
++    /*
++     * Call this with NULL now and set device with set_device
++     * above for consistency sake with how MemoryHeapPmem works.
++     */
++    MemoryHeapBase::init(fd_data.fd, base, size, uflags, NULL);
++
++    return NO_ERROR;
++}
++
++MemoryHeapIon::~MemoryHeapIon()
++{
++    struct ion_handle_data data;
++
++    data.handle = mIonHandle;
++
++    /*
++     * Due to the way MemoryHeapBase is set up, munmap will never
++     * be called so we need to call it ourselves here.
++     */
++    munmap(MemoryHeapBase::getBase(), MemoryHeapBase::getSize());
++    if (mIonDeviceFd > 0) {
++        ioctl(mIonDeviceFd, ION_IOC_FREE, &data);
++        close(mIonDeviceFd);
++    }
++}
++
++// ---------------------------------------------------------------------------
++}; // namespace android

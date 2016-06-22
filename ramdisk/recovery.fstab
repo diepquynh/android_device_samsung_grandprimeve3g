@@ -1,0 +1,11 @@
+/dev/block/platform/sprd-sdhci.0/mmcblk1p1           /sdcard         vfat    default    recoveryonly
+/dev/block/platform/sprd-sdhci.3/by-name/system      /system         ext4    default    recoveryonly
+/dev/block/platform/sprd-sdhci.3/by-name/HIDDEN      /preload        ext4    default    recoveryonly
+/dev/block/platform/sprd-sdhci.3/by-name/userdata    /data           ext4    default    wait,length=-16384
+/dev/block/platform/sprd-sdhci.3/by-name/CSC         /cache          ext4    default    recoveryonly
+/dev/block/platform/sprd-sdhci.3/by-name/efs         /efs            ext4    default    recoveryonly
+/dev/block/platform/sprd-sdhci.3/by-name/PRODNV      /productinfo    ext4    default    recoveryonly
+/dev/block/platform/sprd-sdhci.3/by-name/KERNEL      /boot           emmc    default    recoveryonly
+/dev/block/platform/sprd-sdhci.3/by-name/RECOVERY    /recovery       emmc    default    recoveryonly
+/dev/block/platform/sprd-sdhci.3/by-name/modem       /modem          emmc    default    recoveryonly
+/dev/block/platform/sprd-sdhci.3/by-name/DSP         /modem2         emmc    default    recoveryonly

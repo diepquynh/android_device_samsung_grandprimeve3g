@@ -1,0 +1,9 @@
+allow untrusted_app apk_data_file:dir getattr;
+allow untrusted_app app_data_file:file execute;
+allow untrusted_app device:chr_file {open read write getattr ioctl};
+allow untrusted_app init:dir {getattr search};
+allow untrusted_app init:file {open read getattr};
+allow untrusted_app init:unix_stream_socket {read write getattr getopt};
+allow untrusted_app kernel:dir {getattr};
+allow untrusted_app system_data_file:file append;
+allow untrusted_app zygote:binder call;

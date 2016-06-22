@@ -1,0 +1,80 @@
+# Un-categorized
+bin/engpc
+xbin/zram.sh
+lib/libatparser.so
+
+# GPS
+etc/gps.conf
+etc/gps.xml
+bin/gpsd
+bin/gps.cer
+lib/libsprd_agps_agent.so
+lib/hw/gps.default.so
+
+# HWC
+lib/libboost.so
+lib/egl/libGLES_mali.so
+
+# Audio
+etc/audio_hw.xml
+etc/audio_para
+etc/audio_policy.conf
+etc/codec_pga.xml
+etc/tiny_hw.xml
+lib/libfactoryutil.so
+lib/libomission_avoidance.so
+lib/libatchannel.so
+
+# WiFi
+etc/wifi/bcmdhd_apsta.bin
+etc/wifi/bcmdhd_sta.bin
+etc/wifi/bcmdhd_mfg.bin
+etc/wifi/nvram_net.txt
+etc/wifi/nvram_mfg.txt
+bin/macloader
+
+# Bluetooth
+vendor/firmware/BCM4343A0_001.001.034.0056.0197_M_ORC_Core3.hcd
+
+# RIL
+bin/rild
+bin/modemd
+bin/nvitemd
+bin/phoneserver
+bin/ext_data.sh
+bin/ext_kill.sh
+bin/ext_symlink.sh
+bin/prepare_param.sh
+lib/libril.so
+lib/libreference-ril_sp.so
+lib/libsecril-client.so
+lib/libsecnativefeature.so
+
+# Camera
+lib/libisp.so
+lib/libmorpho_easy_hdr.so
+
+# HAL
+lib/hw/camera.sc8830.so
+lib/hw/sensors.sc8830.so
+
+# Codecs
+#lib/libomx_aacdec_sprd.so
+#lib/libomx_avcdec_hw_sprd.so
+#lib/libomx_avcdec_sw_sprd.so
+#lib/libomx_avcenc_hw_sprd.so
+#lib/libomx_m4vh263dec_hw_sprd.so
+#lib/libomx_m4vh263dec_sw_sprd.so
+#lib/libomx_m4vh263enc_hw_sprd.so
+#lib/libomx_mp3dec_sprd.so
+#lib/libomx_vpxdec_hw_sprd.so
+
+# DRM
+lib/libwvm.so
+lib/libomafldrm.so
+lib/drm/libomaplugin.so
+vendor/lib/libwvdrm_L3.so
+vendor/lib/libWVStreamControlAPI_L3.so
+
+# Module
+lib/modules/autotst.ko

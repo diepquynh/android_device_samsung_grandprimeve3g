@@ -1,0 +1,453 @@
+import /init.board.rc
+import /init.sc8830.usb.rc
+import /init.sc8830_ss.rc
+
+on early-init
+    mount debugfs debugfs /sys/kernel/debug
+
+    # set core dump resource limit
+    setrlimit 4 -1 -1
+
+    # coredump file will not be generated in release version
+    write /proc/sys/kernel/core_pattern /dev/null
+# radio pipe
+    mkdir /dev/rpipe 0550 radio radio
+    pipe 666 /dev/rpipe/ril.vt.0
+    pipe 666 /dev/rpipe/ril.vt.1
+    pipe 666 /dev/rpipe/ril.vt.2
+
+on init
+    mkdir /productinfo 0771 system system
+ # See storage config details at http://source.android.com/tech/storage/
+    mkdir /mnt/media_rw/extSdCard 0700 media_rw media_rw
+    #mkdir /mnt/media_rw/UsbDriveA 0700 media_rw media_rw
+    #mkdir /mnt/media_rw/UsbDriveB 0700 media_rw media_rw
+    #mkdir /mnt/media_rw/UsbDriveC 0700 media_rw media_rw
+    #mkdir /mnt/media_rw/UsbDriveD 0700 media_rw media_rw
+    #mkdir /mnt/media_rw/UsbDriveE 0700 media_rw media_rw
+    #mkdir /mnt/media_rw/UsbDriveF 0700 media_rw media_rw
+
+    # See storage config details at http://source.android.com/tech/storage/
+    mkdir /mnt/shell/emulated 0700 shell shell
+    mkdir /storage/emulated 0555 root root
+
+    export EXTERNAL_STORAGE /storage/emulated/legacy
+    export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
+    export EMULATED_STORAGE_TARGET /storage/emulated
+
+    # Support legacy paths
+    symlink /storage/emulated/legacy /sdcard
+    symlink /storage/emulated/legacy /mnt/sdcard
+    symlink /storage/emulated/legacy /storage/sdcard0
+    symlink /mnt/shell/emulated/0 /storage/emulated/legacy
+
+    # map "real" external storages paths also in same way. backwards compatibility.
+    symlink /storage/extSdCard /mnt/extSdCard
+    #symlink /storage/UsbDriveA /mnt/UsbDriveA
+    #symlink /storage/UsbDriveB /mnt/UsbDriveB
+    #symlink /storage/UsbDriveC /mnt/UsbDriveC
+    #symlink /storage/UsbDriveD /mnt/UsbDriveD
+    #symlink /storage/UsbDriveE /mnt/UsbDriveE
+    #symlink /storage/UsbDriveF /mnt/UsbDriveF
+
+    export SECONDARY_STORAGE /storage/extSdCard
+    
+    mkdir /storage/extSdCard 0700 root root
+    #mkdir /storage/UsbDriveA 0700 root root
+    #mkdir /storage/UsbDriveB 0700 root root
+    #mkdir /storage/UsbDriveC 0700 root root
+    #mkdir /storage/UsbDriveD 0700 root root
+    #mkdir /storage/UsbDriveE 0700 root root
+    #mkdir /storage/UsbDriveF 0700 root root
+
+on fs
+    ubiattach 0 ubipac
+    mount_all /fstab.sc8830
+    mount pstore pstore /sys/fs/pstore
+    setprop ro.crypto.fuse_sdcard true
+	symlink /system/res /res
+	symlink /system/bin /bin
+
+#Allow others to read fb devices
+    chmod 660 /dev/graphics/fb0
+    chmod 660 /dev/fb0
+
+#permissions for debug
+    chown system system /sys/power/restart_cpc
+    chmod 0220 /sys/power/restart_cpc
+
+on post-fs
+    chown system system /productinfo
+    chmod 0771 /productinfo
+    insmod /system/lib/modules/trout_fm.ko
+
+on post-fs-data
+    copy /system/etc/bluetooth/bt_stack.conf /data/misc/bluedroid/bt_stack.conf
+    chown bluetooth system /data/misc/bluedroid/bt_stack.conf
+    chmod 0640 /data/misc/bluedroid/bt_stack.conf
+
+    # Set indication (checked by vold) that we have finished this action
+    setprop vold.post_fs_data_done 1
+    #SPRD: Add support for install apk to internal sdcard @{
+    mkdir /data/internal-asec 0700 root root
+    # @}
+
+on early-boot
+    # set RLIMIT_MEMLOCK to 64MB
+    setrlimit 8 67108864 67108864
+
+    # Support audio loopback test
+    mkdir /dev/pipe 0755 system system
+    pipe 666 /dev/pipe/mmi.audio.ctrl
+    # Support audio parameter stored
+    mkdir /data/local/media 0771 media system
+
+    chmod 660 /proc/cpt/wdtirq
+    chmod 660 /proc/cpt/stop
+    chmod 660 /proc/cpt/start
+    chmod 660 /proc/cpt/modem
+    chmod 660 /proc/cpt/dsp
+
+    chown system root /proc/cpt/wdtirq
+    chown system root /proc/cpt/stop
+    chown system root /proc/cpt/start
+    chown system root /proc/cpt/modem
+    chown system root /proc/cpt/dsp
+
+    chmod 660 /proc/cpw/wdtirq
+    chmod 660 /proc/cpw/stop
+    chmod 660 /proc/cpw/start
+    chmod 660 /proc/cpw/modem
+    chmod 660 /proc/cpw/dsp
+
+    chown system root /proc/cpw/wdtirq
+    chown system root /proc/cpw/stop
+    chown system root /proc/cpw/start
+    chown system root /proc/cpw/modem
+    chown system root /proc/cpw/dsp
+
+    chmod 660 /proc/cpwcn/wdtirq
+    chmod 660 /proc/cpwcn/stop
+    chmod 660 /proc/cpwcn/start
+    chmod 660 /proc/cpwcn/modem
+    chmod 660 /proc/cpwcn/dsp
+
+    chown system root /proc/cpwcn/wdtirq
+    chown system root /proc/cpwcn/stop
+    chown system root /proc/cpwcn/start
+    chown system root /proc/cpwcn/modem
+    chown system root /proc/cpwcn/dsp
+
+    chown system root /sys/class/rtcc/rtcc_trigger
+
+on boot
+    chown system system /sys/module/mali/parameters/gpu_cur_freq
+    chown system system /sys/module/mali/parameters/gpufreq_max_limit
+    chown system system /sys/module/mali/parameters/gpufreq_min_limit
+    chown system system /sys/module/mali/parameters/gpufreq_table
+    chown system system /sys/class/backlight/sprd_backlight/brightness
+
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+    chown system system /sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable
+    chown system system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_freq
+    chown system system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_enable
+    chown system system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_enable
+    chown system system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_upthreshold
+    chown system system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_downdifferential
+    chown media system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_freq
+    chown media system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_request
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chown system system /sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable
+    chown media system /sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable
+    chmod 0660 /sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable
+    chmod 0660 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chmod 0660 /sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable
+    chmod 0660 /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_freq
+    chmod 0660 /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_enable
+
+    chown system system /sys/devices/system/cpu/cpuhotplug/cpu_hotplug_disable
+    chown media system /sys/devices/system/cpu/cpuhotplug/cpu_hotplug_disable
+    chmod 0660 /sys/devices/system/cpu/cpuhotplug/cpu_hotplug_disable
+
+    chown system system /sys/class/graphics/fb0/dynamic_mipi_clk
+
+on charger
+    class_start core
+    start console
+    start slog
+
+service poweroffalarm /system/bin/poweroff_alarm
+    disabled
+    oneshot
+
+on alarm
+    class_start core
+    start drm
+    start media
+    start console
+    start slog
+    start poweroffalarm
+
+on property:ro.board_ram_size=min
+    setprop zram.disksize 64
+
+on property:ro.board_ram_size=low
+    setprop zram.disksize 200
+    write /proc/sys/vm/extra_free_kbytes 1024
+    write /sys/module/zram/parameters/total_mem_usage_percent  35
+
+on property:ro.board_ram_size=mid
+    setprop zram.disksize 250
+    write /proc/sys/vm/extra_free_kbytes 2048
+
+on property:ro.config.zram.support=true
+    setprop sys.vm.swappiness 100
+    write /proc/sys/vm/page-cluster  0
+    start zram
+
+service zram /system/xbin/zram.sh
+        disabled
+        oneshot
+
+
+#on property:ro.debuggable=1
+#    write /sys/kernel/debug/fatal_dump/enable 1
+#    mkdir /data/corefile
+#    chmod 777 /data/corefile
+#    chmod 777 /sys/kernel/debug/sc2713-regulator/vddarm/voltage
+#    chmod 777 /sys/kernel/debug/sc2713-regulator/vddcore/voltage
+#    chmod 777 /sys/kernel/debug/sprd-regulator/vddarm/voltage
+#    chmod 777 /sys/kernel/debug/sprd-regulator/vddcore/voltage
+#    chmod 777 /sys/kernel/debug
+#    write /proc/sys/kernel/core_pattern /data/corefile/core-%e-%p
+#    write /proc/sys/fs/suid_dumpable 1
+#    write /sys/module/smsg/parameters/debug_enable 1
+
+on property:ro.modem.t.count=1
+    write /proc/sim/0 t
+
+on property:ro.modem.t.count=2
+    write /proc/sim/0 t
+    write /proc/sim/1 t
+
+on property:ro.modem.t.count=3
+    write /proc/sim/0 t
+    write /proc/sim/1 t
+    write /proc/sim/2 t
+
+on property:ro.modem.w.count=1
+    write /proc/sim/0 w
+
+on property:ro.modem.w.count=2
+    write /proc/sim/0 w
+    write /proc/sim/1 w
+
+on property:ro.modem.w.count=3
+    write /proc/sim/0 w
+    write /proc/sim/1 w
+    write /proc/sim/2 w
+
+on property:ro.config.ksm.support=true
+    write /sys/kernel/mm/ksm/pages_to_scan 100
+    write /sys/kernel/mm/ksm/sleep_millisecs 500
+    write /sys/kernel/mm/ksm/run   1
+
+
+# SPRD: add for theme setting @{
+on property:universe_ui_support=true
+    start theme_init
+
+service theme_init /system/bin/theme_init.sh
+    disabled
+    oneshot
+# @}
+
+# add for storage manage @{
+on property:persist.storage.type=1
+    start legacy_tempsd
+
+on property:sys.internal.emulated=0
+    stop sdcard
+    stop legacy_tempsd
+
+# virtual sdcard daemon running as media_rw (1023)
+# service sdcard /system/bin/sdcard -u 1023 -g 1023 -l  /data/media /mnt/shell/emulated
+#    class late_start
+
+# service fuse_extSdCard /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d  /mnt/media_rw/extSdCard /storage/extSdCard
+#    class late_start
+#    disabled
+
+#service fuse_UsbDriveA /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveA /storage/UsbDriveA
+#    class late_start
+#    disabled
+	
+#service fuse_UsbDriveB /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveA /storage/UsbDriveB
+#    class late_start
+#    disabled
+
+#service fuse_UsbDriveC /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveC /storage/UsbDriveC
+#    class late_start
+#    disabled
+
+#service fuse_UsbDriveD /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveD /storage/UsbDriveD
+#    class late_start
+#    disabled
+
+#service fuse_UsbDriveE /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveE /storage/UsbDriveE
+#    class late_start
+#    disabled
+
+#service fuse_UsbDriveF /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveF /storage/UsbDriveF
+#    class late_start
+#    disabled
+
+#modem_control
+service modem_control  /system/bin/modem_control
+    class core
+    user root
+    group system radio shell
+    oneshot
+
+service modemd /system/bin/modemd
+    class core
+    user system
+    group system radio shell
+    oneshot
+
+service phoneserver_t /system/bin/phoneserver -m t
+    class core
+    user root
+    group radio system shell dhcp
+    disabled
+    oneshot
+
+service phoneserver_w /system/bin/phoneserver -m w
+    class core
+    user root
+    group radio system shell dhcp
+    disabled
+    oneshot
+
+service phoneserver_l /system/bin/phoneserver -m l
+    class core
+    user root
+    group radio system shell dhcp
+    disabled
+    oneshot
+
+service batterysrv /bin/batterysrv
+    class core
+    user system
+    group system 
+    oneshot
+
+service charge /bin/charge
+    class charger
+    user root
+    oneshot
+
+#nvitemd
+service nvitemd_td /system/bin/nvitemd t 0
+    class core
+    user system
+    disabled
+    group system radio shell
+    oneshot
+
+service nvitemd_w /system/bin/nvitemd w 0
+    class core
+    user system
+    group system radio shell
+    disabled
+    oneshot
+
+service nvitemd_l /system/bin/nvitemd l 0
+    class core
+    user system
+    group system radio shell
+    disabled
+    oneshot
+
+on property:persist.modem.w.enable=1
+    symlink /dev/spipe_w1 /dev/vbpipe1
+    symlink /dev/spipe_w2 /dev/vbpipe2
+    symlink /dev/spipe_w3 /dev/vbpipe3
+    symlink /dev/spipe_w6 /dev/vbpipe6
+    start nvitemd_w
+
+on property:persist.modem.t.enable=1
+    start refnotify_td
+    start nvitemd_td
+
+on property:persist.modem.l.enable=1
+    start refnotify_l
+    start nvitemd_l
+
+#create symlink
+service smd_symlink /system/bin/ext_symlink.sh -u
+    user root
+    disabled
+    oneshot
+
+#data on
+service data_on /system/bin/ext_data.sh  -u
+    user root
+    disabled
+    oneshot
+
+#data off
+service data_off /system/bin/ext_data.sh  -d
+    user root
+    disabled
+    oneshot
+
+#kill td app
+service kill_td_phone /system/bin/ext_kill.sh  -t
+    user root
+    disabled
+    oneshot
+
+#kill w app
+service kill_w_phone /system/bin/ext_kill.sh  -w
+    user root
+    disabled
+    oneshot
+#kill lte app
+service kill_l_phone /system/bin/ext_kill.sh  -l
+    user root
+    disabled
+    oneshot
+
+#change owner
+service chown_service /system/bin/ext_chown.sh  -c
+    class main
+    user root
+    oneshot
+
+#set mac addr
+service set_mac /system/bin/ext_chown.sh  -e
+    user root
+    disabled
+    oneshot
+
+service  inputfreq  /system/bin/inputfreq.sh
+    user root
+    disabled
+    oneshot
+
+service  recoveryfreq  /system/bin/recoveryfreq.sh
+    user root
+    disabled
+    oneshot
+
+    chmod 0666 /proc/pin_switch/iis0_sys_sel/cp0_iis0
+    chmod 0666 /proc/pin_switch/iis0_sys_sel/cp1_iis0
+    chmod 0666 /proc/pin_switch/iis0_sys_sel/cp2_iis0
+    chmod 0666 /proc/pin_switch/iis0_sys_sel/ap_iis0
+    chmod 0666 /proc/pin_switch/bt_iis_sys_sel/cp0_iis0
+    chmod 0666 /proc/pin_switch/bt_iis_sys_sel/cp1_iis0
+    chmod 0666 /proc/pin_switch/bt_iis_sys_sel/cp2_iis0
+    chmod 0666 /proc/pin_switch/bt_iis_sys_sel/ap_iis0
+

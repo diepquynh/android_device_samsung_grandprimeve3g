@@ -1,0 +1,140 @@
+diff --git a/core/jni/android_view_GLES20Canvas.cpp b/core/jni/android_view_GLES20Canvas.cpp
+index 9bbd4fc..ffe1544 100644
+--- a/core/jni/android_view_GLES20Canvas.cpp
++++ b/core/jni/android_view_GLES20Canvas.cpp
+@@ -828,7 +828,7 @@ static void android_view_GLES20Canvas_drawLayer(JNIEnv* env, jobject clazz,
+ static jboolean android_view_GLES20Canvas_isAvailable(JNIEnv* env, jobject clazz) {
+ #ifdef USE_OPENGL_RENDERER
+     char prop[PROPERTY_VALUE_MAX];
+-    if (property_get("ro.kernel.qemu", prop, NULL) == 0) {
++    if (property_get("ro.kernel.qemu", prop, NULL) == 0 || atoi(prop) == 0) {
+         // not in the emulator
+         return JNI_TRUE;
+     }
+diff --git a/media/java/android/media/MediaFormat.java b/media/java/android/media/MediaFormat.java
+index 4356a3e..f3ccc3d 100644
+--- a/media/java/android/media/MediaFormat.java
++++ b/media/java/android/media/MediaFormat.java
+@@ -124,6 +124,15 @@ public final class MediaFormat {
+     private Map<String, Object> mMap;
+ 
+     /**
++     * A key describing the desired level to be used by an encoder.
++     * Constants are declared in {@link MediaCodecInfo.CodecProfileLevel}.
++     * This key is only supported for codecs that specify a profile.
++     *
++     * @see MediaCodecInfo.CodecCapabilities#profileLevels
++     */
++    public static final String KEY_LEVEL = "level";
++
++    /**
+      * A key describing the mime type of the MediaFormat.
+      * The associated value is a string.
+      */
+diff --git a/telephony/java/android/telephony/TelephonyManager.java b/telephony/java/android/telephony/TelephonyManager.java
+index 1f64405..c244156 100644
+--- a/telephony/java/android/telephony/TelephonyManager.java
++++ b/telephony/java/android/telephony/TelephonyManager.java
+@@ -3011,44 +3011,22 @@ public class TelephonyManager {
+         return SubscriptionManager.getSlotId(SubscriptionManager.getDefaultSubId());
+     }
+ 
++    /*
++     * vivalto3gvn uses this naming scheme
++     */
++    private static String getPropNameForPhoneId(int phoneId, String prop) {
++        if (phoneId <= 0)
++            return prop;
++        return prop + (phoneId + 1);
++    }
++
+     /**
+      * Sets the telephony property with the value specified.
+      *
+      * @hide
+      */
+     public static void setTelephonyProperty(int phoneId, String property, String value) {
+-        String propVal = "";
+-        String p[] = null;
+-        String prop = SystemProperties.get(property);
+-
+-        if (value == null) {
+-            value = "";
+-        }
+-
+-        if (prop != null) {
+-            p = prop.split(",");
+-        }
+-
+-        if (!SubscriptionManager.isValidPhoneId(phoneId)) {
+-            Rlog.d(TAG, "setTelephonyProperty: invalid phoneId=" + phoneId +
+-                    " property=" + property + " value: " + value + " prop=" + prop);
+-            return;
+-        }
+-
+-        for (int i = 0; i < phoneId; i++) {
+-            String str = "";
+-            if ((p != null) && (i < p.length)) {
+-                str = p[i];
+-            }
+-            propVal = propVal + str + ",";
+-        }
+-
+-        propVal = propVal + value;
+-        if (p != null) {
+-            for (int i = phoneId + 1; i < p.length; i++) {
+-                propVal = propVal + "," + p[i];
+-            }
+-        }
++        String propVal = value == null ? "" : value;
+ 
+         if (property.length() > SystemProperties.PROP_NAME_MAX
+                 || propVal.length() > SystemProperties.PROP_VALUE_MAX) {
+@@ -3059,7 +3037,7 @@ public class TelephonyManager {
+ 
+         Rlog.d(TAG, "setTelephonyProperty: success phoneId=" + phoneId +
+                 " property=" + property + " value: " + value + " propVal=" + propVal);
+-        SystemProperties.set(property, propVal);
++        SystemProperties.set(getPropNameForPhoneId(phoneId, property), propVal);
+     }
+ 
+     /**
+@@ -3156,17 +3134,10 @@ public class TelephonyManager {
+      * @hide
+      */
+     public static String getTelephonyProperty(int phoneId, String property, String defaultVal) {
+-        String propVal = null;
+-        String prop = SystemProperties.get(property);
+-        if ((prop != null) && (prop.length() > 0)) {
+-            String values[] = prop.split(",");
+-            if ((phoneId >= 0) && (phoneId < values.length) && (values[phoneId] != null)) {
+-                propVal = values[phoneId];
+-            }
+-        }
++        String propVal = SystemProperties.get(getPropNameForPhoneId(phoneId, property));
+         Rlog.d(TAG, "getTelephonyProperty: return propVal='" + propVal + "' phoneId=" + phoneId
+-                + " property='" + property + "' defaultVal='" + defaultVal + "' prop=" + prop);
+-        return propVal == null ? defaultVal : propVal;
++                + " property='" + property + "' defaultVal='" + defaultVal + "'");
++        return propVal == null || propVal.length() == 0 ? defaultVal : propVal;
+     }
+ 
+     /**
+@@ -3175,15 +3146,8 @@ public class TelephonyManager {
+      * @hide
+      */
+     public static int getTelephonyProperty(String property, int slotId, int defaultVal) {
+-        String propVal = null;
+-        String prop = SystemProperties.get(property);
+-        if ((prop != null) && (prop.length() > 0)) {
+-            String values[] = prop.split(",");
+-            if ((slotId >= 0) && (slotId < values.length) && (values[slotId] != null)) {
+-                propVal = values[slotId];
+-            }
+-        }
+-        return propVal == null ? defaultVal : Integer.parseInt(propVal);
++        String propVal = getTelephonyProperty(slotId, property, null);
++        return propVal == null || propVal.length() == 0 ? defaultVal : Integer.parseInt(propVal);
+     }
+ 
+     /** @hide */

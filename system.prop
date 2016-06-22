@@ -1,0 +1,64 @@
+ro.sf.lcd_density=240
+ro.sf.lcd_width=54
+ro.sf.lcd_height=96
+ro.opengles.version=131072
+ro.product.hardware=CORE3_V1.0.0
+
+debug.hwui.render_dirty_regions=false
+
+# Bluetooth OPP low speed for save power
+debug.bt.lowspeed=true
+
+persist.ttydev=ttyVUART0
+
+# delay for ConnectivityChange broadcast (ms)
+conn.connectivity_change_delay = 0
+
+ro.product.partitionpath=/dev/block/platform/sprd-sdhci.3/by-name/
+
+# Default ecclist
+ro.ril.ecclist=112,911,#911,*911
+
+persist.modem.w.enable=1
+persist.modem.w.nvp=w
+ro.modem.w.dev=/dev/cpw
+ro.modem.w.tty=/dev/stty_w
+ro.modem.w.eth=rmnet
+ro.modem.w.snd=1
+ro.modem.w.diag=/dev/slog_w
+ro.modem.w.loop=/dev/spipe_w0
+ro.modem.w.nv=/dev/spipe_w1
+ro.modem.w.assert=/dev/spipe_w2
+ro.modem.w.vbc=/dev/spipe_w6
+ro.modem.w.id=0
+ro.modem.w.fixnv_size=0x40000
+ro.modem.w.runnv_size=0x60000
+
+persist.sys.engpc.disable=0
+
+ro.config.ksm.support=true
+
+#zram config
+ro.config.zram.support=true
+ro.board_ram_size=mid
+
+#if our product not support drm,set as false
+drm.service.enabled=true
+
+# hotspot development
+ro.hotspot.enabled=1
+
+# System property for storage_preload
+persist.sys.storage_preload=1
+
+# this product does not support bt and softap coexist
+ro.btwifisoftap.coexist=false
+# SPRD: add support hwrotation
+ro.sf.hwrotation=0
+
+# System prop for Atlas service
+config.disable_atlas=true
+
+# System prop for DisplayInfo cache
+config.displayinfo.use_cache=true
+

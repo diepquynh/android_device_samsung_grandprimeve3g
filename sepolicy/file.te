@@ -1,0 +1,4 @@
+#Type for prodnv file
+type prod_file,file_type;
+#Type for theme
+type theme_data_file,file_type, data_file_type;

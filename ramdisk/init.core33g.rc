@@ -1,0 +1,2 @@
+import /init.core33g_base.rc
+import /init.wifi.rc

@@ -1,0 +1,4 @@
+#############################
+# productinfo files
+#
+/productinfo(/.*)?	u:object_r:prod_file:s0
