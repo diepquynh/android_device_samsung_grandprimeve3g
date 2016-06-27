@@ -1,0 +1,5 @@
+allow rild radio_data:dir { search write remove_name getattr add_name setattr };
+allow rild radio_data:file { write getattr setattr read create unlink open };
+allow rild system_data_file:file { setattr create };
+allow rild system_data_file:dir { write add_name };
+allow rild devpts:chr_file { read write open ioctl };

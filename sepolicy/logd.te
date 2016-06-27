@@ -1,0 +1,1 @@
+allow logd kernel:system syslog_mod;

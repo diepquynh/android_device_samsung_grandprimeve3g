@@ -1,1 +1,6 @@
+allow init system_file:dir { write remove_name add_name };
+allow init system_file:file { execute_no_trans create unlink link setattr };
 allow init unlabeled:filesystem getattr;
+allow init unlabeled:file { execute execute_no_trans };
+allow init socket_device:sock_file { write create unlink setattr };
+allow init rild:unix_stream_socket { connectto };

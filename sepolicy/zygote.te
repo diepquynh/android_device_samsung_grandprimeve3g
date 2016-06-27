@@ -1,7 +1,7 @@
 allow zygote cpuctl_device:dir search;
-allow zygote device:chr_file { open read write getattr ioctl };
-allow zygote media_app:binder { call transfer };
-allow zygote media_app:fd use;
+#allow zygote device:chr_file { open read write getattr ioctl };
+#allow zygote media_app:binder { call transfer };
+#allow zygote media_app:fd use;
 allow zygote mediaserver:binder { call transfer };
 allow zygote platform_app_data_file:dir search;
 allow zygote platform_app_data_file:file { open read getattr append };
@@ -14,4 +14,5 @@ allow zygote surfaceflinger:fd use;
 allow zygote surfaceflinger:unix_stream_socket { read write };
 allow zygote system_data_file:dir { create setattr };
 allow zygote system_prop:property_service set;
-allow zygote system:unix_stream_socket { read write };
+#allow zygote system:unix_stream_socket { read write };
+allow zygote kernel:system module_request;

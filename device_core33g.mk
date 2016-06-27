@@ -86,11 +86,17 @@ PRODUCT_PACKAGES += \
 	audio_policy.sc8830 \
 	audio_vbc_eq
 
-# Use prebuilt webviewchromium
+AUDIO_CONFIGS := \
+	$(LOCAL_PATH)/configs/audio/audio_policy.conf \
+
+PRODUCT_COPY_FILES += \
+	$(foreach f,$(AUDIO_CONFIGS),$(f):system/etc/$(notdir $(f))) \
+
+# Common libs
 PRODUCT_PACKAGES += \
-	webview \
-	libwebviewchromium_loader.so \
-	libwebviewchromium_plat_support.so
+	libstlport \
+	libril_shim \
+	libgps_shim
 
 # Wifi
 PRODUCT_PACKAGES += \

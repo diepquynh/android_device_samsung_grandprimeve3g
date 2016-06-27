@@ -30,7 +30,7 @@
     <bool name="config_unplugTurnsOnScreen">true</bool>
 
     <!-- If this is true, the screen will fade off. -->
-    <bool name="config_animateScreenLights">true</bool>
+    <bool name="config_animateScreenLights">false</bool>
 
     <!-- List of regexpressions describing the interface (if any) that represent tetherable
          Wifi interfaces.  If the device doesn't want to support tethering over Wifi this
@@ -127,4 +127,55 @@
     <!-- Indicate whether the SD card is accessible without removing the battery. -->
     <bool name="config_batterySdCardAccessibility">true</bool>
 
+    <!-- The RadioAccessFamilies supported by the device.
+         Empty is viewed as "all".  Only used on devices which
+         don't support RIL_REQUEST_GET_RADIO_CAPABILITY
+         format is UMTS|LTE|... -->
+    <string translatable="false" name="config_radio_access_family">GSM|HSPA</string>
+
+    <!-- Ultrasound support for Mic/speaker path -->
+    <!-- Whether the default microphone audio source supports near-ultrasound frequencies
+         (range of 18 - 21 kHz). -->
+    <bool name="config_supportMicNearUltrasound">false</bool>
+    <!-- Whether the default speaker audio output path supports near-ultrasound frequencies
+         (range of 18 - 21 kHz). -->
+    <bool name="config_supportSpeakerNearUltrasound">false</bool>
+
+    <!-- Hardware keys present on the device, stored as a bit field.
+         This integer should equal the sum of the corresponding value for each
+         of the following keys present:
+             1 - Home
+             2 - Back
+             4 - Menu
+             8 - Assistant (search)
+            16 - App switch
+            32 - Camera
+            64 - Volume rocker
+         For example, a device with Home, Back and Menu keys would set this
+         config to 7. -->
+    <integer name="config_deviceHardwareKeys">83</integer>
+
+    <!-- Control the behavior when the user long presses the home button.
+            0 - Nothing
+            1 - Menu key
+            2 - Recent apps view in SystemUI
+            3 - Launch assist intent
+            4 - Voice Search
+            5 - In-app Search
+         This needs to match the constants in
+         policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
+    -->
+    <integer name="config_longPressOnHomeBehavior">4</integer>
+
+    <!-- Control the behavior when the user long presses the app switch button.
+            0 - Nothing
+            1 - Menu key
+            2 - Recent apps view in SystemUI
+            3 - Launch assist intent
+            4 - Voice Search
+            5 - In-app Search
+         This needs to match the constants in
+         services/core/java/com/android/server/policy/policy/impl/PhoneWindowManager.java
+    -->
+    <integer name="config_longPressOnAppSwitchBehavior">1</integer>
 </resources>

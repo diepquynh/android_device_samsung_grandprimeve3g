@@ -1,1 +1,1 @@
-allow system zygote:binder impersonate;
+#allow system zygote:binder impersonate;

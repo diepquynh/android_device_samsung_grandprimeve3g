@@ -1,6 +1,5 @@
 # Un-categorized
 bin/engpc
-xbin/zram.sh
 lib/libatparser.so
 
 # GPS
@@ -11,14 +10,13 @@ bin/gps.cer
 lib/libsprd_agps_agent.so
 lib/hw/gps.default.so
 
-# HWC
+# Graphics rendering
 lib/libboost.so
 lib/egl/libGLES_mali.so
 
 # Audio
 etc/audio_hw.xml
 etc/audio_para
-etc/audio_policy.conf
 etc/codec_pga.xml
 etc/tiny_hw.xml
 lib/libfactoryutil.so
@@ -61,16 +59,6 @@ lib/hw/gralloc.sc8830.so
 lib/hw/hwcomposer.sc8830.so
 lib/hw/sensors.sc8830.so
 lib/hw/sprd_gsp.sc8830.so
-
-# DRM
-lib/libwvm.so
-lib/libomafldrm.so
-lib/drm/libomaplugin.so
-vendor/lib/libwvdrm_L3.so
-vendor/lib/libWVStreamControlAPI_L3.so
-
-# Module
-lib/modules/autotst.ko
 
 # Codecs
 lib/libomx_aacdec_sprd.so

@@ -26,7 +26,6 @@ void audio_pga_free(struct audio_pga *pga);
 
 /* Applies an audio pga by name */
 int audio_pga_apply(struct audio_pga *pga, int val, const char *name);
-int get_snd_card_number(const char *card_name);
 
 /*
  * for PGA tuning by audiotester

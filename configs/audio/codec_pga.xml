@@ -1,0 +1,281 @@
+<!-- SPRD-V2 CODEC PGA configuration file -->
+<codec name="sprd-codec">
+
+<!-- the profile -->
+<profile name="speaker-l">
+	<pga name="SPKL Playback Volume" bit="0" />
+	<pga name="DACL Playback Volume" bit="8" />
+	<pga name="VBC DACL DG Set" bit="16" />
+	<pga name="VBC DACL DG Switch" bit="31" />
+</profile>
+
+<profile name="speaker-r">
+	<pga name="SPKR Playback Volume" bit="0" />
+	<pga name="DACR Playback Volume" bit="8" />
+	<pga name="VBC DACR DG Set" bit="16" />
+	<pga name="VBC DACR DG Switch" bit="31" />
+</profile>
+
+<profile name="headphone-l">
+	<pga name="HPL Playback Volume" bit="0" />
+	<pga name="DACL Playback Volume" bit="8" />
+	<pga name="VBC DACL DG Set" bit="16" />
+	<pga name="VBC DACL DG Switch" bit="31" />
+</profile>
+
+<profile name="headphone-r">
+	<pga name="HPR Playback Volume" bit="0" />
+	<pga name="DACR Playback Volume" bit="8" />
+	<pga name="VBC DACR DG Set" bit="16" />
+	<pga name="VBC DACR DG Switch" bit="31" />
+</profile>
+
+<profile name="headphone-spk-l">
+	<pga name="SPKL Playback Volume" bit="0" />
+	<pga name="HPL Playback Volume" bit="4" />
+	<pga name="DACL Playback Volume" bit="8" />
+	<pga name="VBC DACL DG Set" bit="16" />
+	<pga name="VBC DACL DG Switch" bit="31" />
+</profile>
+
+<profile name="headphone-spk-r">
+	<pga name="SPKR Playback Volume" bit="0" />
+	<pga name="HPR Playback Volume" bit="4" />
+	<pga name="DACR Playback Volume" bit="8" />
+	<pga name="VBC DACR DG Set" bit="16" />
+	<pga name="VBC DACR DG Switch" bit="31" />
+</profile>
+
+<profile name="earpiece">
+	<pga name="EAR Playback Volume" bit="0" />
+	<pga name="DACL Playback Volume" bit="8" />
+	<pga name="VBC DACL DG Set" bit="16" />
+	<pga name="VBC DACL DG Switch" bit="31" />
+</profile>
+
+<profile name="voice-speaker-l">
+	<pga name="SPKL Playback Volume" bit="0" />
+	<pga name="DACL Playback Volume" bit="4" />
+	<pga name="VBC DACL DG Set" bit="16" />
+	<pga name="VBC DACL DG Switch" bit="31" />
+</profile>
+
+<profile name="voice-speaker-r">
+	<pga name="SPKR Playback Volume" bit="0" />
+	<pga name="DACR Playback Volume" bit="4" />
+	<pga name="VBC DACR DG Set" bit="16" />
+	<pga name="VBC DACR DG Switch" bit="31" />
+</profile>
+
+<profile name="voice-headphone-l">
+	<pga name="HPL Playback Volume" bit="0" />
+	<pga name="DACL Playback Volume" bit="4" />
+	<pga name="VBC DACL DG Set" bit="16" />
+	<pga name="VBC DACL DG Switch" bit="31" />
+</profile>
+
+<profile name="voice-headphone-r">
+	<pga name="HPR Playback Volume" bit="0" />
+	<pga name="DACR Playback Volume" bit="4" />
+	<pga name="VBC DACR DG Set" bit="16" />
+	<pga name="VBC DACR DG Switch" bit="31" />
+</profile>
+
+<profile name="voice-headphone-spk-l">
+	<pga name="SPKL Playback Volume" bit="0" />
+	<pga name="DACL Playback Volume" bit="4" />
+	<pga name="HPL Playback Volume" bit="8" />
+	<pga name="VBC DACL DG Set" bit="16" />
+	<pga name="VBC DACL DG Switch" bit="31" />
+</profile>
+
+<profile name="voice-headphone-spk-r">
+	<pga name="SPKR Playback Volume" bit="0" />
+	<pga name="DACR Playback Volume" bit="4" />
+	<pga name="HPR Playback Volume" bit="8" />
+	<pga name="VBC DACR DG Set" bit="16" />
+	<pga name="VBC DACR DG Switch" bit="31" />
+</profile>
+
+<profile name="voice-earpiece">
+	<pga name="EAR Playback Volume" bit="0" />
+	<pga name="DACL Playback Volume" bit="4" />
+	<pga name="VBC DACL DG Set" bit="16" />
+	<pga name="VBC DACL DG Switch" bit="31" />
+</profile>
+
+<profile name="linein-spk-l">
+	<pga name="SPKL Playback Volume" bit="0" />
+	<pga name="ADCL Capture Volume" bit="4" />
+	<pga name="VBC DACL DG Set" bit="16" />
+	<pga name="VBC DACL DG Switch" bit="31" />
+</profile>
+
+<profile name="linein-spk-r">
+	<pga name="SPKR Playback Volume" bit="0" />
+	<pga name="ADCR Capture Volume" bit="4" />
+	<pga name="VBC DACR DG Set" bit="16" />
+	<pga name="VBC DACR DG Switch" bit="31" />
+</profile>
+
+<profile name="linein-hp-l">
+	<pga name="HPL Playback Volume" bit="0" />
+	<pga name="ADCL Capture Volume" bit="4" />
+	<pga name="VBC DACL DG Set" bit="16" />
+	<pga name="VBC DACL DG Switch" bit="31" />
+</profile>
+
+<profile name="linein-hp-r">
+	<pga name="HPR Playback Volume" bit="0" />
+	<pga name="ADCR Capture Volume" bit="4" />
+	<pga name="VBC DACR DG Set" bit="16" />
+	<pga name="VBC DACR DG Switch" bit="31" />
+</profile>
+
+<profile name="capture-l">
+	<pga name="ADCL Capture Volume" bit="0" />
+	<pga name="MIC Boost" bit="6" />
+	<pga name="AUXMIC Boost" bit="6" />
+	<pga name="HEADMIC Boost" bit="6" />
+	<pga name="VBC ADCL DG Set" bit="8" />
+	<pga name="VBC ADCL DG Switch" bit="15" />
+</profile>
+
+<profile name="capture-r">
+	<pga name="ADCR Capture Volume" bit="0" />
+	<pga name="MIC Boost" bit="6" />
+	<pga name="AUXMIC Boost" bit="6" />
+	<pga name="HEADMIC Boost" bit="6" />
+	<pga name="VBC ADCR DG Set" bit="8" />
+	<pga name="VBC ADCR DG Switch" bit="15" />
+</profile>
+
+<profile name="voice-capture-l">
+	<pga name="ADCL Capture Volume" bit="0" />
+	<pga name="MIC Boost" bit="6" />
+	<pga name="AUXMIC Boost" bit="6" />
+	<pga name="HEADMIC Boost" bit="6" />
+	<pga name="VBC ADCL DG Set" bit="8" />
+	<pga name="VBC ADCL DG Switch" bit="15" />
+</profile>
+
+<profile name="voice-capture-r">
+	<pga name="ADCR Capture Volume" bit="0" />
+	<pga name="MIC Boost" bit="6" />
+	<pga name="AUXMIC Boost" bit="6" />
+	<pga name="HEADMIC Boost" bit="6" />
+	<pga name="VBC ADCR DG Set" bit="8" />
+	<pga name="VBC ADCR DG Switch" bit="15" />
+</profile>
+
+<profile name="linein-capture-l">
+	<pga name="ADCL Capture Volume" bit="0" />
+	<pga name="VBC ADCL DG Set" bit="8" />
+	<pga name="VBC ADCL DG Switch" bit="15" />
+</profile>
+
+<profile name="linein-capture-r">
+	<pga name="ADCR Capture Volume" bit="0" />
+	<pga name="VBC ADCR DG Set" bit="8" />
+	<pga name="VBC ADCR DG Switch" bit="15" />
+</profile>
+<profile name="digital-fm">
+	<pga name="VBC STL DG Set" bit="0" />
+	<pga name="VBC STR DG Set" bit="16" />
+</profile>
+<!-- the configuration PGA is the physical vaule -->
+<attribute>
+<!-- DO NOT modify the mixer attribute -->
+	<mixer name="SPKL Playback Volume">
+		<attr max="15" inverse="0" />
+	</mixer>
+
+	<mixer name="SPKR Playback Volume">
+		<attr max="15" inverse="0" />
+	</mixer>
+
+	<mixer name="HPL Playback Volume">
+		<attr max="15" inverse="0" />
+	</mixer>
+
+	<mixer name="HPR Playback Volume">
+		<attr max="15" inverse="0" />
+	</mixer>
+
+	<mixer name="EAR Playback Volume">
+		<attr max="15" inverse="0" />
+	</mixer>
+
+	<mixer name="DACL Playback Volume">
+		<attr max="7" inverse="0" />
+	</mixer>
+
+	<mixer name="DACR Playback Volume">
+		<attr max="7" inverse="0" />
+	</mixer>
+
+	<mixer name="ADCL Capture Volume">
+		<attr max="63" inverse="0" />
+	</mixer>
+
+	<mixer name="ADCR Capture Volume">
+		<attr max="63" inverse="0" />
+	</mixer>
+
+	<mixer name="MIC Boost">
+		<attr max="3" inverse="0" />
+	</mixer>
+
+	<mixer name="AUXMIC Boost">
+		<attr max="3" inverse="0" />
+	</mixer>
+
+	<mixer name="HEADMIC Boost">
+		<attr max="3" inverse="0" />
+	</mixer>
+
+	<mixer name="Linein Boost">
+		<attr max="3" inverse="0" />
+	</mixer>
+
+	<mixer name="VBC DACL DG Set">
+		<attr max="127" inverse="0" />
+	</mixer>
+
+	<mixer name="VBC DACR DG Set">
+		<attr max="127" inverse="0" />
+	</mixer>
+
+	<mixer name="VBC DACL DG Switch">
+		<attr max="1" inverse="0" />
+	</mixer>
+
+	<mixer name="VBC DACR DG Switch">
+		<attr max="1" inverse="0" />
+	</mixer>
+
+	<mixer name="VBC ADCL DG Set">
+		<attr max="127" inverse="0" />
+	</mixer>
+
+	<mixer name="VBC ADCR DG Set">
+		<attr max="127" inverse="0" />
+	</mixer>
+
+	<mixer name="VBC ADCL DG Switch">
+		<attr max="1" inverse="0" />
+	</mixer>
+
+	<mixer name="VBC ADCR DG Switch">
+		<attr max="1" inverse="0" />
+	</mixer>
+	<mixer name="VBC STR DG Set">
+		<attr max="127" inverse="0" />
+	</mixer>
+
+	<mixer name="VBC STL DG Set">
+		<attr max="127" inverse="0" />
+	</mixer>
+</attribute>
+
+</codec>

@@ -1,1 +1,1 @@
-allow init_shell unlabeled:filesystem getattr;
+#allow init_shell unlabeled:filesystem getattr;

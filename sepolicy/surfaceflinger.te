@@ -1,0 +1,4 @@
+allow surfaceflinger ctl_default_prop:property_service set;
+allow surfaceflinger device:chr_file { read write getattr open ioctl };
+allow surfaceflinger kernel:system module_request;
+allow surfaceflinger shell_prop:property_service set;

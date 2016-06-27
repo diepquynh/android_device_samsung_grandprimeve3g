@@ -1,7 +1,7 @@
 # Domain for shell processes spawned by ADB
 type theme, domain;
 type theme_exec, file_type;
-unconfined_domain(theme)
+#unconfined_domain(theme)
 
 # Run app_process.
 # XXX Split into its own domain?

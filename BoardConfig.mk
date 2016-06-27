@@ -52,6 +52,7 @@ BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 -
 
 # RIL
 BOARD_RIL_CLASS := ../../../device/samsung/core33g/ril
+COMMON_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
@@ -81,7 +82,6 @@ BOARD_USE_MHEAP_SCREENSHOT := true
 BOARD_EGL_WORKAROUND_BUG_10194508 := true
 TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
 HWUI_COMPILE_FOR_PERF := true
-USE_SPRD_HWCOMPOSER := true
 USE_OPENGL_RENDERER := true
 USE_OVERLAY_COMPOSER_GPU := true
 DEVICE_FORCE_VIDEO_GO_OVERLAYCOMPOSER := true
@@ -98,14 +98,13 @@ TARGET_SCREEN_WIDTH := 480
 BOARD_USES_TINYALSA_AUDIO := true
 BOARD_USES_SS_VOIP := true
 BOARD_USE_LIBATCHANNEL_WRAPPER := true
+TARGET_TINY_ALSA_IGNORE_SILENCE_SIZE := true
 
 # Media
-COMMON_GLOBAL_CFLAGS += -DADD_LEGACY_ACQUIRE_BUFFER_SYMBOL
 COMMON_GLOBAL_CFLAGS += -DBOARD_CANT_REALLOCATE_OMX_BUFFERS
 
 # Board specific features
 BOARD_USE_SAMSUNG_COLORFORMAT := true
-BOARD_NEEDS_MEMORYHEAPION_SPRD := true
 COMMON_GLOBAL_CFLAGS += -DSPRD_HARDWARE
 
 # healthd
@@ -117,7 +116,7 @@ CM_POWERHAL_EXTENSION := sc8830
 TARGET_POWERHAL_VARIANT := cm
 
 # Init
-TARGET_NR_SVC_SUPP_GIDS := 24
+TARGET_NR_SVC_SUPP_GIDS := 36
 TARGET_PROVIDES_INIT_RC := true
 
 # Recovery
@@ -129,37 +128,20 @@ TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 TARGET_OTA_ASSERT_DEVICE := SM-G360H,SM-G360HU,core33g,core33gdd,core33gdx
 
 # SELinux
-#BOARD_SEPOLICY_DIRS += device/samsung/core33g/sepolicy
-#BOARD_SEPOLICY_UNION :=	\
-#	file.te	\
-#	file_contexts \
-#	seapp_contexts \
-#	theme.te \
-#	healthd.te \
-#	init.te \
-#	init_shell.te \
-#	installd.te \
-#	netd.te \
-#	shell.te \
-#	system.te \
-#	untrusted_app.te \
-#	vold.te	\
-#	zygote.te
+BOARD_SEPOLICY_DIRS += device/samsung/core33g/sepolicy
 
 # Use dmalloc() for such low memory devices like us
 MALLOC_IMPL := dlmalloc
 
-# Use prebuilt webviewchromium to cut down build time
-PRODUCT_PREBUILT_WEBVIEWCHROMIUM := yes
-
 # Enable dex-preoptimization to speed up the first boot sequence
 WITH_DEXPREOPT := true
-#WITH_DEXPREOPT_BOOT_IMG_ONLY := true
+WITH_DEXPREOPT_BOOT_IMG_ONLY := true
 WITH_DEXPREOPT_PIC := true
 WITH_DEXPREOPT_COMP := false
 
 # Charger
 BOARD_CHARGER_ENABLE_SUSPEND := true
+BOARD_NO_CHARGER_LED := true
 BOARD_CHARGING_MODE_BOOTING_LPM := /sys/class/power_supply/battery/batt_lp_charging
 CHARGING_ENABLED_PATH := /sys/class/power_supply/battery/batt_lp_charging
 BACKLIGHT_PATH := /sys/class/backlight/panel/brightness

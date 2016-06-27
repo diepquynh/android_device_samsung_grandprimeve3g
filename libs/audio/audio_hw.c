@@ -36,6 +36,7 @@
 #include <expat.h>
 
 #include <tinyalsa/asoundlib.h>
+#include <tinyalsautils.h>
 #include <audio_utils/resampler.h>
 #include "audio_pga.h"
 #include "vb_effect_if.h"
@@ -618,7 +619,6 @@ static dump_data_info_t dump_info;
  * NOTE: when multiple mutexes have to be acquired, always respect the following order:
  *        hw device > in stream > out stream
  */
-extern int get_snd_card_number(const char *card_name);
 int set_call_route(struct tiny_audio_device *adev, int device, int on);
 static void select_devices_signal(struct tiny_audio_device *adev);
 static void do_select_devices(struct tiny_audio_device *adev);
