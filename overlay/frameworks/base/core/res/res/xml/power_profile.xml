@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /*
-** Copyright 2013, The CyanogenMod Project
+** Copyright 2016, The CyanogenMod Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -41,18 +41,17 @@
         <value>12000000</value>
         <value>10000000</value>
         <value>768000</value>
-        <value>600000</value>
         <value>384000</value>
     </array>
     <item name="cpu.idle">4</item>
     <array name="cpu.active">
         <value>577</value>
         <value>408</value>
-        <value>240</value>
-        <value>178</value>
-        <value>106</value>
+        <value>249</value>
+        <value>148</value>
+        <value>55</value>
     </array>
-    <item name="battery.capacity">1500</item>
+    <item name="battery.capacity">2000</item>
     <array name="wifi.batchedscan">
         <value>.0002</value>
         <value>.002</value>

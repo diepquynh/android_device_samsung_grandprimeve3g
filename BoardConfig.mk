@@ -126,7 +126,7 @@ BOARD_HAS_NO_SELECT_BUTTON := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 
 # Assert
-TARGET_OTA_ASSERT_DEVICE := core33g,SM-G360H,core33gdd
+TARGET_OTA_ASSERT_DEVICE := SM-G360H,SM-G360HU,core33g,core33gdd,core33gdx
 
 # SELinux
 #BOARD_SEPOLICY_DIRS += device/samsung/core33g/sepolicy
@@ -154,6 +154,7 @@ PRODUCT_PREBUILT_WEBVIEWCHROMIUM := yes
 
 # Enable dex-preoptimization to speed up the first boot sequence
 WITH_DEXPREOPT := true
+#WITH_DEXPREOPT_BOOT_IMG_ONLY := true
 WITH_DEXPREOPT_PIC := true
 WITH_DEXPREOPT_COMP := false
 

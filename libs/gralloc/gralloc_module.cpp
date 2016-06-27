@@ -25,8 +25,8 @@
 #include <hardware/hardware.h>
 #include <hardware/gralloc.h>
 
-//#include <linux/ion.h>
-#include "usr/include/linux/ion.h"
+#include <linux/ion.h>
+//#include <usr/include/linux/ion.h>
 #include "ion_sprd.h"
 
 #include "gralloc_priv.h"

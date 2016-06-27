@@ -1,6 +1,9 @@
+#
+# system.prop for core33g
+#
 ro.sf.lcd_density=240
-ro.sf.lcd_width=54
-ro.sf.lcd_height=96
+ro.sf.lcd_width=154
+ro.sf.lcd_height=90
 ro.opengles.version=131072
 ro.product.hardware=CORE3_V1.0.0
 
@@ -61,4 +64,27 @@ config.disable_atlas=true
 
 # System prop for DisplayInfo cache
 config.displayinfo.use_cache=true
+
+# SAMP_SPCM
+sys.config.samp_enable=true
+sys.config.samp_spcm_enable=true
+sys.config.spcm_kill_skip=true
+sys.config.spcm_db_enable=true
+sys.config.spcm_db_launcher=true
+sys.config.samp_hotness_enable=false
+
+# RIL
+ro.com.android.dataroaming=false
+ro.msms.phone_count=2
+persist.msms.phone_count=2
+persist.msms.phone_default=0
+persist.msmslt=0
+ro.modem.w.count=2
+persist.sys.modem.diag=,gser
+sys.usb.gser.count=4
+ro.ril.hsxpa=1
+ro.ril.gprsclass=10
+ril.sim2.present=1
+persist.radio.multisim.config=dsds
+ro.telephony.ril_class=SamsungSPRDRIL
 

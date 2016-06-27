@@ -53,21 +53,14 @@ lib/libsecnativefeature.so
 # Camera
 lib/libisp.so
 lib/libmorpho_easy_hdr.so
+lib/libuvdenoise.so
 
 # HAL
 lib/hw/camera.sc8830.so
+lib/hw/gralloc.sc8830.so
+lib/hw/hwcomposer.sc8830.so
 lib/hw/sensors.sc8830.so
-
-# Codecs
-#lib/libomx_aacdec_sprd.so
-#lib/libomx_avcdec_hw_sprd.so
-#lib/libomx_avcdec_sw_sprd.so
-#lib/libomx_avcenc_hw_sprd.so
-#lib/libomx_m4vh263dec_hw_sprd.so
-#lib/libomx_m4vh263dec_sw_sprd.so
-#lib/libomx_m4vh263enc_hw_sprd.so
-#lib/libomx_mp3dec_sprd.so
-#lib/libomx_vpxdec_hw_sprd.so
+lib/hw/sprd_gsp.sc8830.so
 
 # DRM
 lib/libwvm.so
@@ -78,3 +71,12 @@ vendor/lib/libWVStreamControlAPI_L3.so
 
 # Module
 lib/modules/autotst.ko
+
+# Codecs
+lib/libomx_aacdec_sprd.so
+lib/libomx_avcdec_hw_sprd.so
+lib/libomx_avcenc_hw_sprd.so
+lib/libomx_m4vh263dec_hw_sprd.so
+lib/libomx_m4vh263enc_hw_sprd.so
+lib/libomx_mp3dec_sprd.so
+lib/libomx_vpxdec_hw_sprd.so

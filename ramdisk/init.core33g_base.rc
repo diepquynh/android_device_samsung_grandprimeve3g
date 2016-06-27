@@ -25,6 +25,11 @@ on init
     setprop ro.SecEDS.enable false
 
 on boot
+# Turn on all CPUs
+    write /sys/devices/system/cpu/cpu1/online 1
+    write /sys/devices/system/cpu/cpu2/online 1
+    write /sys/devices/system/cpu/cpu3/online 1
+
     chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO0
     chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO1
     chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO2
@@ -400,6 +405,24 @@ service gpsd /system/bin/gpsd -c /system/etc/gps.xml
     group system inet net_raw
     ioprio be 0
 
+service at_distributor /system/bin/at_distributor
+    class main
+    user root
+    group radio misc log
+
+# Run usb_portd to automatically launch atx when USB configuration changes.
+service usb_portd /system/bin/usb_portd
+    class main
+    oneshot
+    user system
+    group input vpn net_admin net_raw radio system sdcard_rw
+
+# Run atxd daemon, which needs group permissions to run in non-root mode.
+service atxd /system/bin/atxd
+    class main
+    user shell
+    group input vpn net_admin net_raw radio system sdcard_rw log
+
 # Run usbdev_mode to set USB configuration from uboot if bootargs usbdev_mode option is set.
 service usbdev_mode /system/bin/usbdev_mode
     class main
@@ -431,6 +454,12 @@ on nonencrypted
 on property:vold.decrypt=trigger_restart_framework
     setprop ro.fuse_sdcard ${persist.fuse_sdcard}
 
+# Runtime Compcache
+service rtccd /system/bin/rtccd3 -a 300m -x 0.5
+    class core
+    user root
+    oneshot
+
 # Run the script to rename the panic logs
 service apanic_rename /system/bin/sh /system/etc/apanic_rename.sh
     class main
@@ -458,7 +487,6 @@ service umount_service /system/bin/umount /preload
     oneshot
 
 on property:persist.sys.storage_preload=1
-    mkdir /preload
     mount ext4 /dev/block/mmcblk0p19 /preload nosuid nodev noatime wait ro
     setprop storage.preload.complete 1
 

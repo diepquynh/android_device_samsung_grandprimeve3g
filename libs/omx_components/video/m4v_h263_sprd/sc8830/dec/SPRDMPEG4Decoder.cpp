@@ -968,12 +968,12 @@ void SPRDMPEG4Decoder::onQueueFilled(OMX_U32 portIndex) {
                 int32_t buf_width, buf_height;
 
                 (*mMp4GetBufferDimensions)(mHandle, &buf_width, &buf_height);
-                if (!((buf_width <= mMaxWidth&& buf_height <= mMaxHeight) || (buf_width <= mMaxHeight && buf_height <= mMaxWidth))) {
+                /*if (!((buf_width <= mMaxWidth&& buf_height <= mMaxHeight) || (buf_width <= mMaxHeight && buf_height <= mMaxWidth))) {
                     ALOGE("[%d,%d] is out of range [%d, %d], failed to support this format.",buf_width, buf_height, mMaxWidth, mMaxHeight);
                     notify(OMX_EventError, OMX_ErrorFormatNotDetected, 0, NULL);
                     mSignalledError = true;
                     return;
-                }
+                }*/
 
                 if (portSettingsChanged()) {
                     return;

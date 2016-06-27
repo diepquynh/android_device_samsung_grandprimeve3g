@@ -18,14 +18,15 @@ on early-init
 
 on init
     mkdir /productinfo 0771 system system
+
  # See storage config details at http://source.android.com/tech/storage/
     mkdir /mnt/media_rw/extSdCard 0700 media_rw media_rw
-    #mkdir /mnt/media_rw/UsbDriveA 0700 media_rw media_rw
-    #mkdir /mnt/media_rw/UsbDriveB 0700 media_rw media_rw
-    #mkdir /mnt/media_rw/UsbDriveC 0700 media_rw media_rw
-    #mkdir /mnt/media_rw/UsbDriveD 0700 media_rw media_rw
-    #mkdir /mnt/media_rw/UsbDriveE 0700 media_rw media_rw
-    #mkdir /mnt/media_rw/UsbDriveF 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveA 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveB 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveC 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveD 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveE 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveF 0700 media_rw media_rw
 
     # See storage config details at http://source.android.com/tech/storage/
     mkdir /mnt/shell/emulated 0700 shell shell
@@ -34,7 +35,6 @@ on init
     export EXTERNAL_STORAGE /storage/emulated/legacy
     export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
     export EMULATED_STORAGE_TARGET /storage/emulated
-
     # Support legacy paths
     symlink /storage/emulated/legacy /sdcard
     symlink /storage/emulated/legacy /mnt/sdcard
@@ -43,30 +43,30 @@ on init
 
     # map "real" external storages paths also in same way. backwards compatibility.
     symlink /storage/extSdCard /mnt/extSdCard
-    #symlink /storage/UsbDriveA /mnt/UsbDriveA
-    #symlink /storage/UsbDriveB /mnt/UsbDriveB
-    #symlink /storage/UsbDriveC /mnt/UsbDriveC
-    #symlink /storage/UsbDriveD /mnt/UsbDriveD
-    #symlink /storage/UsbDriveE /mnt/UsbDriveE
-    #symlink /storage/UsbDriveF /mnt/UsbDriveF
+    symlink /storage/UsbDriveA /mnt/UsbDriveA
+    symlink /storage/UsbDriveB /mnt/UsbDriveB
+    symlink /storage/UsbDriveC /mnt/UsbDriveC
+    symlink /storage/UsbDriveD /mnt/UsbDriveD
+    symlink /storage/UsbDriveE /mnt/UsbDriveE
+    symlink /storage/UsbDriveF /mnt/UsbDriveF
 
     export SECONDARY_STORAGE /storage/extSdCard
     
     mkdir /storage/extSdCard 0700 root root
-    #mkdir /storage/UsbDriveA 0700 root root
-    #mkdir /storage/UsbDriveB 0700 root root
-    #mkdir /storage/UsbDriveC 0700 root root
-    #mkdir /storage/UsbDriveD 0700 root root
-    #mkdir /storage/UsbDriveE 0700 root root
-    #mkdir /storage/UsbDriveF 0700 root root
+    mkdir /storage/UsbDriveA 0700 root root
+    mkdir /storage/UsbDriveB 0700 root root
+    mkdir /storage/UsbDriveC 0700 root root
+    mkdir /storage/UsbDriveD 0700 root root
+    mkdir /storage/UsbDriveE 0700 root root
+    mkdir /storage/UsbDriveF 0700 root root
 
 on fs
     ubiattach 0 ubipac
     mount_all /fstab.sc8830
     mount pstore pstore /sys/fs/pstore
     setprop ro.crypto.fuse_sdcard true
-	symlink /system/res /res
-	symlink /system/bin /bin
+    symlink /system/res /res
+    symlink /system/bin /bin
 
 #Allow others to read fb devices
     chmod 660 /dev/graphics/fb0
@@ -79,6 +79,7 @@ on fs
 on post-fs
     chown system system /productinfo
     chmod 0771 /productinfo
+    insmod /system/lib/modules/mali.ko
     insmod /system/lib/modules/trout_fm.ko
 
 on post-fs-data
@@ -141,6 +142,12 @@ on early-boot
     chown system root /sys/class/rtcc/rtcc_trigger
 
 on boot
+
+# Turn on all CPUs
+    write /sys/devices/system/cpu/cpu1/online 1
+    write /sys/devices/system/cpu/cpu2/online 1
+    write /sys/devices/system/cpu/cpu3/online 1
+
     chown system system /sys/module/mali/parameters/gpu_cur_freq
     chown system system /sys/module/mali/parameters/gpufreq_max_limit
     chown system system /sys/module/mali/parameters/gpufreq_min_limit
@@ -198,7 +205,7 @@ on property:ro.board_ram_size=low
     write /sys/module/zram/parameters/total_mem_usage_percent  35
 
 on property:ro.board_ram_size=mid
-    setprop zram.disksize 250
+    setprop zram.disksize 300
     write /proc/sys/vm/extra_free_kbytes 2048
 
 on property:ro.config.zram.support=true
@@ -279,29 +286,29 @@ on property:sys.internal.emulated=0
 #    class late_start
 #    disabled
 
-#service fuse_UsbDriveA /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveA /storage/UsbDriveA
-#    class late_start
-#    disabled
+service fuse_UsbDriveA /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveA /storage/UsbDriveA
+    class late_start
+    disabled
 	
-#service fuse_UsbDriveB /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveA /storage/UsbDriveB
-#    class late_start
-#    disabled
+service fuse_UsbDriveB /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveA /storage/UsbDriveB
+    class late_start
+    disabled
 
-#service fuse_UsbDriveC /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveC /storage/UsbDriveC
-#    class late_start
-#    disabled
+service fuse_UsbDriveC /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveC /storage/UsbDriveC
+    class late_start
+    disabled
 
-#service fuse_UsbDriveD /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveD /storage/UsbDriveD
-#    class late_start
-#    disabled
+service fuse_UsbDriveD /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveD /storage/UsbDriveD
+    class late_start
+    disabled
 
-#service fuse_UsbDriveE /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveE /storage/UsbDriveE
-#    class late_start
-#    disabled
+service fuse_UsbDriveE /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveE /storage/UsbDriveE
+    class late_start
+    disabled
 
-#service fuse_UsbDriveF /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveF /storage/UsbDriveF
-#    class late_start
-#    disabled
+service fuse_UsbDriveF /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveF /storage/UsbDriveF
+    class late_start
+    disabled
 
 #modem_control
 service modem_control  /system/bin/modem_control
@@ -369,6 +376,28 @@ service nvitemd_l /system/bin/nvitemd l 0
     group system radio shell
     disabled
     oneshot
+
+service slog /system/bin/slog -t
+    class main
+    user system
+    group system shell radio log sdcard_r sdcard_rw
+
+service refnotify_td /system/bin/refnotify -t 0
+    class main
+    user system
+	group system
+    disabled
+
+service refnotify_w /system/bin/refnotify -t 1
+    class main
+    user system
+    group system
+
+service refnotify_l /system/bin/refnotify -t 2
+    class main
+    user system
+    group system
+    disabled
 
 on property:persist.modem.w.enable=1
     symlink /dev/spipe_w1 /dev/vbpipe1
@@ -451,3 +480,10 @@ service  recoveryfreq  /system/bin/recoveryfreq.sh
     chmod 0666 /proc/pin_switch/bt_iis_sys_sel/cp2_iis0
     chmod 0666 /proc/pin_switch/bt_iis_sys_sel/ap_iis0
 
+# SRT server
+service srtd /system/xbin/srtd
+    class main
+    socket srtserver stream 0777 system system
+    user root
+    group root
+    oneshot

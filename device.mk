@@ -36,16 +36,15 @@ PRODUCT_PROPERTY_OVERRIDES += \
 ROOTDIR_FILES := \
 	$(LOCAL_PATH)/ramdisk/init.rc \
 	$(LOCAL_PATH)/ramdisk/init.board.rc \
+	$(LOCAL_PATH)/ramdisk/init.recovery.board.rc \
 	$(LOCAL_PATH)/ramdisk/init.sc8830.rc \
 	$(LOCAL_PATH)/ramdisk/init.sc8830.usb.rc \
 	$(LOCAL_PATH)/ramdisk/init.sc8830_ss.rc \
 	$(LOCAL_PATH)/ramdisk/init.core33g.rc \
 	$(LOCAL_PATH)/ramdisk/init.core33g_base.rc \
 	$(LOCAL_PATH)/ramdisk/init.wifi.rc \
-	$(LOCAL_PATH)/ramdisk/init.swap.rc \
 	$(LOCAL_PATH)/ramdisk/ueventd.sc8830.rc \
-	$(LOCAL_PATH)/ramdisk/fstab.sc8830 \
-	$(LOCAL_PATH)/ramdisk/fstab.swap \
+	$(LOCAL_PATH)/ramdisk/fstab.sc8830
 
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(ROOTDIR_FILES),$(f):root/$(notdir $(f)))

@@ -45,10 +45,6 @@ static const struct {
     { "OMX.sprd.h263.encoder", "sprd_mpeg4enc", "video_encoder.h263" },
     { "OMX.sprd.mpeg4.encoder", "sprd_mpeg4enc", "video_encoder.mpeg4" },
     { "OMX.sprd.h264.encoder", "sprd_h264enc", "video_encoder.avc" },
-
-    { "OMX.sprd.soft.h264.decoder", "sprd_soft_h264dec", "video_decoder.avc" },
-    { "OMX.sprd.soft.h263.decoder", "sprd_soft_mpeg4dec", "video_decoder.h263" },
-    { "OMX.sprd.soft.mpeg4.decoder", "sprd_soft_mpeg4dec", "video_decoder.mpeg4" },
 };
 
 static const size_t kNumComponents =

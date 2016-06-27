@@ -17,7 +17,7 @@ LOCAL_CFLAGS := -DOSCL_EXPORT_REF= -DOSCL_IMPORT_REF=
 LOCAL_ARM_MODE := arm
 
 LOCAL_SHARED_LIBRARIES := \
-        libstagefright libstagefright_omx libstagefright_foundation libstagefrighthw libutils libui libbinder libdl liblog
+        libstagefright libstagefright_omx libstagefright_foundation libstagefrighthw libutils libui libbinder libdl liblog libmemoryheapion_sprd
 
 LOCAL_MODULE := libstagefright_sprd_h264enc
 LOCAL_MODULE_TAGS := optional

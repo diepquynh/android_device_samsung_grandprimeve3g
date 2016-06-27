@@ -20,7 +20,8 @@ $(call inherit-product, $(LOCAL_PATH)/device.mk)
 # Keylayouts
 KEYLAYOUT_FILES := \
 	$(LOCAL_PATH)/keylayouts/sci-keypad.kl \
-	$(LOCAL_PATH)/keylayouts/samsung-keypad.kl
+	$(LOCAL_PATH)/keylayouts/samsung-keypad.kl \
+	$(LOCAL_PATH)/keylayouts/ist30xx_ts_input.kl
 
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(KEYLAYOUT_FILES),$(f):system/usr/keylayout/$(notdir $(f)))
@@ -49,32 +50,18 @@ PRODUCT_PACKAGES += \
 
 # HWC
 PRODUCT_PACKAGES += \
-	gralloc.sc8830 \
-	hwcomposer.sc8830 \
-	sprd_gsp.sc8830 \
 	libion
 
 # Codecs
 PRODUCT_PACKAGES += \
 	libstagefrighthw \
-	libstagefright_sprd_soft_mpeg4dec \
-	libstagefright_sprd_soft_h264dec \
 	libstagefright_sprd_mpeg4dec \
 	libstagefright_sprd_mpeg4enc \
 	libstagefright_sprd_h264dec \
 	libstagefright_sprd_h264enc \
 	libstagefright_sprd_vpxdec \
 	libstagefright_sprd_aacdec \
-	libstagefright_sprd_mp3dec \
-	libomx_aacdec_sprd.so \
-	libomx_avcdec_hw_sprd.so \
-	libomx_avcdec_sw_sprd.so \
-	libomx_avcenc_hw_sprd.so \
-	libomx_m4vh263dec_hw_sprd.so \
-	libomx_m4vh263dec_sw_sprd.so \
-	libomx_m4vh263enc_hw_sprd.so \
-	libomx_mp3dec_sprd.so \
-	libomx_vpxdec_hw_sprd.so
+	libstagefright_sprd_mp3dec
 
 # Lights
 PRODUCT_PACKAGES += \
@@ -91,14 +78,13 @@ PRODUCT_PACKAGES += \
 
 # Audio
 PRODUCT_PACKAGES += \
-	audio.primary.sc8830 \
-	audio_policy.sc8830 \
 	audio.r_submix.default \
 	audio.usb.default \
-	audio_vbc_eq \
 	libaudio-resampler \
-	libatchannel_wrapper \
-	libtinyalsa
+	libtinyalsa \
+	audio.primary.sc8830 \
+	audio_policy.sc8830 \
+	audio_vbc_eq
 
 # Use prebuilt webviewchromium
 PRODUCT_PACKAGES += \
@@ -168,8 +154,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # ART device props
 PRODUCT_PROPERTY_OVERRIDES += \
 	dalvik.vm.dex2oat-flags=--no-watch-dog \
-	dalvik.vm.dex2oat-filter=speed \
-	dalvik.vm.image-dex2oat-filter=everything
+	dalvik.vm.dex2oat-filter=everything \
+	dalvik.vm.image-dex2oat-filter=everything \
+	ro.sys.fw.dex2oat_thread_count=4
 
 # Support for Browser's saved page feature. This allows
 # for pages saved on previous versions of the OS to be

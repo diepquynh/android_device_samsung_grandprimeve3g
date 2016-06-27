@@ -820,14 +820,14 @@ void SPRDVPXDecoder::onQueueFilled(OMX_U32 portIndex) {
 
             (*mVPXGetBufferDimensions)(mHandle, &buf_width, &buf_height);
 
-            if (!((buf_width<= mMaxWidth&& buf_height<= mMaxHeight)
+            /*if (!((buf_width<= mMaxWidth&& buf_height<= mMaxHeight)
                     || (buf_width <= mMaxHeight && buf_height <= mMaxWidth))) {
                 ALOGE("[%d,%d] is out of range [%d, %d], failed to support this format.",
                       buf_width, buf_height, mMaxWidth, mMaxHeight);
                 notify(OMX_EventError, OMX_ErrorFormatNotDetected, 0, NULL);
                 mSignalledError = true;
                 return;
-            }
+            }*/
 
             if (buf_width != mWidth || buf_height != mHeight) {
                 ALOGI("%s, %d, mWidth: %d, mHeight: %d, buf_width: %d, buf_height: %d", __FUNCTION__, __LINE__, mWidth, mHeight, buf_width, buf_height);

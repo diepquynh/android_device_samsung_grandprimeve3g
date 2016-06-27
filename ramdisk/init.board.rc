@@ -17,7 +17,7 @@ on boot
     mkdir /data/system 0770 system system
     chmod 660 /dev/ttyV0
 
-    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 100000
+	write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 100000
 
 service hfag /system/bin/sdptool add --channel=10 HFAG
     user bluetooth

@@ -12,7 +12,8 @@ LOCAL_C_INCLUDES:= \
 	frameworks/native/include/media/openmax \
 	frameworks/native/include/media/hardware \
 	$(LOCAL_PATH)/include \
-	$(LOCAL_PATH)/../gralloc
+	$(LOCAL_PATH)/../gralloc \
+	$(LOCAL_PATH)/../libmemoryheapion_sprd
 
 LOCAL_SHARED_LIBRARIES :=       \
         libbinder               \

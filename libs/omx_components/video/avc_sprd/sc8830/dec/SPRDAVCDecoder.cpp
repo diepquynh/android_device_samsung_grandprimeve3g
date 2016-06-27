@@ -1057,14 +1057,14 @@ void SPRDAVCDecoder::onQueueFilled(OMX_U32 portIndex) {
         MMDecRet ret;
         ret = (*mH264DecGetInfo)(mHandle, &decoderInfo);
         if(ret == MMDEC_OK) {
-            if (!((decoderInfo.picWidth<= mMaxWidth&& decoderInfo.picHeight<= mMaxHeight)
+            /*if (!((decoderInfo.picWidth<= mMaxWidth&& decoderInfo.picHeight<= mMaxHeight)
                     || (decoderInfo.picWidth <= mMaxHeight && decoderInfo.picHeight <= mMaxWidth))) {
                 ALOGE("[%d,%d] is out of range [%d, %d], failed to support this format.",
                       decoderInfo.picWidth, decoderInfo.picHeight, mMaxWidth, mMaxHeight);
                 notify(OMX_EventError, OMX_ErrorFormatNotDetected, 0, NULL);
                 mSignalledError = true;
                 return;
-            }
+            }*/
 
             if (handlePortSettingChangeEvent(&decoderInfo)) {
                 return;
