@@ -142,7 +142,8 @@ PRODUCT_COPY_FILES += \
 
 # Scripts
 SCRIPTS_FILES := \
-	$(LOCAL_PATH)/scripts/set_freq.sh
+	$(LOCAL_PATH)/scripts/set_freq.sh \
+	$(LOCAL_PATH)/scripts/zram.sh
 
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(SCRIPTS_FILES),$(f):system/bin/$(notdir $(f)))

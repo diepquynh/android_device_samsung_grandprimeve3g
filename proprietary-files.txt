@@ -32,6 +32,7 @@ etc/wifi/nvram_mfg.txt
 bin/macloader
 
 # Bluetooth
+vendor/lib/libbt-vendor.so
 vendor/firmware/BCM4343A0_001.001.034.0056.0197_M_ORC_Core3.hcd
 
 # RIL
