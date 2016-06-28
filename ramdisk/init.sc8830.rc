@@ -213,7 +213,7 @@ on property:ro.config.zram.support=true
     write /proc/sys/vm/page-cluster  0
     start zram
 
-service zram /system/xbin/zram.sh
+service zram /system/bin/zram.sh
         disabled
         oneshot
 
