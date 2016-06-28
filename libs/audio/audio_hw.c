@@ -5145,6 +5145,14 @@ static int adev_open(const hw_module_t* module, const char* name,
         ALOGW("Warning: Failed to create the parameters file of vbc_eq");
     } else {
         ret = mixer_ctl_set_enum_by_string(adev->private_ctl.vbc_eq_update, "loading");
+#if 1
+        /* HACKING */
+        static int hacked = 0;
+        if (!hacked)
+            ret = -1;
+        else
+            hacked = 1;
+#endif
         if (ret == 0) adev->eq_available = true;
         ALOGI("eq_loading, ret(%d), eq_available(%d)", ret, adev->eq_available);
     }
