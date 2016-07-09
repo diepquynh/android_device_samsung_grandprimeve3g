@@ -18,7 +18,7 @@ on early-init
 
 on init
     mkdir /productinfo 0771 system system
-    export LD_SHIM_LIBS /system/lib/hw/camera.sc8830.so|libmemoryheapion_sprd.so:/system/lib/hw/hwcomposer.sc8830.so|libmemoryheapion_sprd.so:/system/lib/libril.so|libril_shim.so:/system/bin/gpsd|libgps_shim.so
+    export LD_SHIM_LIBS /system/lib/hw/camera.sc8830.so|libmemoryheapion_sprd.so:/system/lib/libril.so|libril_shim.so:/system/bin/gpsd|libgps_shim.so
 
     # See storage config details at https://source.android.com/devices/storage/
 
@@ -159,18 +159,6 @@ on alarm
     start console
     start slog
     start poweroffalarm
-
-on property:ro.board_ram_size=min
-    setprop zram.disksize 64
-
-on property:ro.board_ram_size=low
-    setprop zram.disksize 200
-    write /proc/sys/vm/extra_free_kbytes 1024
-    write /sys/module/zram/parameters/total_mem_usage_percent  35
-
-on property:ro.board_ram_size=mid
-    setprop zram.disksize 250
-    write /proc/sys/vm/extra_free_kbytes 2048
 
 on property:ro.config.zram.support=true
     setprop sys.vm.swappiness 100

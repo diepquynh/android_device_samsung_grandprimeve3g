@@ -43,7 +43,6 @@ ro.config.ksm.support=true
 
 #zram config
 ro.config.zram.support=true
-ro.board_ram_size=mid
 
 #if our product not support drm,set as false
 drm.service.enabled=true
@@ -87,4 +86,10 @@ ro.ril.gprsclass=10
 ril.sim2.present=1
 persist.radio.multisim.config=dsds
 ro.telephony.ril_class=SamsungSPRDRIL
+ro.telephony.ril.config=setPrefNwTypeOnUnsolConnected
+ro.ril.telephony.mqanelements=6
+
+# Multi-user UI
+fw.max_users=3
+fw.show_multiuserui=1
 

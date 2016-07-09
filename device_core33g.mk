@@ -50,7 +50,10 @@ PRODUCT_PACKAGES += \
 
 # HWC
 PRODUCT_PACKAGES += \
-	libion
+	libion \
+	gralloc.sc8830 \
+	hwcomposer.sc8830 \
+	sprd_gsp.sc8830
 
 # Codecs
 PRODUCT_PACKAGES += \
@@ -152,6 +155,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 	persist.sys.usb.config=mtp
 
+# FM radio
+PRODUCT_PACKAGES += \
+	FMRadio \
+	radio.fm.default
+
 # Device props
 PRODUCT_PROPERTY_OVERRIDES += \
 	keyguard.no_require_sim=true \
@@ -160,9 +168,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # ART device props
 PRODUCT_PROPERTY_OVERRIDES += \
-	dalvik.vm.dex2oat-flags=--no-watch-dog \
-	dalvik.vm.dex2oat-filter=everything \
-	dalvik.vm.image-dex2oat-filter=everything \
 	ro.sys.fw.dex2oat_thread_count=4
 
 # Support for Browser's saved page feature. This allows

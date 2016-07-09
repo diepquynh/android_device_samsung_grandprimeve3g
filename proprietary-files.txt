@@ -56,10 +56,7 @@ lib/libuvdenoise.so
 
 # HAL
 lib/hw/camera.sc8830.so
-lib/hw/gralloc.sc8830.so
-lib/hw/hwcomposer.sc8830.so
 lib/hw/sensors.sc8830.so
-lib/hw/sprd_gsp.sc8830.so
 
 # Codecs
 lib/libomx_aacdec_sprd.so
