@@ -175,7 +175,7 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 
 # FM radio
 PRODUCT_PACKAGES += \
-	FMRadio \
+	FmRadio \
 	fm.sc8830
 
 # Device props
