@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Inherit from SPRD common configs
+-include device/samsung/sprd-common/BoardConfigCommon.mk
+
 # Inherit from the proprietary version
 -include vendor/samsung/core33g/BoardConfigVendor.mk
 
 # Platform
 TARGET_ARCH := arm
 TARGET_BOARD_PLATFORM := sc8830
-TARGET_BOARD_PLATFORM_GPU := mali-400
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_ARCH_VARIANT := armv7-a-neon
@@ -52,12 +54,13 @@ TARGET_KERNEL_SOURCE := kernel/samsung/core33g
 BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100 --dt device/samsung/core33g/dt.img
 
 # RIL
-BOARD_RIL_CLASS := ../../../device/samsung/core33g/ril
+BOARD_RIL_CLASS += ../../../device/samsung/core33g/ril
 COMMON_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
 
+# FM radio
+BOARD_HAVE_FM_BCM := true
+
 # Bluetooth
-BOARD_HAVE_BLUETOOTH := true
-BOARD_HAVE_BLUETOOTH_BCM := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/core33g/bluetooth
 BOARD_BLUEDROID_VENDOR_CONF := device/samsung/core33g/bluetooth/libbt_vndcfg.txt
 
@@ -66,38 +69,41 @@ BOARD_WLAN_DEVICE := bcmdhd
 BOARD_WLAN_DEVICE_REV := bcm4343
 WPA_SUPPLICANT_VERSION := VER_0_8_X
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
 BOARD_HOSTAPD_DRIVER := NL80211
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_bcmdhd
+BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
 WIFI_DRIVER_FW_PATH_PARAM := "/sys/module/dhd/parameters/firmware_path"
-WIFI_DRIVER_FW_PATH_STA := "/system/etc/wifi/bcmdhd_sta.bin"
-WIFI_DRIVER_FW_PATH_AP := "/system/etc/wifi/bcmdhd_apsta.bin"
+WIFI_DRIVER_FW_PATH_STA := "/system/vendor/firmware/fw_bcmdhd.bin"
+WIFI_DRIVER_FW_PATH_P2P := "/system/vendor/firmware/fw_bcmdhd.bin"
+WIFI_DRIVER_FW_PATH_AP := "/system/vendor/firmware/fw_bcmdhd_apsta.bin"
 WIFI_DRIVER_NVRAM_PATH_PARAM := "/sys/module/dhd/parameters/nvram_path"
 WIFI_DRIVER_NVRAM_PATH := "/system/etc/wifi/nvram_net.txt"
 WIFI_BAND := 802_11_ABG
 BOARD_HAVE_SAMSUNG_WIFI := true
 
-# Hardware rendering
-BOARD_EGL_CFG := device/samsung/core33g/configs/egl.cfg
+# Graphics
 HWUI_COMPILE_FOR_PERF := true
-USE_OPENGL_RENDERER := true
 TARGET_REQUIRES_SYNCHRONOUS_SETSURFACE := true
+
+# HWComposer
 USE_SPRD_HWCOMPOSER := true
+USE_SPRD_DITHER := true
 USE_OVERLAY_COMPOSER_GPU := true
 TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true
 
 # Include an expanded selection of fonts
 EXTENDED_FONT_FOOTPRINT := true
 
+# Lights
+TARGET_HAS_BACKLIT_KEYS := false
+
 # Resolution
 TARGET_SCREEN_HEIGHT := 800
 TARGET_SCREEN_WIDTH := 480
 
 # Audio
-BOARD_USES_TINYALSA_AUDIO := true
-BOARD_USES_SS_VOIP := true
 BOARD_USE_LIBATCHANNEL_WRAPPER := true
-TARGET_TINY_ALSA_IGNORE_SILENCE_SIZE := true
+USE_LEGACY_AUDIO_POLICY := 1
 
 # Media
 COMMON_GLOBAL_CFLAGS += -DBOARD_CANT_REALLOCATE_OMX_BUFFERS
@@ -112,20 +118,19 @@ BOARD_HAL_STATIC_LIBRARIES := libhealthd.sc8830
 # Init
 TARGET_NR_SVC_SUPP_GIDS := 36
 TARGET_PROVIDES_INIT_RC := true
+TARGET_NEEDS_PROP_INIT_HACK := true
 
 # Recovery
-BOARD_HAS_NO_REAL_SDCARD := true
-BOARD_HAS_NO_SELECT_BUTTON := true
+BOARD_HAS_DOWNLOAD_MODE := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
+BOARD_SUPPRESS_EMMC_WIPE := true
+TARGET_RECOVERY_FSTAB := device/samsung/core33g/ramdisk/recovery.fstab
 
 # Assert
 TARGET_OTA_ASSERT_DEVICE := SM-G360H,SM-G360HU,core33g,core33gdd,core33gdx
 
 # SELinux
 BOARD_SEPOLICY_DIRS += device/samsung/core33g/sepolicy
-
-# Use dmalloc() for such low memory devices like us
-# MALLOC_IMPL := dlmalloc                          # GTFO, because this is quad-core
 
 # Enable dex-preoptimization to speed up the first boot sequence
 WITH_DEXPREOPT := true
@@ -139,32 +144,3 @@ BOARD_CHARGING_MODE_BOOTING_LPM := /sys/class/power_supply/battery/batt_lp_charg
 CHARGING_ENABLED_PATH := /sys/class/power_supply/battery/batt_lp_charging
 BACKLIGHT_PATH := /sys/class/backlight/panel/brightness
 
-
-# CMHW
-BOARD_HARDWARE_CLASS := device/samsung/core33g/cmhw/
-
-# TWRP
-##RECOVERY_VARIANT := twrp
-RECOVERY_GRAPHICS_USE_LINELENGTH := true
-SP1_NAME := "internal_sd"
-SP1_BACKUP_METHOD := files
-SP1_MOUNTABLE := 1
-TW_INTERNAL_STORAGE_PATH := "/data/media/0"
-TW_INTERNAL_STORAGE_MOUNT_POINT := "data"
-TW_EXTERNAL_STORAGE_PATH := "/external_sd"
-TW_EXTERNAL_STORAGE_MOUNT_POINT := "external_sd"
-TW_DEFAULT_EXTERNAL_STORAGE := true
-TW_FLASH_FROM_STORAGE := true
-TW_NO_REBOOT_BOOTLOADER := true
-TW_CUSTOM_CPU_TEMP_PATH := "/sys/devices/platform/sec-thermistor/temperature"
-TWHAVE_SELINUX := true
-TARGET_RECOVERY_INITRC := device/samsung/core33g/etc/init.rc
-TARGET_RECOVERY_FSTAB := device/samsung/core33g/ramdisk/recovery.fstab
-TW_HAS_DOWNLOAD_MODE := true
-DEVICE_RESOLUTION := 480x800
-TW_THEME := portrait_mdpi
-BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_10x18.h\"
-
-# UMS
-BOARD_UMS_LUNFILE := "/sys/devices/virtual/android_usb/android0/f_mass_storage/lun/file"
-TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/virtual/android_usb/android0/f_mass_storage/lun/file"

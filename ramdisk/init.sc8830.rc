@@ -116,6 +116,7 @@ on boot
     chown system system /sys/module/mali/parameters/gpufreq_max_limit
     chown system system /sys/module/mali/parameters/gpufreq_min_limit
     chown system system /sys/module/mali/parameters/gpufreq_table
+    chown system system /sys/kernel/debug/mali0/memory_usage
     chown system system /sys/class/backlight/sprd_backlight/brightness
 
     chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
@@ -144,6 +145,12 @@ on boot
     chown system system /sys/class/graphics/fb0/dynamic_mipi_clk
 
 on charger
+
+    exec sfsck /dev/block/mmcblk0p23 ext4
+    mount ext4 /dev/block/mmcblk0p23 /system ro,barrier=1 wait
+    exec sfsck /dev/block/mmcblk0p25 ext4
+    mount ext4 /dev/block/mmcblk0p25 /data noatime,nosuid,nodev,nomblk_io_submit wait,encryptable=footer,check
+
     class_start core
     start console
     start slog

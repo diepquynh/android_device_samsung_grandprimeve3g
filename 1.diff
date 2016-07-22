@@ -1,0 +1,63 @@
+diff --git a/overlay/frameworks/base/core/res/res/values/config.xml b/overlay/frameworks/base/core/res/res/values/config.xml
+index f03dc31..8be293c 100644
+--- a/overlay/frameworks/base/core/res/res/values/config.xml
++++ b/overlay/frameworks/base/core/res/res/values/config.xml
+@@ -26,6 +26,7 @@
+ 
+     <!-- Minimum screen brightness allowed by the power manager. -->
+     <integer name="config_screenBrightnessDim">5</integer>
++
+     <!-- If this is true, the screen will come on when you unplug usb/power/whatever. -->
+     <bool name="config_unplugTurnsOnScreen">true</bool>
+ 
+@@ -68,11 +69,14 @@
+         <item>"mobile,0,0,0,-1,true"</item>
+         <item>"mobile_mms,2,0,2,60000,true"</item>
+         <item>"mobile_supl,3,0,2,60000,true"</item>
++        <item>"mobile_dun,4,0,2,60000,true"</item>
+         <item>"mobile_hipri,5,0,3,60000,true"</item>
+         <item>"mobile_fota,10,0,2,60000,true"</item>
+         <item>"mobile_ims,11,0,2,60000,true"</item>
+         <item>"mobile_cbs,12,0,2,60000,true"</item>
+         <item>"mobile_stk,16,0,3,60000,true"</item>
++        <item>"wifi_p2p,13,1,0,-1,true"</item>
++        <item>"mobile_bip,23,0,2,60000,true"</item>
+         <item>"mobile,100,0,0,-1,true"</item>
+         <item>"mobile0_mms,102,0,2,60000,true"</item>
+         <item>"mobile0_supl,103,0,2,60000,true"</item>
+@@ -100,6 +104,11 @@
+         <item>"bluetooth,7,7,2,-1,true"</item>
+     </string-array>
+ 
++    <!-- This string array should be overridden by the device to present a list of radio
++         attributes.  This is used by the connectivity manager to decide which networks can coexist
++         based on the hardware -->
++    <!-- An Array of "[ConnectivityManager connectionType],
++                      [# simultaneous connection types]"  -->
+     <string-array translatable="false" name="radioAttributes">
+         <item>"1,1"</item>
+         <item>"0,1"</item>
+@@ -112,13 +121,13 @@
+     <integer-array translatable="false" name="config_tether_upstream_types">
+         <item>0</item>
+         <item>1</item>
+-	<item>4</item>
++        <item>4</item>
+         <item>5</item>
+         <item>6</item>
+         <item>7</item>
+         <item>100</item>
+         <item>104</item>
+-	<item>105</item>
++        <item>105</item>
+         <item>200</item>
+         <item>204</item>
+ 	<item>205</item>
+@@ -172,6 +181,7 @@
+     <!-- Whether the default microphone audio source supports near-ultrasound frequencies
+          (range of 18 - 21 kHz). -->
+     <bool name="config_supportMicNearUltrasound">false</bool>
++
+     <!-- Whether the default speaker audio output path supports near-ultrasound frequencies
+          (range of 18 - 21 kHz). -->
+     <bool name="config_supportSpeakerNearUltrasound">false</bool>

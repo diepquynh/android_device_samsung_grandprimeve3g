@@ -358,26 +358,10 @@ on boot
 service drm /system/bin/drmserver
     class main
     user drm
-
-# [ SEC_MM_DRM
-# fix
     group system drm inet drmrpc sdcard_r sdcard_rw media_rw radio shell
-# org
-#    group drm system inet drmrpc
-# ]
-
-# for Napa TS
-#   insmod Napa Touchscreen module
-chmod 0755 /system/etc/init_touch
 
 on post-fs-data
     setprop vold.post_fs_data_done 1
-
-service napa_ts /system/bin/sh /system/etc/init_touch
-    class main
-    user root
-    group root
-    oneshot
 
 # GPS
 service gpsd /system/bin/gpsd -c /system/etc/gps.xml
@@ -392,20 +376,6 @@ on nonencrypted
 
 on property:vold.decrypt=trigger_restart_framework
     setprop ro.fuse_sdcard ${persist.fuse_sdcard}
-
-# Run the script to rename the panic logs
-service apanic_rename /system/bin/sh /system/etc/apanic_rename.sh
-    class main
-    user root
-    group log sdcard_rw
-    oneshot
-
-service copy_cp_imgs /system/bin/sh /system/etc/copy_cp_imgs.sh
-    class main
-    oneshot
-    user root
-    disabled
-
 
 #Indicate boot complete to PM to complete PM initialization
 on property:dev.bootcomplete=1

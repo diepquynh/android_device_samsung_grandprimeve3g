@@ -528,10 +528,6 @@ on charger
     chmod 0666 /dev/log/main
     chmod 0666 /dev/log/event
 
-    mount ext4 /dev/block/mmcblk0p23 /system ro,barrier=1 wait
-    exec sfsck /dev/block/mmcblk0p25 ext4
-    mount ext4 /dev/block/mmcblk0p25 /data noatime,nosuid,nodev,nomblk_io_submit wait,encryptable=footer,check
-
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave
 
     class_start charger

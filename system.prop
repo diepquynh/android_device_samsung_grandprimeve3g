@@ -85,9 +85,11 @@ ro.ril.hsxpa=1
 ro.ril.gprsclass=10
 ril.sim2.present=1
 persist.radio.multisim.config=dsds
-ro.telephony.ril_class=SamsungSPRDRIL
+ro.telephony.ril_class=core33gRIL
 ro.telephony.ril.config=setPrefNwTypeOnUnsolConnected
 ro.ril.telephony.mqanelements=6
+persist.sys.sprd.modemreset=0
+persist.sys.sprd.wcnreset=1
 
 # Multi-user UI
 fw.max_users=3

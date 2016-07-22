@@ -17,44 +17,7 @@ on boot
     mkdir /data/system 0770 system system
     chmod 660 /dev/ttyV0
 
-	write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 100000
-
-service hfag /system/bin/sdptool add --channel=10 HFAG
-    user bluetooth
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
-
-service hsag /system/bin/sdptool add --channel=11 HSAG
-    user bluetooth
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
-
-service opush /system/bin/sdptool add --channel=12 OPUSH
-    user bluetooth
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
-
-service pbap /system/bin/sdptool add --channel=19 PBAP
-    user bluetooth
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
-
-#service hciattach /system/bin/hciattach -n /dev/sttybt0 sprd_shark
-#    socket bluetooth stream 660 bluetooth bluetooth
-#    user bluetooth
-#    group wifi bluetooth net_bt_admin net_bt inet net_raw net_admin system
-#    disabled
-#    oneshot
-
-service btld  /system/bin/btld -lpm 0 -hb 3000000
-    user root
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 100000
 
 service dhcpcd_bnep0 /system/bin/dhcpcd -ABKL
     class main
@@ -108,6 +71,5 @@ service ril-daemon3 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w 
     group radio cache inet misc audio sdcard_rw log shell sdcard_r
 
 # set LMK watermark as {14M,20M,24M,32M,38M,48M}
-on property:lmk.autocalc=false
     write /sys/module/lowmemorykiller/parameters/adj 0,1,3,5,9,15
     write /sys/module/lowmemorykiller/parameters/minfree 3584,5120,6144,8192,9728,12288

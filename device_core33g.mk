@@ -50,21 +50,32 @@ PRODUCT_PACKAGES += \
 
 # HWC
 PRODUCT_PACKAGES += \
-	libion \
 	gralloc.sc8830 \
 	hwcomposer.sc8830 \
-	sprd_gsp.sc8830
+	sprd_gsp.sc8830 \
+	libion_sprd
 
 # Codecs
 PRODUCT_PACKAGES += \
 	libstagefrighthw \
 	libstagefright_sprd_mpeg4dec \
+	libstagefright_sprd_soft_mpeg4dec \
 	libstagefright_sprd_mpeg4enc \
 	libstagefright_sprd_h264dec \
+	libstagefright_sprd_soft_h264dec \
 	libstagefright_sprd_h264enc \
 	libstagefright_sprd_vpxdec \
 	libstagefright_sprd_aacdec \
-	libstagefright_sprd_mp3dec
+	libstagefright_sprd_mp3dec \
+	libomx_aacdec_sprd.so \
+	libomx_avcdec_hw_sprd.so \
+	libomx_avcdec_sw_sprd.so \
+	libomx_avcenc_hw_sprd.so \
+	libomx_m4vh263dec_hw_sprd.so \
+	libomx_m4vh263dec_sw_sprd.so \
+	libomx_m4vh263enc_hw_sprd.so \
+	libomx_mp3dec_sprd.so \
+	libomx_vpxdec_hw_sprd.so
 
 # Lights
 PRODUCT_PACKAGES += \
@@ -81,13 +92,14 @@ PRODUCT_PACKAGES += \
 
 # Audio
 PRODUCT_PACKAGES += \
-	audio.r_submix.default \
-	audio.usb.default \
-	libaudio-resampler \
-	libtinyalsa \
 	audio.primary.sc8830 \
 	audio_policy.sc8830 \
-	audio_vbc_eq
+	audio.r_submix.default \
+	audio.usb.default \
+	audio_vbc_eq \
+	libaudio-resampler \
+	libatchannel_wrapper \
+	libtinyalsa
 
 AUDIO_CONFIGS := \
 	$(LOCAL_PATH)/configs/audio/audio_policy.conf \
@@ -101,6 +113,13 @@ PRODUCT_PACKAGES += \
 	libril_shim \
 	libgps_shim
 
+# GPS
+GPS_CONFIGS := \
+	$(LOCAL_PATH)/configs/gps/gps.xml \
+
+PRODUCT_COPY_FILES += \
+	$(foreach f,$(GPS_CONFIGS),$(f):system/etc/$(notdir $(f)))
+
 # Wifi
 PRODUCT_PACKAGES += \
 	libnetcmdiface \
@@ -110,8 +129,7 @@ PRODUCT_PACKAGES += \
 
 WIFI_CONFIGS := \
 	$(LOCAL_PATH)/configs/wifi/wpa_supplicant.conf \
-	$(LOCAL_PATH)/configs/wifi/wpa_supplicant_overlay.conf \
-	$(LOCAL_PATH)/configs/wifi/p2p_supplicant_overlay.conf
+	$(LOCAL_PATH)/configs/wifi/nvram_net.txt
 
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(WIFI_CONFIGS),$(f):system/etc/wifi/$(notdir $(f)))
@@ -158,7 +176,7 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 # FM radio
 PRODUCT_PACKAGES += \
 	FMRadio \
-	radio.fm.default
+	fm.sc8830
 
 # Device props
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -168,7 +186,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # ART device props
 PRODUCT_PROPERTY_OVERRIDES += \
-	ro.sys.fw.dex2oat_thread_count=4
+	ro.sys.fw.dex2oat_thread_count=4 \
+	dalvik.vm.dex2oat-flags=--no-watch-dog \
+	dalvik.vm.dex2oat-filter=interpret-only \
+	dalvik.vm.image-dex2oat-filter=speed
 
 # Support for Browser's saved page feature. This allows
 # for pages saved on previous versions of the OS to be
