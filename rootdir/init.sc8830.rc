@@ -18,7 +18,7 @@ on early-init
 
 on init
     mkdir /productinfo 0771 system system
-    export LD_SHIM_LIBS /system/lib/hw/camera.sc8830.so|libmemoryheapion_sprd.so:/system/lib/libril.so|libril_shim.so:/system/bin/gpsd|libgps_shim.so
+    export LD_SHIM_LIBS /system/lib/hw/hwcomposer.sc8830.so|libmemoryheapion_sprd.so:/system/lib/hw/camera.sc8830.so|libmemoryheapion_sprd.so:/system/lib/libril.so|libril_shim.so:/system/bin/gpsd|libgps_shim.so
 
     # See storage config details at https://source.android.com/devices/storage/
 

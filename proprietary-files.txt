@@ -21,12 +21,13 @@ etc/tiny_hw.xml
 lib/libfactoryutil.so
 lib/libomission_avoidance.so
 lib/libatchannel.so
+vendor/firmware/vbc_eq
 
 # WiFi
 bin/macloader
 
 # Bluetooth
-#vendor/lib/libbt-vendor.so
+vendor/lib/libbt-vendor.so
 vendor/firmware/BCM4343A0_001.001.034.0056.0197_M_ORC_Core3.hcd
 
 # RIL
@@ -59,4 +60,7 @@ lib/libomx_m4vh263enc_hw_sprd.so
 
 # HAL
 lib/hw/camera.sc8830.so
+lib/hw/gralloc.sc8830.so
+lib/hw/hwcomposer.sc8830.so
 lib/hw/sensors.sc8830.so
+lib/hw/sprd_gsp.sc8830.so
