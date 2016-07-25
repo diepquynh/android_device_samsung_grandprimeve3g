@@ -96,7 +96,6 @@ PRODUCT_PACKAGES += \
 	audio_policy.sc8830 \
 	audio.r_submix.default \
 	audio.usb.default \
-	audio_vbc_eq \
 	libaudio-resampler \
 	libatchannel_wrapper \
 	libtinyalsa
@@ -175,7 +174,7 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 
 # FM radio
 PRODUCT_PACKAGES += \
-	FmRadio \
+	FMRadio \
 	fm.sc8830
 
 # Device props
