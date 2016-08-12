@@ -1,3 +1,6 @@
+#init.grandprimeve3g_base.rc
+
+import init.fac.rc
 
 on early-init
     chown system system /sys/devices/platform/panel/backlight/panel/brightness
@@ -9,26 +12,31 @@ on init
 
     # Support Preload install apks
     mkdir /preload 0771 system system
-	
+
+    # See storage config details at http://source.android.com/tech/storage/
+    mkdir /mnt/media_rw/extSdCard 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveA 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveB 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveC 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveD 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveE 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveF 0700 media_rw media_rw
+    	
     #thermistor
     chown radio system /sys/class/sec/sec-thermistor/temp_adc
     chown radio system /sys/class/sec/sec-thermistor/temperature
     chown radio system /sys/class/sec/sec-thermistor/dcxo_temp_adc
     chown radio system /sys/class/sec/sec-thermistor/dcxo_temperature
-
-    chown radio system /sys/class/thermal/thermal_zone1/temp
 	
-    mkdir /cache 0000 system system
-    mkdir /efs 0774 system radio
+	chown radio system /sys/class/thermal/thermal_zone1/temp
 
 # SecEDS
     setprop ro.SecEDS.enable false
 
 on boot
-# Turn on all CPUs
-    write /sys/devices/system/cpu/cpu1/online 1
-    write /sys/devices/system/cpu/cpu2/online 1
-    write /sys/devices/system/cpu/cpu3/online 1
+
+# SSWAP
+    write /proc/sys/vm/swappiness 130
 
     chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO0
     chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO1
@@ -48,6 +56,8 @@ on boot
     chown system radio /sys/class/sensors/accelerometer_sensor/name
     chown system radio /sys/class/sensors/accelerometer_sensor/selftest
     chown system radio /sys/class/sensors/accelerometer_sensor/lowpassfilter
+    chown system radio /efs/FactoryApp/accel_calibration_data
+    chmod 0666 /efs/FactoryApp/accel_calibration_data
 # Proximity_sensor
     chown system radio /sys/class/sensors/proximity_sensor/state
     chown system radio /sys/class/sensors/proximity_sensor/raw_data
@@ -57,48 +67,12 @@ on boot
     chown system radio /sys/class/sensors/proximity_sensor/name
     chown system radio /sys/class/sensors/proximity_sensor/thresh_high
     chown system radio /sys/class/sensors/proximity_sensor/thresh_low
-    chown system radio /sys/class/sensors/proximity_sensor/barcode_emul_en
-# Light_sensor
-    chown system radio /sys/class/sensors/light_sensor/lux
-    chown system radio /sys/class/sensors/light_sensor/raw_data
-    chown system radio /sys/class/sensors/light_sensor/vendor
-    chown system radio /sys/class/sensors/light_sensor/name
-# Gyro_sensor
-    chown system radio /sys/class/sensors/gyro_sensor/power_on
-    chown system radio /sys/class/sensors/gyro_sensor/power_off
-    chown system radio /sys/class/sensors/gyro_sensor/temperature
-    chown system radio /sys/class/sensors/gyro_sensor/selftest
-    chown system radio /sys/class/sensors/gyro_sensor/selftest_dps
-    chown system radio /sys/class/sensors/gyro_sensor/vendor
-    chown system radio /sys/class/sensors/gyro_sensor/name
-# Barometer_sensor
-    chown system radio /sys/class/sensors/barometer_sensor/sea_level_pressure
-    chown system radio /sys/class/sensors/barometer_sensor/vendor
-    chown system radio /sys/class/sensors/barometer_sensor/name
-    chown system radio /sys/class/sensors/barometer_sensor/calibration
 # Magnetic_sensor
-    chown system radio /dev/akm8963
-    chown system radio /sys/class/sensors/magnetic_sensor/raw_data
-    chown system radio /sys/class/sensors/magnetic_sensor/vendor
     chown system radio /sys/class/sensors/magnetic_sensor/name
-# Gesture_sensor
-    chown system radio /sys/class/sensors/gesture_sensor/vendor
-    chown system radio /sys/class/sensors/gesture_sensor/name
-    chown system radio /sys/class/sensors/gesture_sensor/raw_data
-    chown system radio /sys/class/sensors/gesture_sensor/ir_current
-    chown system radio /sys/class/sensors/gesture_sensor/selftest
-# Temphumidity_sensor
-    chown system radio /sys/class/sensors/temphumidity_sensor/vendor
-    chown system radio /sys/class/sensors/temphumidity_sensor/name
-    chown system radio /sys/class/sensors/temphumidity_sensor/engine_ver
-    chown system radio /sys/class/sensors/temphumidity_sensor/send_accuracy
-# Grip_sensor
-    chown system radio /sys/class/sensors/grip_sensor/vendor
-    chown system radio /sys/class/sensors/grip_sensor/name
-    chown system radio /sys/class/sensors/grip_sensor/raw_data
-    chown system radio /sys/class/sensors/grip_sensor/calibration
-    chown system radio /sys/class/sensors/grip_sensor/threshold
-    chown system radio /sys/class/sensors/grip_sensor/onoff
+    chown system radio /sys/class/sensors/magnetic_sensor/vendor
+    chown system radio /sys/class/sensors/magnetic_sensor/selftest
+# MetaEvent
+    chown system radio /sys/class/sensors/sensor_dev/flush
 
 #audio pin mux
     chown system system proc/pin_switch/bt_iis_sys_sel/cp0_iis2
@@ -182,12 +156,13 @@ on boot
     chown system system /proc/bcm_fuse_net_config
     chown system system /dev/block/mmcblk0
     chmod 0660 /dev/block/mmcblk0
-    chown system system /dev/mem
+    #chown system system /dev/mem
 
     # change owner of sysrpc/mtest to allow atx/atxd access
     chown system system /sys/kernel/sysrpc/mtest
 
 # Battery
+   chown system radio /sys/class/power_supply/battery/batt_reset_soc
    chown system radio /sys/class/power_supply/battery/batt_slate_mode
    chown system radio /sys/class/power_supply/battery/factory_mode
    chown system radio /sys/class/power_supply/battery/siop_level
@@ -214,11 +189,12 @@ on boot
     setprop status.battery.level_raw  100
     setprop status.battery.level_scale 10
 
+# for tsp command
+    chown system system /sys/class/sec/tsp/cmd
 
 # phone
     setprop ro.telephony.call_ring.multiple 0
-# flash
-    chown system radio /sys/class/camera/rear/rear_flash
+
 #security driver
     chmod 0660 /dev/bcm_security
     chown radio root /dev/bcm_security
@@ -256,41 +232,6 @@ on boot
     chmod 0775 /system/lib/drm
 # ]
 
-# allow user space (atx) access to kernel pm debug
-    chown system system /sys/module/pm_dbg/parameters/debug
-    chmod 0660 /sys/module/pm_dbg/parameters/debug
-    chown system system /sys/module/bcmpmu59xxx_ponkey/parameters/simulate_ponkey
-    chmod 0660 /sys/module/bcmpmu59xxx_ponkey/parameters/simulate_ponkey
-    chown system system /sys/module/pm_dbg/parameters/debug
-    chmod 0660 /sys/module/pm_dbg/parameters/debug
-
-# BEGIN BCM QUICK BOOT FEATURE
-    chown root system /sys/ponkey/ponkey_mode
-    chmod 0664 /sys/ponkey/ponkey_mode
-# END BCM QUICK BOOT FEATURE
-
-# SEC_PRODUCT_FEATURE_COMMON_USE_MULTISIM
-    setprop ro.multisim.simslotcount 2
-
-#for efs
-     chown radio system /efs
-     chmod 0771 /efs
-
-# Broadcom GPS
-    chown system system /dev/ttyS3
-    chmod 0660 /dev/ttyS3
-    chown system system /sys/class/sec/gps/GPS_PWR_EN/value
-    chmod 0664 /sys/class/sec/gps/GPS_PWR_EN/value
-    mkdir /data/system 0771 system system
-    chown system system /data/system
-    mkdir /data/system/gps 0771 system system
-    chown system system /data/system/gps
-    rm /data/gps_started
-    rm /data/glonass_started
-    rm /data/beidou_started
-    rm /data/smd_started
-    rm /data/sv_cno.info
-
 #permissions for cpufreq
     chown radio system sys/power/cpufreq_min_limit
     chown radio system sys/power/cpufreq_max_limit
@@ -315,53 +256,149 @@ on boot
     chmod 0660 /sys/devices/system/cpu/cpu2/online
     chmod 0660 /sys/devices/system/cpu/cpu3/online
 
+# allow user space (atx) access to kernel pm debug
+    chown system system /sys/module/pm_dbg/parameters/debug
+    chmod 0660 /sys/module/pm_dbg/parameters/debug
+    chown system system /sys/module/bcmpmu59xxx_ponkey/parameters/simulate_ponkey
+    chmod 0660 /sys/module/bcmpmu59xxx_ponkey/parameters/simulate_ponkey
+    chown system system /sys/module/pm_dbg/parameters/debug
+    chmod 0660 /sys/module/pm_dbg/parameters/debug
+
+# BEGIN BCM QUICK BOOT FEATURE
+    chown root system /sys/ponkey/ponkey_mode
+    chmod 0664 /sys/ponkey/ponkey_mode
+# END BCM QUICK BOOT FEATURE
+
+# OTG Test
+   chown system radio /sys/class/host_notify/usb_otg/booster
+   chmod 0664 /sys/class/host_notify/usb_otg/booster
+
+on fs
+# Temporary hack for root access
+	chmod 6755 /system/xbin/su
+
+#for efs
+     chown radio system /efs
+     chmod 0771 /efs
+
+#For Absolute Persistence Partition 
+
+    mkdir /persdata 0755 system system
+    mkdir /persdata/absolute 0750 system system
+
+    wait /dev/block/platform/sdio_emmc/by-name/persdata
+    check_fs /dev/block/platform/sdio_emmc/by-name/persdata ext4
+    mount ext4 /dev/block/platform/sdio_emmc/by-name/persdata /persdata/absolute nosuid nodev barrier=1
+
+    chown system system /persdata
+    chmod 0755 /persdata 
+    chown system system /persdata/absolute
+    chmod 0750 /persdata/absolute
+
+# Broadcom GPS
+    chown system system /dev/ttyS3
+    chmod 0660 /dev/ttyS3
+    chown system system /sys/class/sec/gps/GPS_PWR_EN/value
+    chmod 0664 /sys/class/sec/gps/GPS_PWR_EN/value
+    mkdir /data/system 0771 system system
+    chown system system /data/system
+    mkdir /data/system/gps 0771 system system
+    chown system system /data/system/gps
+    rm /data/gps_started
+    rm /data/glonass_started
+    rm /data/beidou_started
+    rm /data/smd_started
+    rm /data/sv_cno.info
+
 # permissions for bluetooth.
    setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
    chown bluetooth net_bt_stack ro.bt.bdaddr_path
-   symlink /system/etc/dbus.conf /etc/dbus.conf
    symlink /system/etc/bluetooth /etc/bluetooth
    mkdir /efs/bluetooth 0775 radio system
    mkdir /data/misc 01771 system misc
-   mkdir /data/misc/bluetoothd 0770 bluetooth bluetooth
-   mkdir /data/misc/bluetooth 0770 system system
    chmod 0770 /data/misc/bluetoothd
    chmod 0770 /data/misc/bluetooth
-   chown bluetooth bluetooth /data/misc/bluetoothd
-   chown bluetooth bluetooth /data/misc/bluetooth
    chown root bluetooth /dev/ttyS0
    chmod 0770 /dev/ttyS0
    chmod 0770 /dev/ttyS1
    chmod 0660 /sys/class/rfkill/rfkill0/state
    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
-   chmod 0777 /system/bin/btld
+   chmod 0660 proc/bluetooth/sleep/btwrite
+   chown bluetooth system proc/bluetooth/sleep/btwrite
+
+# permissions for NFC
+#    setprop ro.nfc.port "I2C"
+#    mkdir /data/bcmnfc
+#    mkdir /data/bcmnfc/param
+#    chmod 0755 /data/bcmnfc
+#    chmod 0777 /data/bcmnfc/param
+#    chown nfc nfc /data/bcmnfc
+#    chown nfc nfc /data/bcmnfc/param
+#    chown nfc nfc /data/bcmnfc/libnfc-brcm-20791b04.conf
+#    chown nfc nfc /data/bcmnfc/libnfc-brcm-20791b03.conf
+#    chmod 666 /data/bcmnfc/libnfc-brcm-20791b04.conf
+#    chmod 666 /data/bcmnfc/libnfc-brcm-20791b03.conf
 
 #LCD
     chown system system /sys/class/backlight/panel/brightness
-    chmod 0664 system /sys/class/backlight/panel/brightness
+    chmod 0664 /sys/class/backlight/panel/brightness
+    chown system system /sys/class/lcd/panel/lvds_clk
+    chmod 0664 /sys/class/lcd/panel/lvds_clk
 
-#mdnie
-    chown system media_rw /sys/class/mdnie/mdnie/scenario
-    chmod 0664 /sys/class/mdnie/mdnie/scenario
-    chown system system /sys/class/mdnie/mdnie/negative
-    chmod 0664 /sys/class/mdnie/mdnie/negative
+#KEY
+    chown system system /sys/class/sec/sec_key/reset_enabled
+    chmod 0664 /sys/class/sec/sec_key/reset_enabled
 
 #Enable PMTUD tcp_mtu_probing
-    write /proc/sys/net/ipv4/tcp_mtu_probing 1
+ write /proc/sys/net/ipv4/tcp_mtu_probing 1
 
 # needed to avoid the 7-minute-halt issue in (DOS) passive mode ftp on vodafone networ
-    write /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_be_liberal 1
+ write /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_be_liberal 1
+
+
 
 # Permissions for System Server and daemons.
     chown system system /sys/devices/platform/panel/backlight/panel/brightness
+    write /proc/sys/vm/dirty_writeback_centisecs 1000
 
 service drm /system/bin/drmserver
     class main
     user drm
+
+# [ SEC_MM_DRM
+# fix
     group system drm inet drmrpc sdcard_r sdcard_rw media_rw radio shell
+# org
+#    group drm system inet drmrpc
+# ]
+
+# for Napa TS
+#   insmod Napa Touchscreen module
+chmod 0755 /system/etc/init_touch
 
 on post-fs-data
     setprop vold.post_fs_data_done 1
+
+on property:ro.debug_level=0x494d
+    # Debug Level MID, turn tracing on
+    # set ring buf size to 4KB * 4 = 16KB
+    write /sys/kernel/debug/tracing/buffer_size_kb 512
+
+    # enable part of sced traces, irq, workqueue
+    write /sys/kernel/debug/tracing/events/irq/irq_handler_entry/enable 1
+    write /sys/kernel/debug/tracing/events/irq/irq_handler_exit/enable 1
+    write /sys/kernel/debug/tracing/events/workqueue/enable 1
+    write /sys/kernel/debug/tracing/events/sched/sched_switch/enable 1
+	write /sys/kernel/debug/tracing/events/power/enable 1
+	write /sys/kernel/debug/tracing/events/timer/enable 1
+	write /sys/kernel/debug/tracing/events/cpufreq_interactive/cpufreq_interactive_setspeed/enable 1
+
+service napa_ts /system/bin/sh /system/etc/init_touch
+    class main
+    user root
+    group root
+    oneshot
 
 # GPS
 service gpsd /system/bin/gpsd -c /system/etc/gps.xml
@@ -370,12 +407,38 @@ service gpsd /system/bin/gpsd -c /system/etc/gps.xml
     group system inet net_raw
     ioprio be 0
 
+service at_distributor /system/bin/at_distributor
+    class main
+    user root
+    group radio misc log
+
+#start watchdog daemon
+service watchdogd /system/bin/watchdogd
+    class core
+    user root
+    group root
+    oneshot
+    
 # This will make sure that sdcard service starts as late_start.
 on nonencrypted
     setprop ro.fuse_sdcard ${persist.fuse_sdcard}
 
 on property:vold.decrypt=trigger_restart_framework
     setprop ro.fuse_sdcard ${persist.fuse_sdcard}
+
+# Run the script to rename the panic logs
+service apanic_rename /system/bin/sh /system/etc/apanic_rename.sh
+    class main
+    user root
+    group log sdcard_rw
+    oneshot
+
+service copy_cp_imgs /system/bin/sh /system/etc/copy_cp_imgs.sh
+    class main
+    oneshot
+    user root
+    disabled
+
 
 #Indicate boot complete to PM to complete PM initialization
 on property:dev.bootcomplete=1
@@ -384,13 +447,23 @@ on property:dev.bootcomplete=1
     write /sys/class/input/input1/enable 1
     start copy_cp_imgs
 
+#Interactive governor parameters tuning for better power and performance
+    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay 25000
+    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 90
+    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 1300000
+    write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
+    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 40000
+    write /sys/devices/system/cpu/cpufreq/interactive/target_loads 85
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 40000
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 40000
+
 # umount service
 service umount_service /system/bin/umount /preload
     disabled
     oneshot
-
+    
 on property:persist.sys.storage_preload=1
-    mount ext4 /dev/block/mmcblk0p19 /preload nosuid nodev noatime wait ro
+    mount ext4 /dev/block/platform/sdio_emmc/by-name/HIDDEN /preload nosuid nodev noatime wait ro
     setprop storage.preload.complete 1
 
 on property:persist.sys.storage_preload=0
@@ -402,3 +475,9 @@ on property:persist.sys.storage_preload=0
 on charger
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "powersave"
 
+# SSWAP
+service swapon /sbin/sswap -s
+    class core
+    user root
+    group root
+    oneshot

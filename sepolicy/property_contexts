@@ -1,0 +1,19 @@
+# RIL
+ctl.phoneserver_w                   u:object_r:ctl_rildaemon_prop:s0
+ctl.phoneserver_td                  u:object_r:ctl_rildaemon_prop:s0
+ctl.data_on                         u:object_r:ctl_rildaemon_prop:s0
+ctl.data_off                        u:object_r:ctl_rildaemon_prop:s0
+ctl.kill_w_phone                    u:object_r:ctl_rildaemon_prop:s0
+ctl.kill_td_phone                   u:object_r:ctl_rildaemon_prop:s0
+ctl.smd_symlink                     u:object_r:ctl_rildaemon_prop:s0
+
+sys.symlink.umts_router             u:object_r:radio_prop:s0
+
+# ENGPC
+ctl.engpcclientw                    u:object_r:ctl_engpc_prop:s0
+ctl.engpcclientwcn                  u:object_r:ctl_engpc_prop:s0
+ctl.engservicew                     u:object_r:ctl_engpc_prop:s0
+ctl.engmodemclientw                 u:object_r:ctl_engpc_prop:s0
+
+# Media
+media.                              u:object_r:media_prop:s0

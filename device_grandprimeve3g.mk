@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOCAL_PATH := device/samsung/core33g
+LOCAL_PATH := device/samsung/grandprimeve3g
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 $(call inherit-product, $(LOCAL_PATH)/device.mk)
@@ -50,32 +50,16 @@ PRODUCT_PACKAGES += \
 
 # HWC
 PRODUCT_PACKAGES += \
-	gralloc.sc8830 \
-	hwcomposer.sc8830 \
-	sprd_gsp.sc8830 \
 	libion_sprd
 
 # Codecs
 PRODUCT_PACKAGES += \
 	libstagefrighthw \
 	libstagefright_sprd_mpeg4dec \
-	libstagefright_sprd_soft_mpeg4dec \
 	libstagefright_sprd_mpeg4enc \
 	libstagefright_sprd_h264dec \
-	libstagefright_sprd_soft_h264dec \
 	libstagefright_sprd_h264enc \
-	libstagefright_sprd_vpxdec \
-	libstagefright_sprd_aacdec \
-	libstagefright_sprd_mp3dec \
-	libomx_aacdec_sprd.so \
-	libomx_avcdec_hw_sprd.so \
-	libomx_avcdec_sw_sprd.so \
-	libomx_avcenc_hw_sprd.so \
-	libomx_m4vh263dec_hw_sprd.so \
-	libomx_m4vh263dec_sw_sprd.so \
-	libomx_m4vh263enc_hw_sprd.so \
-	libomx_mp3dec_sprd.so \
-	libomx_vpxdec_hw_sprd.so
+	libstagefright_sprd_vpxdec
 
 # Lights
 PRODUCT_PACKAGES += \
@@ -93,7 +77,6 @@ PRODUCT_PACKAGES += \
 # Audio
 PRODUCT_PACKAGES += \
 	audio.primary.sc8830 \
-	audio_policy.sc8830 \
 	audio.r_submix.default \
 	audio.usb.default \
 	libaudio-resampler \
@@ -140,7 +123,6 @@ PRODUCT_PACKAGES += \
 
 # Permissions
 PERMISSION_XML_FILES := \
-	$(LOCAL_PATH)/permissions/platform.xml \
 	frameworks/native/data/etc/handheld_core_hardware.xml \
 	frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml \
 	frameworks/native/data/etc/android.hardware.camera.front.xml \
@@ -199,8 +181,8 @@ PRODUCT_PACKAGES += \
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
 # Set those variables here to overwrite the inherited values.
-PRODUCT_NAME := full_core33g
-PRODUCT_DEVICE := core33g
+PRODUCT_NAME := full_grandprimeve3g
+PRODUCT_DEVICE := grandprimeve3g
 PRODUCT_BRAND := samsung
 PRODUCT_MANUFACTURER := samsung
-PRODUCT_MODEL := SM-G360H
+PRODUCT_MODEL := SM-G531H

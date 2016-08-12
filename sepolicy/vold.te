@@ -5,3 +5,5 @@ allow vold fuse_device:chr_file getattr;
 allow vold cache_file:dir setattr;
 allow vold system_prop:property_service set;
 allow vold unlabeled:filesystem getattr;
+allow vold efs_file:dir { open read };
+allow vold prod_file:dir { open read };

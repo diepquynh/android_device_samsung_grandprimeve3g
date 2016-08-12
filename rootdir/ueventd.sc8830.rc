@@ -2,13 +2,14 @@
 /dev/sprd_dma_copy      0660     system      audio
 /dev/sprd_scale         0660     system      audio
 /dev/sprd_rotation      0660     system      audio
-/dev/sprd_dcam          0660     system      audio
+/dev/sprd_image         0660     system      audio
 /dev/sprd_gsp         	0660     system      graphics
 /dev/sprd_isp           0660     system      audio
 /dev/sprd_vsp           0660     system      audio
 /dev/sprd_jpg           0660     system      audio
+/dev/sprd_vpp           0660     system      audio
+/dev/sprd_coda7l        0660     system      audio
 /dev/sprd_sensor        0660     system      audio
-/dev/video0             0660     system      audio
 /dev/ion                0666     system      graphics
 /dev/mali0              0666     system      graphics
 
@@ -20,7 +21,7 @@
 /dev/spipe_td2          0660     system      system
 /dev/spipe_td3          0660     system      system
 /dev/spipe_td4          0660     media       audio
-/dev/spipe_td5          0660     system      system
+/dev/spipe_td5          0660     radio      system
 /dev/spipe_td6          0660     media       audio
 /dev/spipe_td7          0660     system      system
 /dev/spipe_td8          0660     system      system
@@ -31,9 +32,11 @@
 /dev/spipe_w2           0660     system      system
 /dev/spipe_w3           0660     system      system
 /dev/spipe_w4           0660     media       audio
-/dev/spipe_w5           0660     system      system
+/dev/spipe_w5           0660     radio      system
 /dev/spipe_w6           0660     media       audio
 /dev/spipe_w8           0660     system      system
+/dev/spipe_w9           0660     system      system
+/dev/spipe_w10          0660     system      system
 /dev/slog_wcn           0660     system      system
 /dev/spipe_wcn*         0660     system      system
 /dev/vbpipe1            0660     system  system
@@ -81,5 +84,45 @@
 /dev/sdiomux29          0660     media       audio
 /dev/sdiomux30          0660     media       audio
 /dev/akm8963_dev        0660     system      system
-/dev/umts_router        0660     system      radio
+/dev/download		0660     system      system
+/dev/slog_wcn           0660     system      system
+/dev/power_ctl		0660     system      system
 
+## Sensor IIO device
+/dev/iio:device*      0660  system   radio
+
+/sys/devices/70700000.i2c/i2c-2/2-001d/iio:device*              0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-001d/iio:device* name 0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-001d/iio:device* static_matrix        0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-001d/iio:device* sampling_frequency           0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-001d/iio:device* sampling_frequency_available 0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-001d/iio:device* buffer               0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-001d/iio:device* buffer/enable        0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-001d/iio:device* buffer/length        0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-001d/iio:device* trigger              0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-001d/iio:device* trigger/current_trigger      0760  system   radio
+
+/sys/devices/70700000.i2c/i2c-2/2-002e/iio:device*		0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-002e/iio:device* name	0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-002e/iio:device* static_matrix	0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-002e/iio:device* sampling_frequency		0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-002e/iio:device* sampling_frequency_available	0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-002e/iio:device* buffer		0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-002e/iio:device* buffer/enable	0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-002e/iio:device* buffer/length	0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-002e/iio:device* trigger		0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-002e/iio:device* trigger/current_trigger	0760  system   radio
+
+/sys/devices/70700000.i2c/i2c-2/2-0044/iio:device*              0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-0044/iio:device* name 0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-0044/iio:device* static_matrix        0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-0044/iio:device* sampling_frequency           0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-0044/iio:device* sampling_frequency_available 0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-0044/iio:device* buffer               0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-0044/iio:device* buffer/enable        0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-0044/iio:device* buffer/length        0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-0044/iio:device* trigger              0760  system   radio
+/sys/devices/70700000.i2c/i2c-2/2-0044/iio:device* trigger/current_trigger      0760  system   radio
+
+# Google FRP solution
+/dev/block/platform/sdio_emmc/by-name/PERSISTENT    0660    system    system

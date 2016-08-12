@@ -1,2 +1,1 @@
-# Don't audit kernel modules
 dontaudit domain kernel:system module_request;

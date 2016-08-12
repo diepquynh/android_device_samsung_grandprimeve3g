@@ -15,6 +15,7 @@
        CpColdStart="false"
        CpGuardTimeSec="1"
        ReAidingOnHotStart="false"
+       SuplSslMethod="SSLv23_NO_TLSv1_2"
        SuplEnable="true"
        SuplUseApn="false"
        SuplTlsCertPath="/system/bin/gps.cer"

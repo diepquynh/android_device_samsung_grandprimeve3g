@@ -1,0 +1,1 @@
+allow kernel untrusted_app_tmpfs:file write;

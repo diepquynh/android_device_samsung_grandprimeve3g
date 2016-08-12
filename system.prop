@@ -1,11 +1,8 @@
-#
-# system.prop for core33g
-#
 ro.sf.lcd_density=240
 ro.sf.lcd_width=154
 ro.sf.lcd_height=90
 ro.opengles.version=131072
-ro.product.hardware=CORE3_V1.0.0
+ro.product.hardware=TSHARK2TABE_V1.0.0
 
 debug.hwui.render_dirty_regions=false
 
@@ -17,14 +14,14 @@ persist.ttydev=ttyVUART0
 # delay for ConnectivityChange broadcast (ms)
 conn.connectivity_change_delay = 0
 
-ro.product.partitionpath=/dev/block/platform/sprd-sdhci.3/by-name/
+ro.product.partitionpath=/dev/block/platform/sdio_emmc/by-name/
 
 # Default ecclist
 ro.ril.ecclist=112,911,#911,*911
 
 persist.modem.w.enable=1
 persist.modem.w.nvp=w
-ro.modem.w.dev=/dev/cpw
+ro.modem.w.dev=/proc/cpw/
 ro.modem.w.tty=/dev/stty_w
 ro.modem.w.eth=rmnet
 ro.modem.w.snd=1
@@ -37,12 +34,26 @@ ro.modem.w.id=0
 ro.modem.w.fixnv_size=0x40000
 ro.modem.w.runnv_size=0x60000
 
+ro.modem.wcn.enable=1
+ro.modem.wcn.dev=/dev/cpwcn
+ro.modem.wcn.tty=/deiv/stty_wcn
+ro.modem.wcn.diag=/dev/slog_wcn
+ro.modem.wcn.assert=/dev/spipe_wcn2
+ro.modem.wcn.id=1
+ro.modem.wcn.count=1
+ro.digital.fm.support=1
+
 persist.sys.engpc.disable=0
 
 ro.config.ksm.support=true
 
 #zram config
 ro.config.zram.support=true
+ro.board_ram_size=high
+
+# SPRD: add low cost low memory @{
+# ro.config.low_ram=true
+# @}
 
 #if our product not support drm,set as false
 drm.service.enabled=true
@@ -50,27 +61,19 @@ drm.service.enabled=true
 # hotspot development
 ro.hotspot.enabled=1
 
-# System property for storage_preload
-persist.sys.storage_preload=1
-
 # this product does not support bt and softap coexist
 ro.btwifisoftap.coexist=false
 # SPRD: add support hwrotation
 ro.sf.hwrotation=0
 
-# System prop for Atlas service
-config.disable_atlas=true
-
-# System prop for DisplayInfo cache
-config.displayinfo.use_cache=true
+# System property for storage_preload
+persist.sys.storage_preload=1
 
 # SAMP_SPCM
-sys.config.samp_enable=true
 sys.config.samp_spcm_enable=true
-sys.config.spcm_kill_skip=true
 sys.config.spcm_db_enable=true
 sys.config.spcm_db_launcher=true
-sys.config.samp_hotness_enable=false
+sys.config.spcm_preload_enable=true
 
 # RIL
 ro.com.android.dataroaming=false
@@ -85,10 +88,10 @@ ro.ril.hsxpa=1
 ro.ril.gprsclass=10
 ril.sim2.present=1
 persist.radio.multisim.config=dsds
-ro.telephony.ril_class=core33gRIL
+ro.telephony.ril_class=grandprimeve3gRIL
 ro.telephony.ril.config=setPrefNwTypeOnUnsolConnected
 ro.ril.telephony.mqanelements=6
-persist.sys.sprd.modemreset=0
+persist.sys.sprd.modemreset=1
 persist.sys.sprd.wcnreset=1
 
 # Multi-user UI

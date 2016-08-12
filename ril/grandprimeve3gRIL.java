@@ -39,15 +39,26 @@ import java.util.Collections;
  *
  * {@hide}
  */
-public class core33gRIL extends SamsungSPRDRIL implements CommandsInterface {
+public class grandprimeve3gRIL extends SamsungSPRDRIL implements CommandsInterface {
 
-    public core33gRIL(Context context, int preferredNetworkType, int cdmaSubscription) {
+    public grandprimeve3gRIL(Context context, int preferredNetworkType, int cdmaSubscription) {
         this(context, preferredNetworkType, cdmaSubscription, null);
     }
 
-    public core33gRIL(Context context, int preferredNetworkType,
+    public grandprimeve3gRIL(Context context, int preferredNetworkType,
             int cdmaSubscription, Integer instanceId) {
         super(context, preferredNetworkType, cdmaSubscription, instanceId);
+    }
+
+
+    @Override
+    public void startLceService(int reportIntervalMs, boolean pullMode, Message response) {
+        riljLog("Link Capacity Estimate (LCE) service is not supported!");
+        if (response != null) {
+            AsyncResult.forMessage(response, null, new CommandException(
+                    CommandException.Error.REQUEST_NOT_SUPPORTED));
+            response.sendToTarget();
+        }
     }
 
     @Override

@@ -1,5 +1,5 @@
 <!-- TinyHAL configuration file for GOD -->
-<tinyalsa-audio device="scx15 audio">
+<tinyalsa-audio device="sc8830 audio">
 
    <!-- We are able to have most of our routing static so do that -->
    <path>
@@ -10,12 +10,21 @@
      <ctl name="DACL Playback Volume" val="7" />
      <ctl name="DACR Playback Volume" val="7" />
 
+     <ctl name="HPL CG Playback Volume1" val="63" />
+     <ctl name="HPR CG Playback Volume1" val="63" />
+     <ctl name="HPL CG Playback Volume2" val="7" />
+     <ctl name="HPR CG Playback Volume2" val="7" />
+
      <!-- DAC->Speaker -->
      <ctl name="SPKL Playback Volume" val="10" />
      <ctl name="SPKR Playback Volume" val="10" />
+     <ctl name="DACL Playback Volume" val="5" />
+     <ctl name="DACR Playback Volume" val="5" />
 
      <!-- DAC->Earpiece -->
      <ctl name="EAR Playback Volume" val="10" />
+     <ctl name="DACL Playback Volume" val="5" />
+     <ctl name="DACR Playback Volume" val="5" />
 
      <!-- ADC ->(main mic)  -->
      <ctl name="ADCL Capture Volume" val="12" />
@@ -59,6 +68,10 @@
   <func name="Inter PA Config" val="304" />
 </private>
 
+<private name="internal HP PA">
+  <func name="Inter HP PA Config" val="7489" />
+</private>
+
 <private name="spk mute">
   <func name="Speaker Mute" val="0" />
 </private>
@@ -71,17 +84,10 @@
   <func name="HeadPhone Mute" val="0" />
 </private>
 
-<private name="fm mute">
-<func name="Headphone Internal Mute" val="0" />
+<private name="Aud Codec Info">
+  <func name="Aud Codec Info" val="0" />
 </private>
 
-<private name="Aud Loop in VBC Switch">
-  <func name="Aud Loop in VBC Switch" val="0" />
-</private>
-
-<private name="Aud1 Loop in VBC Switch">
-  <func name="Aud1 Loop in VBC Switch" val="0" />
-</private>
 <!-- END OF MUST NOT modify private field directly -->
 
 <device name="builtin-mic">
@@ -115,7 +121,6 @@
      <ctl name="ADCL Mixer HPMICADCL Switch" val="1" />
      <ctl name="ADCR Mixer HPMICADCR Switch" val="1" />
      <ctl name="HP Mic Function" val="1" />
-     <ctl name="Headmic Bypass" val="1" />     
   </path>
   <path name="off">
      <ctl name="HP Mic Function" val="0" />
@@ -148,22 +153,36 @@
 
 <device name="line">
   <path name="on">
-	<ctl name="ADCL Mixer AILADCL Switch" val="1" />
-	<ctl name="ADCR Mixer AIRADCR Switch" val="1" />
-	<ctl name="Line Function" val="1" />
+     <ctl name="HeadPhone Mute" val="1" />
+     <ctl name="ADCL Mixer AILADCL Switch" val="1" />
+     <ctl name="ADCR Mixer AIRADCR Switch" val="1" />
+     <ctl name="Line Function" val="1" />
+     <ctl name="HeadPhone Mute" val="0" />
   </path>
   <path name="off">
-	<ctl name="Line Function" val="0" />
-	<ctl name="ADCL Mixer AILADCL Switch" val="0" />
-	<ctl name="ADCR Mixer AIRADCR Switch" val="0" />
+     <ctl name="Line Function" val="0" />
+     <ctl name="ADCL Mixer AILADCL Switch" val="0" />
+     <ctl name="ADCR Mixer AIRADCR Switch" val="0" />
   </path>
 </device>
 
-<device name="linein-capture">
-  <path name="on">
-  </path>
-  <path name="off">
-  </path>
+<device name="digital-fm">
+<path name="on">
+<ctl name="Digital FM Function" val="1" />
+<ctl name="DA0 ADDST MUX" val="0" />
+<ctl name="DA1 ADDST MUX" val="0" />
+<ctl name="DA0 ADDFM MUX" val="1" />
+<ctl name="DA1 ADDFM MUX" val="1" />
+<ctl name="AD IISMUX" val="2" />
+</path>
+<path name="off">
+<ctl name="Digital FM Function" val="0" />
+<ctl name="DA0 ADDST MUX" val="0" />
+<ctl name="DA1 ADDST MUX" val="0" />
+<ctl name="DA0 ADDFM MUX" val="0" />
+<ctl name="DA1 ADDFM MUX" val="0" />
+<ctl name="AD IISMUX" val="0" />
+</path>
 </device>
 
 <device name="speaker">
@@ -181,14 +200,14 @@
 
 <device name="headphone">
    <path name="on">
-     <ctl name="HPL Mixer DACLHPL Switch" val="1" />
-     <ctl name="HPR Mixer DACRHPR Switch" val="1" />
+     <ctl name="HPL Mixer DACRHPL Switch" val="1" />
+     <ctl name="HPR Mixer DACLHPR Switch" val="1" />
      <ctl name="HeadPhone Function" val="1" />
    </path>
    <path name="off">
      <ctl name="HeadPhone Function" val="0" />
-     <ctl name="HPL Mixer DACLHPL Switch" val="0" />
-     <ctl name="HPR Mixer DACRHPR Switch" val="0" />
+     <ctl name="HPL Mixer DACRHPL Switch" val="0" />
+     <ctl name="HPR Mixer DACLHPR Switch" val="0" />
    </path>
 </device>
 
