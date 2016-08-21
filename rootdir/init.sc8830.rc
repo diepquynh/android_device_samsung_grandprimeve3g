@@ -18,37 +18,7 @@ on early-init
 
 on init
     mkdir /productinfo 0771 system system
-
-    # See storage config details at https://source.android.com/devices/storage/
-
-    # Support legacy paths
-    symlink /sdcard /mnt/sdcard
-    symlink /sdcard /storage/sdcard0
-
-    mkdir /mnt/media_rw/extSdCard 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveA 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveB 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveC 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveD 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveE 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveF 0700 media_rw media_rw
-
-    # map "real" external storages paths also in same way. backwards compatibility.
-    symlink /storage/extSdCard /mnt/extSdCard
-    symlink /storage/UsbDriveA /mnt/UsbDriveA
-    symlink /storage/UsbDriveB /mnt/UsbDriveB
-    symlink /storage/UsbDriveC /mnt/UsbDriveC
-    symlink /storage/UsbDriveD /mnt/UsbDriveD
-    symlink /storage/UsbDriveE /mnt/UsbDriveE
-    symlink /storage/UsbDriveF /mnt/UsbDriveF
-
-    mkdir /storage/extSdCard 0700 root root
-    mkdir /storage/UsbDriveA 0700 root root
-    mkdir /storage/UsbDriveB 0700 root root
-    mkdir /storage/UsbDriveC 0700 root root
-    mkdir /storage/UsbDriveD 0700 root root
-    mkdir /storage/UsbDriveE 0700 root root
-    mkdir /storage/UsbDriveF 0700 root root
+    export LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so:/system/bin/gpsd|libgps_shim.so:/system/lib/libmemoryheapion_sprd.so|libmemoryheapion_sammy.so:/system/lib/hw/camera.sc8830.so|libmemoryheapion_sammy.so
 
     symlink /dev/block/platform/sdio_emmc/by-name/PERSISTENT /dev/block/persistent
 
@@ -63,7 +33,6 @@ on init
 on fs
     mount_all /fstab.sc8830
     mount pstore pstore /sys/fs/pstore
-    setprop ro.crypto.fuse_sdcard true
 	symlink /system/res /res
 	symlink /system/bin /bin
 

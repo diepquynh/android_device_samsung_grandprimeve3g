@@ -10,10 +10,10 @@
 /dev/block/platform/sdio_emmc/by-name/prodnv   /productinfo ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
 
 # VOLD : fstab_dt_otg.sc8830
-/devices/sdio_sd/mmc_host/mmc1           auto                    vfat    default     voldmanaged=extSdCard:auto,noemulatedsd
-/devices/20200000.usb/usb*sda            auto                    vfat    default     voldmanaged=UsbDriveA:auto
-/devices/20200000.usb/usb*sdb            auto                    vfat    default     voldmanaged=UsbDriveB:auto
-/devices/20200000.usb/usb*sdc            auto                    vfat    default     voldmanaged=UsbDriveC:auto
-/devices/20200000.usb/usb*sdd            auto                    vfat    default     voldmanaged=UsbDriveD:auto
-/devices/20200000.usb/usb*sde            auto                    vfat    default     voldmanaged=UsbDriveE:auto
-/devices/20200000.usb/usb*sdf            auto                    vfat    default     voldmanaged=UsbDriveF:auto
+/devices/sdio_sd/mmc_host/mmc1*           auto                    auto    default     voldmanaged=extSdCard:auto,noemulatedsd,encryptable=userdata
+/devices/20200000.usb/usb*sda*            auto                    auto    default     voldmanaged=UsbDriveA:auto
+/devices/20200000.usb/usb*sdb*            auto                    auto    default     voldmanaged=UsbDriveB:auto
+/devices/20200000.usb/usb*sdc*            auto                    auto    default     voldmanaged=UsbDriveC:auto
+/devices/20200000.usb/usb*sdd*            auto                    auto    default     voldmanaged=UsbDriveD:auto
+/devices/20200000.usb/usb*sde*            auto                    auto    default     voldmanaged=UsbDriveE:auto
+/devices/20200000.usb/usb*sdf*            auto                    auto    default     voldmanaged=UsbDriveF:auto
