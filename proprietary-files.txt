@@ -25,10 +25,13 @@ lib/libomission_avoidance.so
 lib/libatchannel.so
 
 # WiFi
+etc/wifi/bcmdhd_apsta.bin
+etc/wifi/bcmdhd_mfg.bin
+etc/wifi/bcmdhd_sta.bin
+etc/wifi/nvram_mfg.txt
 bin/macloader
 
 # Bluetooth
-lib/libbt-vendor.so
 vendor/firmware/BCM43430A1_V0025.0070.hcd
 
 # RIL
@@ -49,6 +52,20 @@ lib/libsecnativefeature.so
 # Camera
 lib/libisp.so
 lib/libmorpho_easy_hdr.so
+lib/libcalibration.so
+lib/libAF.so
+lib/libsft_af_ctrl.so
+lib/libdeflicker.so
+lib/libynoise.so
+lib/libspaf.so
+lib/liblsc.so
+lib/libAl_Awb.so
+lib/libAl_Awb_Sp.so
+lib/libae.so
+lib/libawb.so
+
+# ION
+lib/libmemoryheapion.so
 
 # Codecs
 lib/libomx_avcdec_hw_sprd.so
