@@ -18,7 +18,7 @@ on early-init
 
 on init
     mkdir /productinfo 0771 system system
-    export LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so:/system/bin/gpsd|libgps_shim.so:/system/lib/libmemoryheapion_sprd.so|libmemoryheapion_sammy.so:/system/lib/hw/camera.sc8830.so|libmemoryheapion_sammy.so
+    export LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so:/system/bin/gpsd|libgps_shim.so:/system/lib/libmemoryheapion.so|libmemoryheapion_sammy.so
 
     symlink /dev/block/platform/sdio_emmc/by-name/PERSISTENT /dev/block/persistent
 
