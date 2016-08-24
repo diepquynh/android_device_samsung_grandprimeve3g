@@ -20,8 +20,7 @@ $(call inherit-product, $(LOCAL_PATH)/device.mk)
 # Keylayouts
 KEYLAYOUT_FILES := \
 	$(LOCAL_PATH)/keylayouts/sci-keypad.kl \
-	$(LOCAL_PATH)/keylayouts/samsung-keypad.kl \
-	$(LOCAL_PATH)/keylayouts/ist30xx_ts_input.kl
+	$(LOCAL_PATH)/keylayouts/samsung-keypad.kl
 
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(KEYLAYOUT_FILES),$(f):system/usr/keylayout/$(notdir $(f)))
@@ -150,6 +149,9 @@ SCRIPTS_FILES := \
 
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(SCRIPTS_FILES),$(f):system/bin/$(notdir $(f)))
+
+PRODUCT_COPY_FILES += \
+	$(LOCAL_PATH)/scripts/40mali:system/etc/init.d/40mali
 
 # Set default USB interface
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
