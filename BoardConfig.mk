@@ -63,7 +63,7 @@ BOARD_HAVE_FMRADIO_BCM := true
 
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/grandprimeve3g/bluetooth
-BOARD_BLUEDROID_VENDOR_CONF := device/samsung/grandprimeve3g/bluetooth/libbt_vndcfg.txt
+BOARD_CUSTOM_BT_CONFIG := device/samsung/vivalto3gvn/bluetooth/libbt_vndcfg.txt
 
 # Wifi
 BOARD_WLAN_DEVICE := bcmdhd
