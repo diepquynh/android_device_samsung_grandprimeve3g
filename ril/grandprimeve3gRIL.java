@@ -28,6 +28,7 @@ import android.telephony.PhoneNumberUtils;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import com.android.internal.telephony.uicc.SpnOverride;
+import com.android.internal.telephony.uicc.IccUtils;
 import com.android.internal.telephony.RILConstants;
 import android.telephony.SignalStrength;
 import com.android.internal.telephony.uicc.IccCardApplicationStatus;
