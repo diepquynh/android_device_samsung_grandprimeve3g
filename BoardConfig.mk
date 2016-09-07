@@ -55,7 +55,7 @@ BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 -
 
 # RIL
 BOARD_RIL_CLASS += ../../../device/samsung/grandprimeve3g/ril
-COMMON_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
+BOARD_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
 
 # FM radio
 BOARD_HAVE_FM_BCM := true
