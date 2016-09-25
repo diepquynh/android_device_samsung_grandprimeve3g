@@ -54,6 +54,9 @@ TARGET_KERNEL_SOURCE := kernel/samsung/grandprimeve3g
 BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100 --dt device/samsung/grandprimeve3g/dt.img
 
 # RIL
+BOARD_PROVIDES_RILD := true
+BOARD_PROVIDES_LIBRIL := true
+BOARD_PROVIDES_LIBREFERENCE_RIL := true
 BOARD_RIL_CLASS += ../../../device/samsung/grandprimeve3g/ril
 BOARD_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
 
