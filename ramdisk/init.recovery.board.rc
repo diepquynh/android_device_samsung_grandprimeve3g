@@ -1,0 +1,8 @@
+on cali
+#       mount_all /etc/recovery.fstab
+#      start slog
+#       trigger adb_enable
+
+service slog /system/bin/slog -t
+       class main
+       user root

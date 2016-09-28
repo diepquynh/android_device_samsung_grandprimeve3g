@@ -17,7 +17,7 @@
  **                         Dependencies                                      *
  **---------------------------------------------------------------------------*/ 
 #define LOG_TAG "record_process"
-/* #define LOG_NDEBUG 0 */
+#define LOG_NDEBUG 0
 
 
 

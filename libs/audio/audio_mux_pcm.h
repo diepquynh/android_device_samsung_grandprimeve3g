@@ -4,6 +4,12 @@
 #include <tinyalsa/asoundlib.h>
 
 
+
+#define SND_CARD_VOICE_TG 1
+#define SND_CARD_VOIP_TG    2
+#define SND_CARD_MUX_MAX   3
+
+
 struct pcm * mux_pcm_open(unsigned int card, unsigned int device,
                      unsigned int flags, struct pcm_config *config);
 

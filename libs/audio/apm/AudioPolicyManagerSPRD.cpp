@@ -15,7 +15,7 @@
  */
 
 #define LOG_TAG "AudioPolicyManagerSPRD"
-#define LOG_NDEBUG 0
+//#define LOG_NDEBUG 0
 #include <utils/Log.h>
 #include "AudioPolicyManagerSPRD.h"
 #include <media/mediarecorder.h>
@@ -73,9 +73,7 @@ status_t AudioPolicyManagerSPRD::startOutput(audio_io_handle_t output,
     // necessary for a correct control of hardware output routing by startOutput() and stopOutput()
     outputDesc->changeRefCount(stream, 1);
 	ALOGD("startOutput() is_voip_set %d,stream %d,",is_voip_set,stream);
-	if((!is_voip_set)&&(stream == AudioSystem::VOICE_CALL)) {
-		for (size_t i = 0; i < mOutputs.size(); i++) {
-		    AudioOutputDescriptor *outputDesc = mOutputs.valueAt(i);
+	if((!is_voip_set)&&(stream == AudioSystem::VOICE_CALL)&&(mPrimaryOutput == output)) {
 			ALOGD("startOutput() outputDesc->mRefCount[AudioSystem::VOICE_CALL] %d",outputDesc->mRefCount[AudioSystem::VOICE_CALL]);
 			if(outputDesc->mRefCount[AudioSystem::VOICE_CALL] == 1) {
                 AudioParameter param;
@@ -83,7 +81,6 @@ status_t AudioPolicyManagerSPRD::startOutput(audio_io_handle_t output,
 				mpClientInterface->setParameters(0, param.toString());
 				is_voip_set = true;
 			}
-		}
 	}
 
     if (outputDesc->mRefCount[stream] == 1) {
@@ -160,9 +157,7 @@ status_t AudioPolicyManagerSPRD::stopOutput(audio_io_handle_t output,
     }
 
 	ALOGD("stopOutput() is_voip_set %d,stream %d,output size %d",is_voip_set,stream,mOutputs.size());
-		if(is_voip_set &&(stream == AudioSystem::VOICE_CALL)) {
-			for (size_t i = 0; i < mOutputs.size(); i++) {
-				AudioOutputDescriptor *outputDesc = mOutputs.valueAt(i);
+		if(is_voip_set &&(stream == AudioSystem::VOICE_CALL)&&(mPrimaryOutput == output)) {
 				ALOGD("stopOutput() outputDesc->mRefCount[AudioSystem::VOICE_CALL] %d",outputDesc->mRefCount[AudioSystem::VOICE_CALL]);
 				if(outputDesc->mRefCount[AudioSystem::VOICE_CALL] == 1) {
 					AudioParameter param;
@@ -170,7 +165,6 @@ status_t AudioPolicyManagerSPRD::stopOutput(audio_io_handle_t output,
 					mpClientInterface->setParameters(0, param.toString());
 					is_voip_set = false;
 				}
-			}
 		}
 
     if (outputDesc->mRefCount[stream] > 0) {
@@ -221,7 +215,7 @@ void AudioPolicyManagerSPRD::releaseOutput(audio_io_handle_t output)
         return;
     }
 
-	if(is_voip_set) {
+	if(is_voip_set&&(mPrimaryOutput == output)) {
 	    AudioOutputDescriptor *outputDesc = mOutputs.valueAt(index);
 		if(outputDesc->mRefCount[AudioSystem::VOICE_CALL] == 0) {
 			AudioParameter param;

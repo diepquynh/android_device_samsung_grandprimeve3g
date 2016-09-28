@@ -1,0 +1,534 @@
+#init.grandprimeve3g_base.rc
+
+import init.fac.rc
+
+on early-init
+    chown system system /sys/devices/platform/panel/backlight/panel/brightness
+    chown system system /sys/class/input/event0/device/device/enable
+    chmod 777 /sys/class/input/event0/device/device/enable
+    mount debugfs /sys/kernel/debug /sys/kernel/debug
+
+on init
+
+    # Support Preload install apks
+    mkdir /preload 0771 system system
+
+    # See storage config details at http://source.android.com/tech/storage/
+    mkdir /mnt/media_rw/extSdCard 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveA 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveB 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveC 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveD 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveE 0700 media_rw media_rw
+    mkdir /mnt/media_rw/UsbDriveF 0700 media_rw media_rw
+    	
+    #thermistor
+    chown radio system /sys/class/sec/sec-thermistor/temp_adc
+    chown radio system /sys/class/sec/sec-thermistor/temperature
+    chown radio system /sys/class/sec/sec-thermistor/dcxo_temp_adc
+    chown radio system /sys/class/sec/sec-thermistor/dcxo_temperature
+	
+	chown radio system /sys/class/thermal/thermal_zone1/temp
+
+    export EXTERNAL_STORAGE /storage/emulated/legacy
+    export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
+    export EMULATED_STORAGE_TARGET /storage/emulated
+
+    # Support legacy paths
+    symlink /storage/emulated/legacy /sdcard
+    symlink /storage/emulated/legacy /mnt/sdcard
+    symlink /storage/emulated/legacy /storage/sdcard0
+    symlink /mnt/shell/emulated/0 /storage/emulated/legacy
+
+    # map "real" external storages paths also in same way. backwards compatibility.
+    symlink /storage/extSdCard /mnt/extSdCard
+    symlink /storage/UsbDriveA /mnt/UsbDriveA
+    symlink /storage/UsbDriveB /mnt/UsbDriveB
+    symlink /storage/UsbDriveC /mnt/UsbDriveC
+    symlink /storage/UsbDriveD /mnt/UsbDriveD
+    symlink /storage/UsbDriveE /mnt/UsbDriveE
+    symlink /storage/UsbDriveF /mnt/UsbDriveF
+
+    export SECONDARY_STORAGE /storage/extSdCard
+    
+    mkdir /storage/extSdCard 0700 root root
+    mkdir /storage/UsbDriveA 0700 root root
+    mkdir /storage/UsbDriveB 0700 root root
+    mkdir /storage/UsbDriveC 0700 root root
+    mkdir /storage/UsbDriveD 0700 root root
+    mkdir /storage/UsbDriveE 0700 root root
+    mkdir /storage/UsbDriveF 0700 root root
+    mkdir /cache 0000 system system
+    mkdir /efs 0774 radio system
+
+# SecEDS
+    setprop ro.SecEDS.enable false
+
+on boot
+
+# SSWAP
+    write /proc/sys/vm/swappiness 130
+
+    chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO0
+    chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO1
+    chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO2
+    chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO3
+    chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO4
+    chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO5
+    chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/TxCurrent
+    chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/Squelch
+
+# SENSORS
+# Accelerometer_sensor
+    chown system radio /sys/class/sensors/accelerometer_sensor/raw_data
+    chown system radio /sys/class/sensors/accelerometer_sensor/calibration
+    chown system radio /sys/class/sensors/accelerometer_sensor/reactive_alert
+    chown system radio /sys/class/sensors/accelerometer_sensor/vendor
+    chown system radio /sys/class/sensors/accelerometer_sensor/name
+    chown system radio /sys/class/sensors/accelerometer_sensor/selftest
+    chown system radio /sys/class/sensors/accelerometer_sensor/lowpassfilter
+    chown system radio /efs/FactoryApp/accel_calibration_data
+    chmod 0666 /efs/FactoryApp/accel_calibration_data
+# Proximity_sensor
+    chown system radio /sys/class/sensors/proximity_sensor/state
+    chown system radio /sys/class/sensors/proximity_sensor/raw_data
+    chown system radio /sys/class/sensors/proximity_sensor/prox_avg
+    chown system radio /sys/class/sensors/proximity_sensor/prox_cal
+    chown system radio /sys/class/sensors/proximity_sensor/vendor
+    chown system radio /sys/class/sensors/proximity_sensor/name
+    chown system radio /sys/class/sensors/proximity_sensor/thresh_high
+    chown system radio /sys/class/sensors/proximity_sensor/thresh_low
+# Magnetic_sensor
+    chown system radio /sys/class/sensors/magnetic_sensor/name
+    chown system radio /sys/class/sensors/magnetic_sensor/vendor
+    chown system radio /sys/class/sensors/magnetic_sensor/selftest
+# MetaEvent
+    chown system radio /sys/class/sensors/sensor_dev/flush
+
+#audio pin mux
+    chown system system proc/pin_switch/bt_iis_sys_sel/cp0_iis2
+    chown system system proc/pin_switch/bt_iis_sys_sel/cp0_iis3
+    chown system system proc/pin_switch/bt_iis_sys_sel/cp0_iis0
+    chown system system proc/pin_switch/bt_iis_sys_sel/cp0_iis1
+    chown system system proc/pin_switch/bt_iis_sys_sel/cp1_iis1
+    chown system system proc/pin_switch/bt_iis_sys_sel/cp1_iis2
+    chown system system proc/pin_switch/bt_iis_sys_sel/cp1_iis0
+    chown system system proc/pin_switch/bt_iis_sys_sel/cp1_iis3
+    chown system system proc/pin_switch/bt_iis_sys_sel/ap_iis3
+    chown system system proc/pin_switch/bt_iis_sys_sel/ap_iis2
+    chown system system proc/pin_switch/bt_iis_sys_sel/ap_iis1
+    chown system system proc/pin_switch/bt_iis_sys_sel/ap_iis0
+    chown system system proc/pin_switch/bt_iis_sys_sel/vbc_iis
+    chown system system proc/pin_switch/iis01_loop_sel
+    chown system system proc/pin_switch/iis23_loop_sel
+    chown system system proc/pin_switch/iis12_loop_sel
+    chown system system proc/pin_switch/iis02_loop_sel
+    chown system system proc/pin_switch/iis03_loop_sel
+    chown system system proc/pin_switch/iis13_loop_sel
+    chown system system proc/pin_switch/iis1_sys_sel/ap_iis1
+    chown system system proc/pin_switch/iis0_sys_sel/ap_iis0
+    chown system system proc/pin_switch/iis0_sys_sel/cp0_iis0
+    chown system system proc/pin_switch/iis0_sys_sel/cp1_iis0
+    chown system system proc/pin_switch/iis0_sys_sel/cp2_iis0
+    chown system system proc/pin_switch/iis1_sys_sel/cp2_iis1
+    chown system system proc/pin_switch/iis1_sys_sel/cp0_iis1
+    chown system system proc/pin_switch/iis1_sys_sel/cp1_iis1
+
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/cp0_iis2
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/cp0_iis3
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/cp0_iis0
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/cp0_iis1
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/cp1_iis1
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/cp1_iis2
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/cp1_iis0
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/cp1_iis3
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/ap_iis3
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/ap_iis2
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/ap_iis1
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/ap_iis0
+    chmod 0664 proc/pin_switch/bt_iis_sys_sel/vbc_iis
+    chmod 0664 proc/pin_switch/iis01_loop_sel
+    chmod 0664 proc/pin_switch/iis23_loop_sel
+    chmod 0664 proc/pin_switch/iis12_loop_sel
+    chmod 0664 proc/pin_switch/iis02_loop_sel
+    chmod 0664 proc/pin_switch/iis03_loop_sel
+    chmod 0664 proc/pin_switch/iis13_loop_sel
+    chmod 0664 proc/pin_switch/iis1_sys_sel/ap_iis1
+    chmod 0664 proc/pin_switch/iis0_sys_sel/ap_iis0
+    chmod 0664 proc/pin_switch/iis0_sys_sel/cp0_iis0
+    chmod 0664 proc/pin_switch/iis0_sys_sel/cp1_iis0
+    chmod 0664 proc/pin_switch/iis0_sys_sel/cp2_iis0
+    chmod 0664 proc/pin_switch/iis1_sys_sel/cp2_iis1
+    chmod 0664 proc/pin_switch/iis1_sys_sel/cp0_iis1
+    chmod 0664 proc/pin_switch/iis1_sys_sel/cp1_iis1
+
+# required so RIL can open kernel RPC drivers
+    chmod 0660 /dev/bcm_rpc
+    chmod 0660 /dev/bcm_irpc
+    chown radio radio /dev/bcm_rpc
+    chown radio radio /dev/bcm_irpc
+
+    setprop ro.build.product hawaii
+    setprop ro.product.device hawaii
+    setprop ro.radio.noril no
+
+    chmod 0660 /dev/bcm_atc
+    chown shell system /dev/bcm_atc
+    mkdir /data/atx
+    chown system system /data/atx
+    chmod 0771 /data/atx
+    chown system system /dev/bcm_log
+    chmod 0660 /dev/bcm_log
+    chown system system /dev/bcm_audio_log
+    chmod 0660 /dev/bcm_audio_log
+    chown system system /dev/ttyGS0
+    chmod 0770 /dev/snd/controlC0
+
+    chown system system /proc/bcm_fuse_net_config
+    chown system system /dev/block/mmcblk0
+    chmod 0660 /dev/block/mmcblk0
+    #chown system system /dev/mem
+
+    # change owner of sysrpc/mtest to allow atx/atxd access
+    chown system system /sys/kernel/sysrpc/mtest
+
+# Battery
+   chown system radio /sys/class/power_supply/battery/batt_reset_soc
+   chown system radio /sys/class/power_supply/battery/batt_slate_mode
+   chown system radio /sys/class/power_supply/battery/factory_mode
+   chown system radio /sys/class/power_supply/battery/siop_level
+   chown system radio /sys/class/power_supply/battery/wc_enable
+   chown system radio /sys/class/power_supply/battery/update
+   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/call
+   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/video
+   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/music
+   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/browser
+   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/hotspot
+   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/camera
+   chown system radio /sys/class/power_supply/battery/talk_wcdma
+   chown system radio /sys/class/power_supply/battery/talk_gsm
+   chown system radio /sys/class/power_supply/battery/call
+   chown system radio /sys/class/power_supply/battery/data_call
+   chown system radio /sys/class/power_supply/battery/gps
+   chown system radio /sys/class/power_supply/battery/wifi
+   chown system radio /sys/class/power_supply/battery/lte
+   chown system radio /sys/class/power_supply/battery/lcd
+
+# fake some battery state
+    setprop status.battery.state Slow
+    setprop status.battery.level 10
+    setprop status.battery.level_raw  100
+    setprop status.battery.level_scale 10
+
+# for tsp command
+    chown system system /sys/class/sec/tsp/cmd
+
+# phone
+    setprop ro.telephony.call_ring.multiple 0
+
+#security driver
+    chmod 0660 /dev/bcm_security
+    chown radio root /dev/bcm_security
+    mkdir /data/sec 0770
+    chown radio root /data/sec
+
+# GPIO DVS
+    chown radio system /sys/class/secgpio_check/secgpio_check_all/check_init_detail
+    chown radio system /sys/class/secgpio_check/secgpio_check_all/check_sleep_detail
+    chown radio system /sys/class/secgpio_check/secgpio_check_all/gpio_sleep_debug
+    chown radio system /sys/class/secgpio_check/secgpio_check_all/gpioinfo_check
+    chown radio system /sys/class/secgpio_check/secgpio_check_all/gpioinit_check
+    chown radio system /sys/class/secgpio_check/secgpio_check_all/gpiosleep_check
+
+    # For WV DRM
+    chown drm drm /dev/bcm_kbox
+    chmod 0660 /dev/bcm_kbox
+
+    # create directory for DRM plug-ins
+    mkdir /data/drm 0770 drm drm
+
+    # create directory for MediaDrm plug-ins - give drm the read/write access to
+    # the following directory.
+    mkdir /data/mediadrm 0770 mediadrm mediadrm
+
+# [ SEC_MM_DRM
+    # DRM directory creation
+    mkdir /system/etc/security/.drm 0775
+    chown root root /system/etc/security/.drm
+    chmod 0775 /system/etc/security/.drm
+
+    # Added drm folder to copy drm plugins
+    mkdir /system/lib/drm 0775
+    chown root root /system/lib/drm
+    chmod 0775 /system/lib/drm
+# ]
+
+#permissions for cpufreq
+    chown radio system sys/power/cpufreq_min_limit
+    chown radio system sys/power/cpufreq_max_limit
+    chown radio system sys/power/cpufreq_table
+    chmod 0660 /sys/power/cpufreq_min_limit
+    chmod 0660 /sys/power/cpufreq_max_limit
+    chmod 0660 /sys/power/cpufreq_table
+
+# permissions for cpuhotplug
+    chown radio system /sys/devices/system/cpu/cpuhotplug/cpu_num_min_limit
+    chown radio system /sys/devices/system/cpu/cpuhotplug/cpu_num_limit
+    chmod 0660 /sys/devices/system/cpu/cpuhotplug/cpu_num_min_limit
+    chmod 0660 /sys/devices/system/cpu/cpuhotplug/cpu_num_limit
+
+# permissions for cpuonline
+    chown radio system /sys/devices/system/cpu/cpu0/online
+    chown radio system /sys/devices/system/cpu/cpu1/online
+    chown radio system /sys/devices/system/cpu/cpu2/online
+    chown radio system /sys/devices/system/cpu/cpu3/online
+    chmod 0660 /sys/devices/system/cpu/cpu0/online
+    chmod 0660 /sys/devices/system/cpu/cpu1/online
+    chmod 0660 /sys/devices/system/cpu/cpu2/online
+    chmod 0660 /sys/devices/system/cpu/cpu3/online
+
+# allow user space (atx) access to kernel pm debug
+    chown system system /sys/module/pm_dbg/parameters/debug
+    chmod 0660 /sys/module/pm_dbg/parameters/debug
+    chown system system /sys/module/bcmpmu59xxx_ponkey/parameters/simulate_ponkey
+    chmod 0660 /sys/module/bcmpmu59xxx_ponkey/parameters/simulate_ponkey
+    chown system system /sys/module/pm_dbg/parameters/debug
+    chmod 0660 /sys/module/pm_dbg/parameters/debug
+
+# BEGIN BCM QUICK BOOT FEATURE
+    chown root system /sys/ponkey/ponkey_mode
+    chmod 0664 /sys/ponkey/ponkey_mode
+# END BCM QUICK BOOT FEATURE
+
+# OTG Test
+   chown system radio /sys/class/host_notify/usb_otg/booster
+   chmod 0664 /sys/class/host_notify/usb_otg/booster
+
+on fs
+# Temporary hack for root access
+	chmod 6755 /system/xbin/su
+
+#for efs
+     chown radio system /efs
+     chmod 0771 /efs
+
+#For Absolute Persistence Partition 
+
+    mkdir /persdata 0755 system system
+    mkdir /persdata/absolute 0750 system system
+
+    wait /dev/block/platform/sdio_emmc/by-name/persdata
+    check_fs /dev/block/platform/sdio_emmc/by-name/persdata ext4
+    mount ext4 /dev/block/platform/sdio_emmc/by-name/persdata /persdata/absolute nosuid nodev barrier=1
+
+    chown system system /persdata
+    chmod 0755 /persdata 
+    chown system system /persdata/absolute
+    chmod 0750 /persdata/absolute
+
+# Broadcom GPS
+    chown system system /dev/ttyS3
+    chmod 0660 /dev/ttyS3
+    chown system system /sys/class/sec/gps/GPS_PWR_EN/value
+    chmod 0664 /sys/class/sec/gps/GPS_PWR_EN/value
+    mkdir /data/system 0771 system system
+    chown system system /data/system
+    mkdir /data/system/gps 0771 system system
+    chown system system /data/system/gps
+    rm /data/gps_started
+    rm /data/glonass_started
+    rm /data/beidou_started
+    rm /data/smd_started
+    rm /data/sv_cno.info
+
+# permissions for bluetooth.
+   setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
+   chown bluetooth net_bt_stack ro.bt.bdaddr_path
+   symlink /system/etc/bluetooth /etc/bluetooth
+   mkdir /efs/bluetooth 0775 radio system
+   mkdir /data/misc 01771 system misc
+   chmod 0770 /data/misc/bluetoothd
+   chmod 0770 /data/misc/bluetooth
+   chown root bluetooth /dev/ttyS0
+   chmod 0770 /dev/ttyS0
+   chmod 0770 /dev/ttyS1
+   chmod 0660 /sys/class/rfkill/rfkill0/state
+   chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
+   chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
+   chmod 0660 proc/bluetooth/sleep/btwrite
+   chown bluetooth system proc/bluetooth/sleep/btwrite
+
+# permissions for NFC
+#    setprop ro.nfc.port "I2C"
+#    mkdir /data/bcmnfc
+#    mkdir /data/bcmnfc/param
+#    chmod 0755 /data/bcmnfc
+#    chmod 0777 /data/bcmnfc/param
+#    chown nfc nfc /data/bcmnfc
+#    chown nfc nfc /data/bcmnfc/param
+#    chown nfc nfc /data/bcmnfc/libnfc-brcm-20791b04.conf
+#    chown nfc nfc /data/bcmnfc/libnfc-brcm-20791b03.conf
+#    chmod 666 /data/bcmnfc/libnfc-brcm-20791b04.conf
+#    chmod 666 /data/bcmnfc/libnfc-brcm-20791b03.conf
+
+#LCD
+    chown system system /sys/class/backlight/panel/brightness
+    chmod 0664 /sys/class/backlight/panel/brightness
+    chown system system /sys/class/lcd/panel/lvds_clk
+    chmod 0664 /sys/class/lcd/panel/lvds_clk
+
+#KEY
+    chown system system /sys/class/sec/sec_key/reset_enabled
+    chmod 0664 /sys/class/sec/sec_key/reset_enabled
+
+#Enable PMTUD tcp_mtu_probing
+ write /proc/sys/net/ipv4/tcp_mtu_probing 1
+
+# needed to avoid the 7-minute-halt issue in (DOS) passive mode ftp on vodafone networ
+ write /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_be_liberal 1
+
+
+
+# Permissions for System Server and daemons.
+    chown system system /sys/devices/platform/panel/backlight/panel/brightness
+    write /proc/sys/vm/dirty_writeback_centisecs 1000
+
+service drm /system/bin/drmserver
+    class main
+    user drm
+
+# [ SEC_MM_DRM
+# fix
+    group system drm inet drmrpc sdcard_r sdcard_rw media_rw radio shell
+# org
+#    group drm system inet drmrpc
+# ]
+
+# for Napa TS
+#   insmod Napa Touchscreen module
+chmod 0755 /system/etc/init_touch
+
+on post-fs-data
+    setprop vold.post_fs_data_done 1
+
+on property:ro.debug_level=0x494d
+    # Debug Level MID, turn tracing on
+    # set ring buf size to 4KB * 4 = 16KB
+    write /sys/kernel/debug/tracing/buffer_size_kb 512
+
+    # enable part of sced traces, irq, workqueue
+    write /sys/kernel/debug/tracing/events/irq/irq_handler_entry/enable 1
+    write /sys/kernel/debug/tracing/events/irq/irq_handler_exit/enable 1
+    write /sys/kernel/debug/tracing/events/workqueue/enable 1
+    write /sys/kernel/debug/tracing/events/sched/sched_switch/enable 1
+	write /sys/kernel/debug/tracing/events/power/enable 1
+	write /sys/kernel/debug/tracing/events/timer/enable 1
+	write /sys/kernel/debug/tracing/events/cpufreq_interactive/cpufreq_interactive_setspeed/enable 1
+
+service napa_ts /system/bin/sh /system/etc/init_touch
+    class main
+    user root
+    group root
+    oneshot
+
+# GPS
+service gpsd /system/bin/gpsd -c /system/etc/gps.xml
+    class main
+    user gps
+    group system inet net_raw
+    ioprio be 0
+
+service at_distributor /system/bin/at_distributor
+    class main
+    user root
+    group radio misc log
+
+# Run usb_portd to automatically launch atx when USB configuration changes.
+service usb_portd /system/bin/usb_portd
+    class main
+    oneshot
+    user system
+    group input vpn net_admin net_raw radio system sdcard_rw
+
+# Run atxd daemon, which needs group permissions to run in non-root mode.
+service atxd /system/bin/atxd
+    class main
+    user shell
+    group input vpn net_admin net_raw radio system sdcard_rw log
+
+# Run usbdev_mode to set USB configuration from uboot if bootargs usbdev_mode option is set.
+service usbdev_mode /system/bin/usbdev_mode
+    class main
+    oneshot
+    user system
+    group radio system
+
+#start watchdog daemon
+service watchdogd /system/bin/watchdogd
+    class core
+    user root
+    group root
+    oneshot
+    
+# This will make sure that sdcard service starts as late_start.
+on nonencrypted
+    setprop ro.fuse_sdcard ${persist.fuse_sdcard}
+
+on property:vold.decrypt=trigger_restart_framework
+    setprop ro.fuse_sdcard ${persist.fuse_sdcard}
+
+# Run the script to rename the panic logs
+service apanic_rename /system/bin/sh /system/etc/apanic_rename.sh
+    class main
+    user root
+    group log sdcard_rw
+    oneshot
+
+service copy_cp_imgs /system/bin/sh /system/etc/copy_cp_imgs.sh
+    class main
+    oneshot
+    user root
+    disabled
+
+
+#Indicate boot complete to PM to complete PM initialization
+on property:dev.bootcomplete=1
+    write /dev/console [AUTOTEST]BOOT_COMPLETE
+    write /sys/module/pwr_mgr/parameters/pm_late_init 1
+    write /sys/class/input/input1/enable 1
+    start copy_cp_imgs
+
+#Interactive governor parameters tuning for better power and performance
+    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay 25000
+    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 90
+    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 1300000
+    write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
+    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 40000
+    write /sys/devices/system/cpu/cpufreq/interactive/target_loads 85
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 40000
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 40000
+
+# umount service
+service umount_service /system/bin/umount /preload
+    disabled
+    oneshot
+    
+on property:persist.sys.storage_preload=1
+    mount ext4 /dev/block/platform/sdio_emmc/by-name/HIDDEN /preload nosuid nodev noatime wait ro
+    setprop storage.preload.complete 1
+
+on property:persist.sys.storage_preload=0
+    start umount_service
+
+# service battery_charger /charger
+#    class charger
+
+on charger
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "powersave"
+
+# SSWAP
+service swapon /sbin/sswap -s
+    class core
+    user root
+    group root
+    oneshot

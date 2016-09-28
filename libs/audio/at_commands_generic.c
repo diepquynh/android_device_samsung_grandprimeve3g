@@ -16,14 +16,14 @@ enum {
      USERCASE_BIT = 5,
      EXTRAVOLUME_BIT = 6,
      BTSAMPLE_BIT = 7,
-     MAX_BIT = 8,
+     SPPCMDUMP_BIT=8,
+     MAX_BIT = 9,
 };
 static pthread_mutex_t  ATlock = PTHREAD_MUTEX_INITIALIZER;         //eng cannot handle many at commands once
+static int at_cmd_routeDev(struct tiny_audio_device *adev,char* route,T_AT_CMD* at);
 
-#if 0
 int do_cmd_dual(int modemId, int simId, struct tiny_audio_device *adev)
 {
-    const char *err_str = NULL;
     int indx = 0;
     T_AT_CMD process_at_cmd = {0};
     int dirty_count= 0;
@@ -57,69 +57,13 @@ int do_cmd_dual(int modemId, int simId, struct tiny_audio_device *adev)
     for(indx=0;indx < dirty_count;indx++){
         cmd_bit = cmd_queue_pri[dirty_count-indx-1];
         ALOGD("do_cmd_dual Switch incall AT command [%d][%d][%s][%d] ", modemId,simId,&(process_at_cmd.at_cmd[cmd_bit]),cmd_bit);
-        err_str = sendAt(modemId, simId, &(process_at_cmd.at_cmd[cmd_bit]));
-        ALOGD("do_cmd_dual Switch incall AT command [%s][%s] ", &(process_at_cmd.at_cmd[cmd_bit]), err_str);
+        adev->routeDev = at_cmd_routeDev(adev,&(process_at_cmd.at_cmd[cmd_bit]),&process_at_cmd);
+        char resp[AT_RESPONSE_LEN] = { 0 };
+        int ret = sendAt(resp, AT_RESPONSE_LEN, simId, &(process_at_cmd.at_cmd[cmd_bit]));
+        ALOGD("do_cmd_dual Switch incall AT command [%d][%s][%s] ", ret, &(process_at_cmd.at_cmd[cmd_bit]), resp);
     }
     return 0;
 }
-
-#else
-
-int do_cmd_dual(int modemId, int simId, struct tiny_audio_device *adev)
-{
-    size_t res = 0;
-    void *buf = NULL;
-    int indx = 0;
-    T_AT_CMD process_at_cmd = {0};
-    int dirty_count= 0;
-    int max_pri = 0;
-    int max_pri_bit = 0;
-    uint8_t dirty_indx = 0;
-    uint8_t cmd_queue_pri[MAX_AT_CMD_TYPE] = {0};
-    uint8_t cmd_bit = 0;
-
-    buf = malloc(AT_RESPONSE_LEN);
-    if (NULL == buf) {
-        ALOGE("do_cmd_dual: malloc fail!");
-        return -1;
-    }
-
-    pthread_mutex_lock(&ATlock);
-    dirty_count = __builtin_popcount(adev->at_cmd_vectors->at_cmd_dirty);
-    if(dirty_count != 0){
-        memcpy(&process_at_cmd, adev->at_cmd_vectors, sizeof(T_AT_CMD ));
-        memset(adev->at_cmd_vectors, 0x00, sizeof(T_AT_CMD ));
-    }
-    pthread_mutex_unlock(&ATlock);
-
-    ALOGD("do_cmd_dual Switch incall AT command dirty_count:[%d] : [%d] :[%0x]", dirty_count,sizeof(process_at_cmd.at_cmd)/sizeof(process_at_cmd.at_cmd[0]),process_at_cmd.at_cmd_dirty);
-    for(dirty_indx = 0;dirty_indx < dirty_count;dirty_indx++){
-        max_pri = process_at_cmd.at_cmd_priority[0];
-        max_pri_bit = 0;
-        for(indx=0;indx < sizeof(process_at_cmd.at_cmd)/sizeof(process_at_cmd.at_cmd[0]);indx++){
-            if(max_pri < process_at_cmd.at_cmd_priority[indx]){
-                max_pri = process_at_cmd.at_cmd_priority[indx];
-                max_pri_bit = indx;
-            }
-        }
-        process_at_cmd.at_cmd_priority[max_pri_bit] = 0;
-        cmd_queue_pri[dirty_indx] = max_pri_bit;
-        ALOGD("do_cmd_dual Switch incall AT command dirty Bit :[%x] ", max_pri_bit);
-    }
-    for(indx=0;indx < dirty_count;indx++){
-        cmd_bit = cmd_queue_pri[dirty_count-indx-1];
-        ALOGD("do_cmd_dual Switch incall AT command [%d][%d][%s][%d] ", modemId,simId,&(process_at_cmd.at_cmd[cmd_bit]),cmd_bit);
-        memset(buf, '\0', AT_RESPONSE_LEN);
-        res = sendAt(buf, AT_RESPONSE_LEN, simId, &(process_at_cmd.at_cmd[cmd_bit]));
-        ALOGD("do_cmd_dual Switch incall AT command [%s][%s][%d] ", &(process_at_cmd.at_cmd[cmd_bit]), buf, res);
-    }
-    if (buf != NULL){
-        free(buf);
-        buf = NULL;
-    }
-    return 0;
-}
-#endif
 
 static uint8_t process_priority(struct tiny_audio_device *adev,int bit){
     int indx = 0;
@@ -162,6 +106,21 @@ static void push_voice_command(char *at_cmd,int bit){
     voice_command_signal(s_adev,at_cmd,bit);
     ALOGE("push_voice_command: X,at_cmd:%s,bit:%d,postcmd:%s",at_cmd,bit,&(s_adev->at_cmd_vectors->at_cmd[bit]));
 }
+
+static void push_route_command(char *at_cmd,int bit,int out){
+    ALOGE("push_route_command: E");
+    ALOGE("push_route_command: at_cmd:%s,bit:%d,precmd:%s,len:%d",at_cmd,bit,&(s_adev->at_cmd_vectors->at_cmd[bit]),sizeof(s_adev->at_cmd_vectors->at_cmd[bit]));
+    pthread_mutex_lock(&ATlock);
+    s_adev->at_cmd_vectors->at_cmd_dirty |= (0x01 << bit);
+    memset(&(s_adev->at_cmd_vectors->at_cmd[bit]),0x00,sizeof(s_adev->at_cmd_vectors->at_cmd[bit]));
+    strncpy(&(s_adev->at_cmd_vectors->at_cmd[bit]),at_cmd,strlen(at_cmd));
+    s_adev->at_cmd_vectors->routeDev  = out;
+    s_adev->at_cmd_vectors->at_cmd_priority[bit]  = process_priority(s_adev,bit);
+    ALOGE("%s: post:%s,priority:%d",__func__,&(s_adev->at_cmd_vectors->at_cmd[bit]) ,s_adev->at_cmd_vectors->at_cmd_priority[bit]);
+    pthread_mutex_unlock(&ATlock);
+    voice_command_signal(s_adev,at_cmd,bit);
+    ALOGE("push_route_command: X,at_cmd:%s,bit:%d,postcmd:%s",at_cmd,bit,&(s_adev->at_cmd_vectors->at_cmd[bit]));
+}
 // 0x80 stands for 8KHz(NB) sampling rate BT Headset.
 // 0x40 stands for 16KHz(WB) sampling rate BT Headset.
 static int config_bt_dev_type(int bt_headset_type, cp_type_t cp_type, int cp_sim_id,struct tiny_audio_device *adev)
@@ -178,6 +137,26 @@ static int config_bt_dev_type(int bt_headset_type, cp_type_t cp_type, int cp_sim
     return 0;
 }
 
+static int at_cmd_cp_pcm_dump(char *at_cmd)
+{
+    ALOGI("%s : at_cmd: %s",__func__,at_cmd);
+    push_voice_command(at_cmd,SPPCMDUMP_BIT);
+    usleep(10000);
+    return 0;
+}
+
+static int at_cmd_routeDev(struct tiny_audio_device *adev,char* route,T_AT_CMD* at)
+{
+    char *prefix = "AT+SSAM=";
+    int len = strlen(prefix);
+    int dev = 0;
+    if(0 == strncmp(prefix,route,len)){
+        dev = at->routeDev;
+        ALOGW("%s %s routeDev:%x",__func__,route,dev);
+    }
+    return dev;
+}
+
 static int at_cmd_route(struct tiny_audio_device *adev)
 {
     const char *at_cmd = NULL;
@@ -187,7 +166,10 @@ static int at_cmd_route(struct tiny_audio_device *adev)
     }
 
     if (adev->out_devices & (AUDIO_DEVICE_OUT_WIRED_HEADSET | AUDIO_DEVICE_OUT_WIRED_HEADPHONE)) {
-        at_cmd = "AT+SSAM=2";
+        if(!headset_no_mic())
+            at_cmd = "AT+SSAM=2";
+        else
+            at_cmd = "AT+SSAM=4";
     } else if (adev->out_devices & (AUDIO_DEVICE_OUT_BLUETOOTH_SCO
                                 | AUDIO_DEVICE_OUT_BLUETOOTH_SCO_HEADSET
                                 | AUDIO_DEVICE_OUT_BLUETOOTH_SCO_CARKIT)) {
@@ -196,16 +178,16 @@ static int at_cmd_route(struct tiny_audio_device *adev)
                     st_vbc_ctrl_thread_para->adev->cp_type, android_sim_num,adev);
 
         if (adev->bluetooth_nrec) {
-            at_cmd = "AT+SSAM=6";
-        } else {
             at_cmd = "AT+SSAM=5";
+        } else {
+            at_cmd = "AT+SSAM=6";
         }
     } else if (adev->out_devices & AUDIO_DEVICE_OUT_SPEAKER) {
         at_cmd = "AT+SSAM=1";
     } else {
         at_cmd = "AT+SSAM=0";
     }
-    push_voice_command(at_cmd,ROUTE_BIT);
+    push_route_command(at_cmd,ROUTE_BIT,adev->out_devices);
     return 0;
 }
 

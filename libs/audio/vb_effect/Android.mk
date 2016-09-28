@@ -1,4 +1,5 @@
-# Copyright (C) 2012 The Android Open Source Project
+# Copyright (C) 2016 The Android Open Source Project
+# Copyright (C) 2016 The CyanogenMod Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,27 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_CFLAGS := -D_POSIX_SOURCE -Wno-multichar -g
+LOCAL_CFLAGS := \
+	-D_POSIX_SOURCE \
+	-Wno-multichar \
+	-g
 
-LOCAL_C_INCLUDES += \
-	$(LOCAL_PATH)/../../engmode \
-	$(LOCAL_PATH)/../ \
-	$(LOCAL_PATH)/../nv_exchange \
-	$(LOCAL_PATH)/../../kernel-headers/arch-arm \
-	external/tinyalsa/include
-
+ifneq (,$(filter sc8830 scx15,$(TARGET_BOARD_PLATFORM)))
+BOARD_EQ_DIR := v2
+else
 BOARD_EQ_DIR := v1
-
-ifeq ($(strip $(TARGET_BOARD_PLATFORM)),sc8830)
-BOARD_EQ_DIR := v2
-endif
-
-ifeq ($(strip $(TARGET_BOARD_PLATFORM)),scx15)
-BOARD_EQ_DIR := v2
 endif
 
 LOCAL_SRC_FILES := \
@@ -41,9 +35,24 @@ LOCAL_SRC_FILES := \
 	$(BOARD_EQ_DIR)/filter_calc.c \
 	$(BOARD_EQ_DIR)/vb_hal_if.c \
 	$(BOARD_EQ_DIR)/vb_hal_adp.c \
-	$(BOARD_EQ_DIR)/tinyalsa_util.c
 
-LOCAL_SHARED_LIBRARIES := liblog libc libcutils libtinyalsa libnvexchange
+LOCAL_C_INCLUDES := \
+	external/tinyalsa/include \
+	$(LOCAL_PATH)/../ \
+	$(LOCAL_PATH)/../audio/nv_exchange \
+
+LOCAL_EXPORT_C_INCLUDE_DIRS := \
+	$(LOCAL_PATH) \
+	$(LOCAL_PATH)/$(BOARD_EQ_DIR) \
+	$(LOCAL_C_INCLUDES) \
+
+LOCAL_SHARED_LIBRARIES := \
+	liblog \
+	libc \
+	libcutils \
+	libtinyalsa \
+	libtinyalsautils \
+	libnvexchange \
 
 LOCAL_MODULE := libvbeffect
 

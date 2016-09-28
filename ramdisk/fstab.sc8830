@@ -3,11 +3,22 @@
 # specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
 # <src>                                         <mnt_point>  <type>  <mnt_flags and options>             <fs_mgr_flags>
 
-/dev/block/platform/sprd-sdhci.3/by-name/system   /system      ext4 ro,errors=panic                                                                 wait
-/dev/block/platform/sprd-sdhci.3/by-name/userdata /data        ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check,encryptable=footer
-/dev/block/platform/sprd-sdhci.3/by-name/CSC	  /cache       ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
-/dev/block/platform/sprd-sdhci.3/by-name/efs	  /efs         ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
-/dev/block/platform/sprd-sdhci.3/by-name/prodnv   /productinfo ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
+/dev/block/platform/sdio_emmc/by-name/SYSTEM   /system      ext4 ro,errors=panic                                                                 wait
+/dev/block/platform/sdio_emmc/by-name/userdata /data        ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check,encryptable=footer
+/dev/block/platform/sdio_emmc/by-name/CACHE    /cache       ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
+/dev/block/platform/sdio_emmc/by-name/efs      /efs         ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
+/dev/block/platform/sdio_emmc/by-name/prodnv   /productinfo ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
 
-#VOLD
-/devices/sprd-sdhci.0/mmc_host/mmc1*      auto         vfat defaults voldmanaged=extSdCard:auto,noemulatedsd
+# Boot partitions
+/dev/block/platform/sdio_emmc/by-name/KERNEL   /boot        emmc defaults									 recoveryonly
+/dev/block/platform/sdio_emmc/by-name/HIDDEN   /preload     ext4 defaults									 recoveryonly
+/dev/block/platform/sdio_emmc/by-name/RECOVERY /recovery    emmc defaults									 recoveryonly
+
+# USB OTG
+/devices/sdio_sd/mmc_host/mmc1           auto                    vfat    default     voldmanaged=extSdCard:auto,noemulatedsd
+/devices/20200000.usb/usb*sda            auto                    vfat    default     voldmanaged=UsbDriveA:auto
+/devices/20200000.usb/usb*sdb            auto                    vfat    default     voldmanaged=UsbDriveB:auto
+/devices/20200000.usb/usb*sdc            auto                    vfat    default     voldmanaged=UsbDriveC:auto
+/devices/20200000.usb/usb*sdd            auto                    vfat    default     voldmanaged=UsbDriveD:auto
+/devices/20200000.usb/usb*sde            auto                    vfat    default     voldmanaged=UsbDriveE:auto
+/devices/20200000.usb/usb*sdf            auto                    vfat    default     voldmanaged=UsbDriveF:auto

@@ -12,99 +12,99 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ifeq ($(strip $(BOARD_USES_TINYALSA_AUDIO)),true)
-
 LOCAL_PATH := $(call my-dir)
 
-#TinyAlsa audio
+ifeq ($(strip $(BOARD_USES_TINYALSA_AUDIO)),true)
 
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := audio.primary.$(TARGET_BOARD_PLATFORM)
-LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/hw
-LOCAL_CFLAGS := -D_POSIX_SOURCE -Wno-multichar -g
 
-ifeq ($(strip $(BOARD_USES_LINE_CALL)), true)
+LOCAL_MODULE_RELATIVE_PATH := hw
+
+LOCAL_CFLAGS := \
+	-D_POSIX_SOURCE \
+	-Wno-multichar \
+	-g \
+	-Wno-unused-parameter
+
+ifeq ($(BOARD_USES_LINE_CALL), true)
 LOCAL_CFLAGS += -D_VOICE_CALL_VIA_LINEIN
 endif
 
-ifeq ($(strip $(TARGET_BOARD_PLATFORM)),sc8830)
-LOCAL_CFLAGS += -DAUDIO_SPIPE_TD
-LOCAL_CFLAGS += -D_LPA_IRAM
+ifeq ($(TARGET_BUILD_VARIANT),userdebug)
+LOCAL_CFLAGS += -DAUDIO_DEBUG
 endif
 
-ifeq ($(strip $(TARGET_BOARD_PLATFORM)),scx15)
-LOCAL_CFLAGS += -DAUDIO_SPIPE_TD
-LOCAL_CFLAGS += -D_LPA_IRAM
+ifneq ($(filter scx35_sc9620referphone scx35_sc9620openphone scx35_sc9620openphone_zt, $(TARGET_BOARD)),)
+LOCAL_CFLAGS += -DVB_CONTROL_PARAMETER_V2
 endif
 
-ifeq ($(strip $(BOARD_USES_SS_VOIP)), true)
+ifeq ($(strip $(AUDIO_CONTROL_PARAMETER_V2)), true)
+LOCAL_CFLAGS += -DVB_CONTROL_PARAMETER_V2
+endif
+
+ifneq (,$(filter sc8830 scx15,$(TARGET_BOARD_PLATFORM)))
+LOCAL_CFLAGS += -DAUDIO_SPIPE_TD -D_LPA_IRAM
+endif
+
+ifeq ($(BOARD_USES_SS_VOIP), true)
 # Default case, Nothing to do.
 else
 LOCAL_CFLAGS += -DVOIP_DSP_PROCESS
 endif
+
 
 LOCAL_C_INCLUDES += \
 	external/tinyalsa/include \
 	external/expat/lib \
 	system/media/audio_utils/include \
 	system/media/audio_effects/include \
-	$(LOCAL_PATH)/../engmode \
-	$(LOCAL_PATH)/../audio/vb_pga \
-	$(LOCAL_PATH)/../audio/record_process \
-	$(LOCAL_PATH)/../audio/nv_exchange \
-	$(LOCAL_PATH)/../audio/DumpData
+	$(LOCAL_PATH)/record_process \
 
-ifeq ($(BOARD_USE_LIBATCHANNEL_WRAPPER),true)
-LOCAL_CFLAGS += \
-	-DUSE_LIBATCHANNEL_WRAPPER
-LOCAL_C_INCLUDES += \
-	$(LOCAL_PATH)/../libatchannel_wrapper
-else
-LOCAL_C_INCLUDES += \
-	$(LOCAL_PATH)/../libatchannel
-endif
+LOCAL_SRC_FILES := \
+	audio_hw.c \
+	record_process/aud_proc_config.c.arm \
+	record_process/aud_filter_calc.c.arm \
 
-BOARD_EQ_DIR := v1
-
-ifeq ($(strip $(TARGET_BOARD_PLATFORM)),sc8830)
-BOARD_EQ_DIR := v2
-endif
-
-ifeq ($(strip $(TARGET_BOARD_PLATFORM)),scx15)
-BOARD_EQ_DIR := v2
-endif
-
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/../audio/vb_effect/$(BOARD_EQ_DIR)
-
-LOCAL_SRC_FILES := audio_hw.c tinyalsa_util.c audio_pga.c \
-			record_process/aud_proc_config.c.arm \
-			record_process/aud_filter_calc.c.arm
-
-ifeq ($(strip $(AUDIO_MUX_PIPE)), true)
-LOCAL_SRC_FILES  += audio_mux_pcm.c
+ifeq ($(AUDIO_MUX_PIPE),true)
+LOCAL_SRC_FILES += audio_mux_pcm.c
 LOCAL_CFLAGS += -DAUDIO_MUX_PCM
 endif
 
 LOCAL_SHARED_LIBRARIES := \
-	liblog libcutils libtinyalsa libaudioutils \
-	libexpat libdl \
-	libvbeffect libvbpga libnvexchange libdumpdata
-
-ifeq ($(BOARD_USE_LIBATCHANNEL_WRAPPER),true)
-LOCAL_SHARED_LIBRARIES += libatchannel_wrapper
-else
-LOCAL_SHARED_LIBRARIES += libatchannel
-endif
+	liblog \
+	libcutils \
+	libtinyalsa \
+	libtinyalsautils \
+	libaudioutils \
+	libexpat \
+	libdl \
+	libvbeffect \
+	libvbpga \
+	libnvexchange \
+	libdumpdata \
+	libhardware_legacy \
 
 LOCAL_REQUIRED_MODULES := \
-	liblog libcutils libtinyalsa libaudioutils \
-	libexpat libdl \
-	libvbeffect libvbpga libnvexchange libdumpdata
+	liblog \
+	libcutils \
+	libtinyalsa \
+	libaudioutils \
+	libexpat \
+	libdl \
+	libvbeffect \
+	libvbpga \
+	libnvexchange \
+	libdumpdata \
+	libhardware_legacy
 
 ifeq ($(BOARD_USE_LIBATCHANNEL_WRAPPER),true)
+LOCAL_CFLAGS += -DUSE_LIBATCHANNEL_WRAPPER
+LOCAL_SHARED_LIBRARIES += libatchannel_wrapper
 LOCAL_REQUIRED_MODULES += libatchannel_wrapper
 else
+LOCAL_SHARED_LIBRARIES += libatchannel
 LOCAL_REQUIRED_MODULES += libatchannel
 endif
 

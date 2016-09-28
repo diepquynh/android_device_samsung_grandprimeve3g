@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VENDOR=samsung
-DEVICE=core33g
+DEVICE=grandprimeve3g
 
 BASE=../../../vendor/$VENDOR/$DEVICE/proprietary
 
@@ -11,7 +11,7 @@ for FILE in `cat proprietary-files.txt | grep -v ^# | grep -v ^$`; do
     if [ ! -d $BASE/$DIR ]; then
         mkdir -p $BASE/$DIR
     fi
-    cp ../../../../stock\ G360H/$FILE $BASE/$FILE
+    cp ../../../../g531h/stock/$FILE $BASE/$FILE
     echo "$FILE pulled"
 done
 

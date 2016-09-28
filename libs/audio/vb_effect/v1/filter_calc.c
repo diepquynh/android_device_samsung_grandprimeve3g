@@ -20,7 +20,6 @@
 
 #include "filter_calc.h"
 
-#include <asm/div64.h>
 #include <stdlib.h>
 #include <errno.h>
 

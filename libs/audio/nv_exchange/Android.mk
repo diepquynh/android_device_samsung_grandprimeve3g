@@ -1,4 +1,5 @@
-# Copyright (C) 2012 The Android Open Source Project
+# Copyright (C) 2016 The Android Open Source Project
+# Copyright (C) 2016 The CyanogenMod Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,17 +17,32 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_CFLAGS := -D_POSIX_SOURCE -Wno-multichar -g
+LOCAL_CFLAGS := \
+	-D_POSIX_SOURCE \
+	-Wno-multichar \
+	-g
 
 LOCAL_C_INCLUDES += \
-	$(LOCAL_PATH)/../../engmode \
 	$(LOCAL_PATH)/../ \
-	external/expat/lib
+	external/expat/lib \
 
-LOCAL_SRC_FILES := string_exchange_bin.c
+LOCAL_EXPORT_C_INCLUDE_DIRS := \
+	$(LOCAL_PATH) \
+	$(LOCAL_C_INCLUDES)
 
-LOCAL_SHARED_LIBRARIES := liblog libc libcutils liblog libtinyalsa libaudioutils \
-	libexpat libdl libhardware_legacy
+LOCAL_SRC_FILES := \
+	string_exchange_bin.c \
+
+LOCAL_SHARED_LIBRARIES := \
+	liblog \
+	libc \
+	libcutils \
+	liblog \
+	libtinyalsa \
+	libaudioutils \
+	libexpat \
+	libdl \
+	libhardware_legacy
 
 LOCAL_MODULE := libnvexchange
 

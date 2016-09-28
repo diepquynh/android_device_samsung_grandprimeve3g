@@ -6,7 +6,7 @@ on early-init
     mount debugfs debugfs /sys/kernel/debug
 
     # set core dump resource limit
-    setrlimit 4 -1 -1
+    setrlimit 4 2147483647 2147483647
 
     # coredump file will not be generated in release version
     write /proc/sys/kernel/core_pattern /dev/null
@@ -18,7 +18,6 @@ on early-init
 
 on init
     mkdir /productinfo 0771 system system
-
  # See storage config details at http://source.android.com/tech/storage/
     mkdir /mnt/media_rw/extSdCard 0700 media_rw media_rw
     mkdir /mnt/media_rw/UsbDriveA 0700 media_rw media_rw
@@ -35,6 +34,10 @@ on init
     export EXTERNAL_STORAGE /storage/emulated/legacy
     export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
     export EMULATED_STORAGE_TARGET /storage/emulated
+
+    export SECONDARY_STORAGE /storage/extSdCard
+    export LEGACY_STORAGE /storage/emulated/legacy
+
     # Support legacy paths
     symlink /storage/emulated/legacy /sdcard
     symlink /storage/emulated/legacy /mnt/sdcard
@@ -50,8 +53,6 @@ on init
     symlink /storage/UsbDriveE /mnt/UsbDriveE
     symlink /storage/UsbDriveF /mnt/UsbDriveF
 
-    export SECONDARY_STORAGE /storage/extSdCard
-    
     mkdir /storage/extSdCard 0700 root root
     mkdir /storage/UsbDriveA 0700 root root
     mkdir /storage/UsbDriveB 0700 root root
@@ -60,21 +61,30 @@ on init
     mkdir /storage/UsbDriveE 0700 root root
     mkdir /storage/UsbDriveF 0700 root root
 
+    symlink /dev/block/platform/sdio_emmc/by-name/PERSISTENT /dev/block/persistent
+
+# @}
+    chown system system /sys/class/power_supply/battery/hw_switch_point
+    chown system system /sys/class/power_supply/battery/save_capacity
+
+    #SPRD: Add support for install apk to internal sdcard @{
+    mkdir /mnt/secure/internal-asec 0700 root root
+    # @}
+
 on fs
-    ubiattach 0 ubipac
     mount_all /fstab.sc8830
     mount pstore pstore /sys/fs/pstore
     setprop ro.crypto.fuse_sdcard true
-    symlink /system/res /res
-    symlink /system/bin /bin
-
-#Allow others to read fb devices
-    chmod 660 /dev/graphics/fb0
-    chmod 660 /dev/fb0
+	symlink /system/res /res
+	symlink /system/bin /bin
 
 #permissions for debug
     chown system system /sys/power/restart_cpc
     chmod 0220 /sys/power/restart_cpc
+
+#Allow others to read fb devices
+    chmod 660 /dev/graphics/fb0
+    chmod 660 /dev/fb0
 
 on post-fs
     chown system system /productinfo
@@ -86,12 +96,14 @@ on post-fs-data
     copy /system/etc/bluetooth/bt_stack.conf /data/misc/bluedroid/bt_stack.conf
     chown bluetooth system /data/misc/bluedroid/bt_stack.conf
     chmod 0640 /data/misc/bluedroid/bt_stack.conf
+    mkdir /data/local/media 0770 media system
+    mkdir /data/anr 0771 system system
+    mkdir /data/tombstones 0771 system system
+#    mkdir /data/corefile
+#    chmod 777 /data/corefile
 
     # Set indication (checked by vold) that we have finished this action
     setprop vold.post_fs_data_done 1
-    #SPRD: Add support for install apk to internal sdcard @{
-    mkdir /data/internal-asec 0700 root root
-    # @}
 
 on early-boot
     # set RLIMIT_MEMLOCK to 64MB
@@ -101,7 +113,6 @@ on early-boot
     mkdir /dev/pipe 0755 system system
     pipe 666 /dev/pipe/mmi.audio.ctrl
     # Support audio parameter stored
-    mkdir /data/local/media 0771 media system
 
     chmod 660 /proc/cpt/wdtirq
     chmod 660 /proc/cpt/stop
@@ -120,12 +131,14 @@ on early-boot
     chmod 660 /proc/cpw/start
     chmod 660 /proc/cpw/modem
     chmod 660 /proc/cpw/dsp
+    chmod 660 /proc/cpw/mem
 
     chown system root /proc/cpw/wdtirq
     chown system root /proc/cpw/stop
     chown system root /proc/cpw/start
     chown system root /proc/cpw/modem
     chown system root /proc/cpw/dsp
+    chown system root /proc/cpw/mem
 
     chmod 660 /proc/cpwcn/wdtirq
     chmod 660 /proc/cpwcn/stop
@@ -140,47 +153,39 @@ on early-boot
     chown system root /proc/cpwcn/dsp
 
     chown system root /sys/class/rtcc/rtcc_trigger
-
 on boot
-
-# Turn on all CPUs
-    write /sys/devices/system/cpu/cpu1/online 1
-    write /sys/devices/system/cpu/cpu2/online 1
-    write /sys/devices/system/cpu/cpu3/online 1
-
-    chown system system /sys/module/mali/parameters/gpu_cur_freq
-    chown system system /sys/module/mali/parameters/gpufreq_max_limit
-    chown system system /sys/module/mali/parameters/gpufreq_min_limit
-    chown system system /sys/module/mali/parameters/gpufreq_table
-    chown system system /sys/class/backlight/sprd_backlight/brightness
+    chown system system /sys/module/mali/parameters/gpu_freq_cur
+    chown system system /sys/module/mali/parameters/gpu_freq_max_limit
+    chown system system /sys/module/mali/parameters/gpu_freq_min_limit
+    chown system system /sys/class/backlight/sprd_backlight/panel/brightness
 
     chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
     chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
-    chown system system /sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable
     chown system system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_freq
-    chown system system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_enable
     chown system system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_enable
     chown system system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_upthreshold
     chown system system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_downdifferential
-    chown media system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_freq
     chown media system /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_request
-    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-    chown system system /sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable
-    chown media system /sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable
-    chmod 0660 /sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable
+    chown system system /dev/iq_mem
+    chown media system /sys/devices/system/cpu/cpuhotplug/cpu_hotplug_disable
+    chown system system /sys/class/graphics/fb0/dynamic_pclk
+    chown system system /sys/class/graphics/fb0/dynamic_mipi_clk
+    chown system system /sys/class/graphics/fb0/blank
+
     chmod 0660 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-    chmod 0660 /sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable
+    chmod 0660 /sys/devices/system/cpu/cpuhotplug/cpu_hotplug_disable
     chmod 0660 /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_freq
     chmod 0660 /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_enable
+    chmod 0440 /dev/iq_mem
+    chmod 0660 /sys/class/graphics/fb0/dynamic_pclk
+    chmod 0660 /sys/class/graphics/fb0/dynamic_mipi_clk
+    chmod 0660 /sys/class/graphics/fb0/blank
 
-    chown system system /sys/devices/system/cpu/cpuhotplug/cpu_hotplug_disable
-    chown media system /sys/devices/system/cpu/cpuhotplug/cpu_hotplug_disable
-    chmod 0660 /sys/devices/system/cpu/cpuhotplug/cpu_hotplug_disable
-
-    chown system system /sys/class/graphics/fb0/dynamic_mipi_clk
+# chown for engineermode
+   chown system system /sys/class/power_supply/battery/stop_charge
+   chmod 0664 /sys/class/power_supply/battery/stop_charge
 
 on charger
-    class_start core
     start console
     start slog
 
@@ -205,11 +210,15 @@ on property:ro.board_ram_size=low
     write /sys/module/zram/parameters/total_mem_usage_percent  35
 
 on property:ro.board_ram_size=mid
-    setprop zram.disksize 300
+    setprop zram.disksize 400
     write /proc/sys/vm/extra_free_kbytes 2048
 
+on property:ro.board_ram_size=high
+    setprop zram.disksize 600
+    write /proc/sys/vm/extra_free_kbytes 4096
+
 on property:ro.config.zram.support=true
-    setprop sys.vm.swappiness 100
+#    setprop sys.vm.swappiness 100
     write /proc/sys/vm/page-cluster  0
     start zram
 
@@ -220,8 +229,6 @@ service zram /system/bin/zram.sh
 
 #on property:ro.debuggable=1
 #    write /sys/kernel/debug/fatal_dump/enable 1
-#    mkdir /data/corefile
-#    chmod 777 /data/corefile
 #    chmod 777 /sys/kernel/debug/sc2713-regulator/vddarm/voltage
 #    chmod 777 /sys/kernel/debug/sc2713-regulator/vddcore/voltage
 #    chmod 777 /sys/kernel/debug/sprd-regulator/vddarm/voltage
@@ -230,6 +237,8 @@ service zram /system/bin/zram.sh
 #    write /proc/sys/kernel/core_pattern /data/corefile/core-%e-%p
 #    write /proc/sys/fs/suid_dumpable 1
 #    write /sys/module/smsg/parameters/debug_enable 1
+#    setprop persist.sys.slog.enabled 1
+#    CTS for slog, enable the slog daemon in debug version anyway.
 
 on property:ro.modem.t.count=1
     write /proc/sim/0 t
@@ -270,45 +279,45 @@ service theme_init /system/bin/theme_init.sh
     oneshot
 # @}
 
-# add for storage manage @{
-on property:persist.storage.type=1
-    start legacy_tempsd
-
-on property:sys.internal.emulated=0
-    stop sdcard
-    stop legacy_tempsd
-
 # virtual sdcard daemon running as media_rw (1023)
-# service sdcard /system/bin/sdcard -u 1023 -g 1023 -l  /data/media /mnt/shell/emulated
-#    class late_start
+service sdcard /system/bin/sdcard -u 1023 -g 1023 -l /data/media /mnt/shell/emulated
+    class late_start
+    oneshot
 
-# service fuse_extSdCard /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d  /mnt/media_rw/extSdCard /storage/extSdCard
-#    class late_start
-#    disabled
-
-service fuse_UsbDriveA /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveA /storage/UsbDriveA
+service fuse_extSdCard /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/extSdCard /storage/extSdCard
     class late_start
     disabled
-	
-service fuse_UsbDriveB /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveA /storage/UsbDriveB
-    class late_start
-    disabled
+    oneshot
 
-service fuse_UsbDriveC /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveC /storage/UsbDriveC
+service fuse_UsbDriveA /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveA /storage/UsbDriveA
     class late_start
     disabled
+    oneshot
 
-service fuse_UsbDriveD /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveD /storage/UsbDriveD
+service fuse_UsbDriveB /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveB /storage/UsbDriveB
     class late_start
     disabled
+    oneshot
 
-service fuse_UsbDriveE /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveE /storage/UsbDriveE
+service fuse_UsbDriveC /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveC /storage/UsbDriveC
     class late_start
     disabled
+    oneshot
 
-service fuse_UsbDriveF /system/bin/sdcard -u 1023 -g 1023 -d  /mnt/media_rw/UsbDriveF /storage/UsbDriveF
+service fuse_UsbDriveD /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveD /storage/UsbDriveD
     class late_start
     disabled
+    oneshot
+
+service fuse_UsbDriveE /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveE /storage/UsbDriveE
+    class late_start
+    disabled
+    oneshot
+
+service fuse_UsbDriveF /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveF /storage/UsbDriveF
+    class late_start
+    disabled
+    oneshot
 
 #modem_control
 service modem_control  /system/bin/modem_control
@@ -323,6 +332,11 @@ service modemd /system/bin/modemd
     group system radio shell
     oneshot
 
+service wcnd /system/bin/wcnd
+    class main
+    user system
+    group system shell wifi inet net_bt_stack
+    #oneshot
 service phoneserver_t /system/bin/phoneserver -m t
     class core
     user root
@@ -344,16 +358,99 @@ service phoneserver_l /system/bin/phoneserver -m l
     disabled
     oneshot
 
+service phoneserver_tl /system/bin/phoneserver -m tl
+    class core
+    user root
+    group radio system shell dhcp
+    disabled
+    oneshot
+
 service batterysrv /bin/batterysrv
     class core
     user system
-    group system 
+    group system
     oneshot
 
-service charge /bin/charge
-    class charger
+#service charge /bin/charge
+#    class charger
+#    user root
+#   oneshot
+
+#td rild service
+service tril-daemon /system/bin/rild_sp -l /system/lib/libreference-ril_sp.so -m t -n 0
+    class core
+    socket rild stream 660 root radio
+    socket rild-debug stream 660 radio system
+    disabled
     user root
-    oneshot
+    group radio cache inet misc audio sdcard_rw log
+
+service tril-daemon1 /system/bin/rild_sp -l /system/lib/libreference-ril_sp.so -m t -n 1
+    class core
+    socket rild2 stream 660 root radio
+    socket rild-debug2 stream 660 radio system
+    disabled
+    user root
+    group radio cache inet misc audio sdcard_rw log
+
+service tril-daemon2 /system/bin/rild_sp -l /system/lib/libreference-ril_sp.so -m t -n 2
+    class core
+    socket rild3 stream 660 root radio
+    socket rild-debug3 stream 660 radio system
+    disabled
+    user root
+    group radio cache inet misc audio sdcard_rw log
+
+#wcdma rild service
+service ril-daemon /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 0
+    class core
+    socket rild stream 660 root radio
+    socket rild-debug stream 660 radio system
+    disabled
+    user root
+    group radio cache inet misc audio sdcard_rw log shell
+
+service ril-daemon2 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 1
+    class core
+    socket rild2 stream 660 root radio
+    socket rild-debug2 stream 660 radio system
+    disabled
+    user root
+    group radio cache inet misc audio sdcard_rw log shell
+
+service ril-daemon3 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 2
+    class core
+    socket rild3 stream 660 root radio
+    socket rild-debug3 stream 660 radio system
+    disabled
+    user root
+    group radio cache inet misc audio sdcard_rw log shell
+
+#lte rild service
+service lril-daemon /system/bin/rild_sp -l /system/lib/libreference-ril_sp.so -m l -n 0
+    class core
+    socket rild stream 660 root radio
+    socket rild-debug stream 660 radio system
+    disabled
+    user root
+    group radio cache inet misc audio sdcard_rw log shell
+
+#tl rild service
+service tlril-daemon /system/bin/rild_sp -l /system/lib/libreference-ril_sp.so -m tl -n 0
+    class core
+    socket rild stream 660 root radio
+    socket rild-debug stream 660 radio system
+    disabled
+    user root
+    group radio cache inet misc audio sdcard_rw log shell
+
+service tlril-daemon1 /system/bin/rild_sp -l /system/lib/libreference-ril_sp.so -m tl -n 1
+    class core
+    socket rild2 stream 660 root radio
+    socket rild-debug2 stream 660 radio system
+    disabled
+    user root
+    group radio cache inet misc audio sdcard_rw log shell
 
 #nvitemd
 service nvitemd_td /system/bin/nvitemd t 0
@@ -382,28 +479,64 @@ service slog /system/bin/slog -t
     user system
     group system shell radio log sdcard_r sdcard_rw
 
-service refnotify_td /system/bin/refnotify -t 0
-    class main
+service apr /system/bin/collect_apr
+    class core
     user system
-	group system
     disabled
+    oneshot
+
+service refnotify_td /system/bin/refnotify -t 0
+    class core
+    disabled
+    user system
+    group system radio shell
+    oneshot
 
 service refnotify_w /system/bin/refnotify -t 1
-    class main
+    class core
+    disabled
     user system
-    group system
+    group system radio shell
+    oneshot
 
 service refnotify_l /system/bin/refnotify -t 2
     class main
-    user system
-    group system
     disabled
+    user system
+    group system radio shell
+    oneshot
+
+# For CTS of slog ->
+# This action is to make sure that the shell user
+# can also enable the slog daemon
+
+# convert the debug to system
+on property:debug.slog.enabled=1
+    setprop persist.sys.slog.enabled 1
+
+# convert the debug to system
+on property:debug.slog.enabled=0
+    setprop persist.sys.slog.enabled 0
+
+# Start the daemon
+on property:persist.sys.slog.enabled=1
+    start slog
+    start sprd_res_monitor
+
+# Stop the daemon
+on property:persist.sys.slog.enabled=0
+    stop slog
+    stop sprd_res_monitor
+    rm /data/local/tmp/sprd_monitor.conf
+
+# For CTS of slog <-
 
 on property:persist.modem.w.enable=1
     symlink /dev/spipe_w1 /dev/vbpipe1
     symlink /dev/spipe_w2 /dev/vbpipe2
     symlink /dev/spipe_w3 /dev/vbpipe3
     symlink /dev/spipe_w6 /dev/vbpipe6
+    start refnotify_w
     start nvitemd_w
 
 on property:persist.modem.t.enable=1
@@ -428,6 +561,18 @@ service data_on /system/bin/ext_data.sh  -u
 
 #data off
 service data_off /system/bin/ext_data.sh  -d
+    user root
+    disabled
+    oneshot
+
+#enable_dns
+service enable_dns /system/bin/ext_data.sh -e
+    user root
+    disabled
+    oneshot
+
+#disable_dns
+service disable_dns /system/bin/ext_data.sh -c
     user root
     disabled
     oneshot
@@ -480,10 +625,19 @@ service  recoveryfreq  /system/bin/recoveryfreq.sh
     chmod 0666 /proc/pin_switch/bt_iis_sys_sel/cp2_iis0
     chmod 0666 /proc/pin_switch/bt_iis_sys_sel/ap_iis0
 
-# SRT server
-service srtd /system/xbin/srtd
+service autotest /system/bin/autotest
     class main
-    socket srtserver stream 0777 system system
+    disabled
     user root
-    group root
     oneshot
+
+service bugreport /system/bin/dumpstate -d -p -B \
+        -o /data/data/com.android.shell/files/bugreports/bugreport
+    class late_start
+    disabled
+    oneshot
+
+service smd_symlink /system/bin/ext_symlink.sh -u
+	user root
+	disabled
+	oneshot

@@ -15,7 +15,7 @@
 # The gps config appropriate for this device
 $(call inherit-product, device/common/gps/gps_us_supl.mk)
 
-$(call inherit-product-if-exists, vendor/samsung/core33g/core33g-vendor.mk)
+$(call inherit-product-if-exists, vendor/samsung/grandprimeve3g/grandprimeve3g-vendor.mk)
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
@@ -24,8 +24,8 @@ PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := hdpi
 
 # Boot animation
-TARGET_SCREEN_HEIGHT := 800
-TARGET_SCREEN_WIDTH := 480
+TARGET_SCREEN_HEIGHT := 960
+TARGET_SCREEN_WIDTH := 540
 
 # Languages
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -40,8 +40,8 @@ ROOTDIR_FILES := \
 	$(LOCAL_PATH)/ramdisk/init.sc8830.rc \
 	$(LOCAL_PATH)/ramdisk/init.sc8830.usb.rc \
 	$(LOCAL_PATH)/ramdisk/init.sc8830_ss.rc \
-	$(LOCAL_PATH)/ramdisk/init.core33g.rc \
-	$(LOCAL_PATH)/ramdisk/init.core33g_base.rc \
+	$(LOCAL_PATH)/ramdisk/init.grandprimeve3g.rc \
+	$(LOCAL_PATH)/ramdisk/init.grandprimeve3g_base.rc \
 	$(LOCAL_PATH)/ramdisk/init.wifi.rc \
 	$(LOCAL_PATH)/ramdisk/ueventd.sc8830.rc \
 	$(LOCAL_PATH)/ramdisk/fstab.sc8830
@@ -59,6 +59,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 $(call inherit-product, frameworks/native/build/phone-hdpi-2048-dalvik-heap.mk)
 $(call inherit-product, frameworks/native/build/phone-xxhdpi-2048-hwui-memory.mk)
 
+# WiFi
+$(call inherit-product, hardware/broadcom/wlan/bcmdhd/firmware/bcm4343/device-bcm.mk)
+
 # For userdebug builds
 ADDITIONAL_DEFAULT_PROPERTIES += \
 	ro.secure=0 \
@@ -67,7 +70,7 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
 	persist.service.adb.enable=1
 
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
-PRODUCT_NAME := full_core33g
-PRODUCT_DEVICE := core33g
+PRODUCT_NAME := full_grandprimeve3g
+PRODUCT_DEVICE := grandprimeve3g
 PRODUCT_BRAND := samsung
-PRODUCT_MODEL := SM-G360H
+PRODUCT_MODEL := SM-G531H
