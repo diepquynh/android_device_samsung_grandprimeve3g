@@ -32,6 +32,7 @@ etc/wifi/nvram_mfg.txt
 bin/macloader
 
 # Bluetooth
+vendor/libs/libbt-vendor.so
 vendor/firmware/BCM43430A1_V0025.0070.hcd
 
 # RIL
@@ -73,6 +74,27 @@ lib/libomx_avcenc_hw_sprd.so
 lib/libomx_vpxdec_hw_sprd.so
 lib/libomx_m4vh263dec_hw_sprd.so
 lib/libomx_m4vh263enc_hw_sprd.so
+lib/libsomxcore.so
+lib/libsomxaace.so
+lib/libsomxadpcmd.so
+lib/libsomxmp3d.so
+lib/libsomxflacd.so
+lib/libsomxamrd.so
+lib/libsomx263dsw.so
+lib/libsomxaacd.so
+lib/libsomxvp8d.so
+lib/libsomxhevcdsw.so
+lib/libsomxnaace.so
+lib/libsomxmp4vdsw.so
+lib/libsomxcmn.so
+lib/libsomx264dsw.so
+
+# Stagefright
+lib/libstagefright_sprd_h264dec.so
+lib/libstagefright_sprd_h264enc.so
+lib/libstagefright_sprd_mpeg4dec.so
+lib/libstagefright_sprd_mpeg4enc.so
+lib/libstagefright_sprd_vpxdec.so
 
 # HAL
 lib/hw/camera.sc8830.so
