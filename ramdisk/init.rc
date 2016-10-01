@@ -35,7 +35,7 @@ on early-init
 on init
     sysclktz 0
 
-    loglevel 8
+    loglevel 3
 
     # Backward compatibility
     symlink /system/etc /etc
@@ -286,6 +286,7 @@ on post-fs-data
     mkdir /data/app-lib 0771 system system
     mkdir /data/app 0771 system system
     mkdir /data/property 0700 root root
+    mkdir /data/tombstones 0771 system system
 
     # create dalvik-cache, so as to enforce our permissions
     mkdir /data/dalvik-cache 0771 root root
@@ -438,17 +439,6 @@ on property:sys.init_log_level=*
     loglevel ${sys.init_log_level}
 
 on charger
-
-    chmod 0666 /dev/log/radio
-    chmod 0666 /dev/log/main
-    chmod 0666 /dev/log/event
-
-    mount ext4 /dev/block/mmcblk0p23 /system ro,barrier=1 wait
-    exec sfsck /dev/block/mmcblk0p25 ext4
-    mount ext4 /dev/block/mmcblk0p25 /data noatime,nosuid,nodev,nomblk_io_submit wait,encryptable=footer,check
-
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave
-
     class_start charger
 
 on property:vold.decrypt=trigger_reset_main
@@ -501,11 +491,6 @@ service logd /system/bin/logd
 
 service healthd /sbin/healthd
     class core
-    critical
-    seclabel u:r:healthd:s0
-
-service healthd-charger /charger
-    class charger
     critical
     seclabel u:r:healthd:s0
 
@@ -569,12 +554,6 @@ service debuggerd /system/bin/debuggerd
 service debuggerd64 /system/bin/debuggerd64
     class main
 
-service prepare_param /system/bin/prepare_param.sh /dev/block/platform/sprd-sdhci.3/by-name/PARAM
-    class main
-    user root
-    group root
-    oneshot
-
 service surfaceflinger /system/bin/surfaceflinger
     class core
     user system
@@ -589,7 +568,7 @@ service drm /system/bin/drmserver
 service media /system/bin/mediaserver
     class main
     user media
-    group system audio camera inet net_bt net_bt_admin net_bw_acct drmrpc qcom_diag mediadrm radio sdcard_rw sdcard_r media_rw shell
+    group audio camera inet net_bt net_bt_admin net_bw_acct drmrpc mediadrm qcom_diag
     ioprio rt 4
 
 # One shot invocation to deal with encrypted volume.
@@ -646,7 +625,7 @@ service mtpd /system/bin/mtpd
 service keystore /system/bin/keystore /data/misc/keystore
     class main
     user keystore
-    group keystore drmrpc system
+    group keystore drmrpc
 
 service dumpstate /system/bin/dumpstate -s
     class main

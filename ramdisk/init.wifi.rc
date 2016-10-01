@@ -1,9 +1,7 @@
-# Wi-Fi init file
-
+on post-fs-data
     #Create directory for hostapd
     mkdir /data/hostapd 0770 system wifi
 
-on post-fs-data
     # give system access to wpa_supplicant.conf for backup and restore
     mkdir /data/misc/wifi 0770 wifi system
     chmod 0660 /data/misc/wifi/wpa_supplicant.conf
@@ -29,13 +27,20 @@ on post-fs-data
     chmod 0664 /data/.roamoff.info
     chmod 0664 /data/.frameburst.info
     chmod 0664 /data/.txbf.info
+
     # for WIFI MAC address
     mkdir /efs/wifi 0775 radio system
     chown system wifi /efs/wifi/.mac.info
     chmod 0660 /efs/wifi/.mac.info
 
 on boot
-	setprop wifi.interface wlan0
+    setprop wifi.interface wlan0
+
+on property:init.svc.macloader=stopped
+    chown system root /data/.cid.info
+    chmod 0664 /data/.cid.info
+    chown system root /data/.rev
+    chmod 0664 /data/.rev
 
 service p2p_supplicant /system/bin/wpa_supplicant \
     -iwlan0 -Dnl80211 -c/data/misc/wifi/p2p_supplicant.conf \
@@ -80,37 +85,9 @@ service iprenew_p2p /system/bin/dhcpcd -n
     disabled
     oneshot
 
-# start for WiFi MFG (TestMode)
-service mfgloader /system/bin/mfgloader
-    class main
-    disabled
-    oneshot
-
-service wlandutservice /system/bin/wlandutservice
-    class main
-    user system
-    group wifi net_raw net_admin system inet
-    disabled
-    oneshot
-
 service macloader /system/bin/macloader
     class main
     oneshot
-
-on property:init.svc.macloader=stopped
-    chown system root /data/.cid.info
-    chmod 0664 /data/.cid.info
-    chown system root /data/.rev
-    chmod 0664 /data/.rev
-# end of WiFi MFG (TestMode)
-
-service olsrd /system/bin/olsrd -f /etc/wifi/olsrd.conf
-    class main
-    disabled
-    oneshot
-
-on property:init.svc.dhcpcd_ibss=running
-    start olsrd
 
 service hostapd /system/bin/hostapd -dddd /data/hostapd/hostapd.conf
     class late_start
