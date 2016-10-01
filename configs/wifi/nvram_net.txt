@@ -1,4 +1,4 @@
-# NVRAM file for Grand Frime VE/SM-G531H  BCM43438 A1 18/05/2015
+# NVRAM file for Grand Prime VE/SM-G531H  BCM43438 A1 18/05/2015
 # 2.4 GHz, 20 MHz BW mode
 
 # The following parameter values are just placeholders, need to be updated.
