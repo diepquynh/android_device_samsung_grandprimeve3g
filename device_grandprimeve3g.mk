@@ -17,21 +17,6 @@ LOCAL_PATH := device/samsung/grandprimeve3g
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 $(call inherit-product, $(LOCAL_PATH)/device.mk)
 
-# Keylayouts
-KEYLAYOUT_FILES := \
-	$(LOCAL_PATH)/keylayouts/sci-keypad.kl \
-	$(LOCAL_PATH)/keylayouts/gpio-keys.kl
-
-PRODUCT_COPY_FILES += \
-	$(foreach f,$(KEYLAYOUT_FILES),$(f):system/usr/keylayout/$(notdir $(f)))
-
-IDC_FILES := \
-	$(LOCAL_PATH)/keylayouts/sec_touchscreen.idc \
-	$(LOCAL_PATH)/keylayouts/Synaptics_HID_TouchPad.idc
-
-PRODUCT_COPY_FILES += \
-	$(foreach f,$(IDC_FILES),$(f):system/usr/idc/$(notdir $(f)))
-
 # Bluetooth config
 BLUETOOTH_CONFIGS := \
 	$(LOCAL_PATH)/configs/bluetooth/bt_vendor.conf
@@ -56,10 +41,13 @@ PRODUCT_PACKAGES += \
 
 # HWC
 PRODUCT_PACKAGES += \
+	libmemoryheapion \
 	libion
 
 # Codecs
 PRODUCT_PACKAGES += \
+	omxregister-bellagio \
+	libomxil-bellagio \
 	libstagefrighthw \
 	libstagefright_sprd_mpeg4dec \
 	libstagefright_sprd_mpeg4enc \
