@@ -31,7 +31,6 @@ etc/wifi/bcmdhd_sta.bin
 etc/wifi/nvram_mfg.txt
 
 # Bluetooth
-vendor/libs/libbt-vendor.so
 vendor/firmware/BCM43430A1_V0025.0070.hcd
 
 # RIL
