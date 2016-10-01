@@ -69,6 +69,7 @@ BOARD_HOSTAPD_DRIVER := NL80211
 BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
 WIFI_DRIVER_FW_PATH_PARAM := "/sys/module/dhd/parameters/firmware_path"
 WIFI_DRIVER_FW_PATH_STA := "/system/etc/wifi/bcmdhd_sta.bin"
+WIFI_DRIVER_FW_PATH_P2P := "/system/etc/wifi/bcmdhd_sta.bin"
 WIFI_DRIVER_FW_PATH_AP := "/system/etc/wifi/bcmdhd_apsta.bin"
 WIFI_DRIVER_NVRAM_PATH_PARAM := "/sys/module/dhd/parameters/nvram_path"
 WIFI_DRIVER_NVRAM_PATH := "/system/etc/wifi/nvram_net.txt"
@@ -99,17 +100,12 @@ BOARD_USES_TINYALSA_AUDIO := true
 BOARD_USES_SS_VOIP := true
 BOARD_USE_LIBATCHANNEL_WRAPPER := true
 
-# Media
-COMMON_GLOBAL_CFLAGS += -DADD_LEGACY_ACQUIRE_BUFFER_SYMBOL
-COMMON_GLOBAL_CFLAGS += -DBOARD_CANT_REALLOCATE_OMX_BUFFERS
-
 # Board specific features
 BOARD_USE_SAMSUNG_COLORFORMAT := true
-# BOARD_NEEDS_MEMORYHEAPION_SPRD := true
 COMMON_GLOBAL_CFLAGS += -DSPRD_HARDWARE
 
 # healthd
-BOARD_HAL_STATIC_LIBRARIES := libhealthd-grandprimeve3g.sc8830
+BOARD_HAL_STATIC_LIBRARIES := libhealthd.sc8830
 
 # Use the CM PowerHAL
 TARGET_USES_CM_POWERHAL := true
@@ -163,7 +159,6 @@ BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_CHARGING_MODE_BOOTING_LPM := /sys/class/power_supply/battery/batt_lp_charging
 CHARGING_ENABLED_PATH := /sys/class/power_supply/battery/batt_lp_charging
 BACKLIGHT_PATH := /sys/class/backlight/panel/brightness
-
 
 # CMHW
 BOARD_HARDWARE_CLASS := device/samsung/grandprimeve3g/cmhw/
