@@ -89,3 +89,6 @@ lib/hw/gralloc.sc8830.so
 lib/hw/hwcomposer.sc8830.so
 lib/hw/sensors.sc8830.so
 lib/hw/sprd_gsp.sc8830.so
+
+# Magnetic sensor
+lib/libyasalgo.so
