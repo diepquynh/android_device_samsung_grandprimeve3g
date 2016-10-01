@@ -90,6 +90,7 @@ lib/libsomxcmn.so
 lib/libsomx264dsw.so
 
 # Stagefright
+lib/libstagefrighthw.so
 lib/libstagefright_sprd_h264dec.so
 lib/libstagefright_sprd_h264enc.so
 lib/libstagefright_sprd_mpeg4dec.so
