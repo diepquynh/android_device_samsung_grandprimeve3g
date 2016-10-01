@@ -15,7 +15,7 @@
 /dev/block/platform/sdio_emmc/by-name/RECOVERY /recovery    emmc defaults									 recoveryonly
 
 # USB OTG
-/devices/sdio_sd/mmc_host/mmc1           auto                    vfat    default     voldmanaged=extSdCard:auto,noemulatedsd
+/devices/sdio_sd/mmc_host/mmc1*          auto                    vfat    default     voldmanaged=extSdCard:auto,noemulatedsd
 /devices/20200000.usb/usb*sda            auto                    vfat    default     voldmanaged=UsbDriveA:auto
 /devices/20200000.usb/usb*sdb            auto                    vfat    default     voldmanaged=UsbDriveB:auto
 /devices/20200000.usb/usb*sdc            auto                    vfat    default     voldmanaged=UsbDriveC:auto
