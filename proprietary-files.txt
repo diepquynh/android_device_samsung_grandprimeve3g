@@ -29,7 +29,6 @@ etc/wifi/bcmdhd_apsta.bin
 etc/wifi/bcmdhd_mfg.bin
 etc/wifi/bcmdhd_sta.bin
 etc/wifi/nvram_mfg.txt
-bin/macloader
 
 # Bluetooth
 vendor/libs/libbt-vendor.so

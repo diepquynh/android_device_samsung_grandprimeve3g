@@ -89,7 +89,8 @@ PRODUCT_PACKAGES += \
 	libnetcmdiface \
 	dhcpcd.conf \
 	wpa_supplicant \
-	hostapd
+	hostapd \
+	macloader
 
 WIFI_CONFIGS := \
 	$(LOCAL_PATH)/configs/wifi/wpa_supplicant.conf \
