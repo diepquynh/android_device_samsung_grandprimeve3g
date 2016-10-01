@@ -30,7 +30,7 @@
     <bool name="config_unplugTurnsOnScreen">true</bool>
 
     <!-- CRT Screen-off anim. -->
-    <bool name="config_animateScreenLights">false</bool>
+    <bool name="config_animateScreenLights">true</bool>
 
     <!-- List of regexpressions describing the interface (if any) that represent tetherable
          Wifi interfaces.  If the device doesn't want to support tethering over Wifi this
