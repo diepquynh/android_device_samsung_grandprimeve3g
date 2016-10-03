@@ -125,7 +125,7 @@ service engpcclientw /system/bin/engpc -p w -a /dev/ttyGS0 -d /dev/ttyGS1
     oneshot
 
 # set LMK watermark as {14M,20M,24M,32M,38M,48M}
-on property:lmk.autocalc=false
+on property:sys.boot_completed=1
     write /sys/module/lowmemorykiller/parameters/adj 0,1,3,5,9,15
     write /sys/module/lowmemorykiller/parameters/minfree 3584,5120,6144,8192,9728,12288
     
