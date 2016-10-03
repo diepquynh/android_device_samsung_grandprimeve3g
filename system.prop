@@ -46,8 +46,9 @@ persist.sys.engpc.disable=0
 
 ro.config.ksm.support=true
 
-#zram config
+# Multitasking
 ro.config.zram.support=true
+lmk.autocalc=false
 
 #if our product not support drm,set as false
 drm.service.enabled=true
