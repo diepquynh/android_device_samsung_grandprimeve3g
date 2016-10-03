@@ -121,7 +121,7 @@ BOARD_HAS_NO_SELECT_BUTTON := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 
 # Assert
-TARGET_OTA_ASSERT_DEVICE := SM-G531H,grandprimeve3g,grandprimeve3gxx
+TARGET_OTA_ASSERT_DEVICE := SM-G531H,SM-G531BT,grandprimeve3g,grandprimeve3gdtv,grandprimeve3gub,grandprimeve3gxx,grandprimeve3gdtvvj
 
 # SELinux
 #BOARD_SEPOLICY_DIRS += device/samsung/grandprimeve3g/sepolicy
