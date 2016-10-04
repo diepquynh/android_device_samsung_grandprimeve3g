@@ -12,12 +12,6 @@ on early-init
     # coredump file will not be generated in release version
     write /proc/sys/kernel/core_pattern /dev/null
 
-# radio pipe
-    mkdir /dev/rpipe 0550 radio radio
-    pipe 666 /dev/rpipe/ril.vt.0
-    pipe 666 /dev/rpipe/ril.vt.1
-    pipe 666 /dev/rpipe/ril.vt.2
-
 on init
     stop ril-daemon
 
@@ -74,7 +68,7 @@ on early-boot
 
     # Support audio loopback test
     mkdir /dev/pipe 0755 system system
-    pipe 666 /dev/pipe/mmi.audio.ctrl
+    exec -- /system/bin/mknod -m 666 /dev/pipe/mmi.audio.ctrl p
     # Support audio parameter stored
 
     chmod 660 /proc/cpt/wdtirq
