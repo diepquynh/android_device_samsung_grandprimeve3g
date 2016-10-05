@@ -76,7 +76,7 @@ ro.ril.hsxpa=1
 ro.ril.gprsclass=10
 persist.radio.multisim.config=dsds
 ro.telephony.ril_class=SamsungSPRDRIL
-ro.ril.telephony.mqanelements=6
+ro.telephony.ril_qanelements=6
 persist.sys.sprd.modemreset=1
 persist.sys.sprd.wcnreset=1
 
