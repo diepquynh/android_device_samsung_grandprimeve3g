@@ -44,6 +44,10 @@ PRODUCT_PACKAGES += \
 	libmemoryheapion \
 	libion
 
+# Doze
+PRODUCT_PACKAGES += \
+	SamsungDoze
+
 # Codecs
 PRODUCT_PACKAGES += \
 	omxregister-bellagio \
