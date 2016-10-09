@@ -439,6 +439,9 @@ on property:sys.init_log_level=*
     loglevel ${sys.init_log_level}
 
 on charger
+    chmod 0666 /dev/log/radio
+    chmod 0666 /dev/log/main
+    chmod 0666 /dev/log/event
     class_start charger
 
 on property:vold.decrypt=trigger_reset_main
@@ -491,6 +494,11 @@ service logd /system/bin/logd
 
 service healthd /sbin/healthd
     class core
+    critical
+    seclabel u:r:healthd:s0
+
+service charger /sbin/healthd -c
+    class charger
     critical
     seclabel u:r:healthd:s0
 

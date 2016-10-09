@@ -21,22 +21,15 @@ on init
  # See storage config details at http://source.android.com/tech/storage/
     mkdir /mnt/media_rw/extSdCard 0700 media_rw media_rw
     mkdir /mnt/media_rw/UsbDriveA 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveB 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveC 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveD 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveE 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveF 0700 media_rw media_rw
 
     # See storage config details at http://source.android.com/tech/storage/
     mkdir /mnt/shell/emulated 0700 shell shell
     mkdir /storage/emulated 0555 root root
 
     export EXTERNAL_STORAGE /storage/emulated/legacy
+    export SECONDARY_STORAGE /storage/extSdCard:/storage/UsbDriveA
     export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
     export EMULATED_STORAGE_TARGET /storage/emulated
-
-    export SECONDARY_STORAGE /storage/extSdCard
-    export LEGACY_STORAGE /storage/emulated/legacy
 
     # Support legacy paths
     symlink /storage/emulated/legacy /sdcard
@@ -47,19 +40,9 @@ on init
     # map "real" external storages paths also in same way. backwards compatibility.
     symlink /storage/extSdCard /mnt/extSdCard
     symlink /storage/UsbDriveA /mnt/UsbDriveA
-    symlink /storage/UsbDriveB /mnt/UsbDriveB
-    symlink /storage/UsbDriveC /mnt/UsbDriveC
-    symlink /storage/UsbDriveD /mnt/UsbDriveD
-    symlink /storage/UsbDriveE /mnt/UsbDriveE
-    symlink /storage/UsbDriveF /mnt/UsbDriveF
 
     mkdir /storage/extSdCard 0700 root root
     mkdir /storage/UsbDriveA 0700 root root
-    mkdir /storage/UsbDriveB 0700 root root
-    mkdir /storage/UsbDriveC 0700 root root
-    mkdir /storage/UsbDriveD 0700 root root
-    mkdir /storage/UsbDriveE 0700 root root
-    mkdir /storage/UsbDriveF 0700 root root
 
     symlink /dev/block/platform/sdio_emmc/by-name/PERSISTENT /dev/block/persistent
 
@@ -186,8 +169,9 @@ on boot
    chmod 0664 /sys/class/power_supply/battery/stop_charge
 
 on charger
-    start console
-    start slog
+    mount ext4 /dev/block/mmcblk0p25 /system ro,barrier=1 wait
+    exec sfsck /dev/block/mmcblk0p27 ext4
+    mount ext4 /dev/block/mmcblk0p27 /data noatime,nosuid,nodev,nomblk_io_submit wait,encryptable=footer,check
 
 service poweroffalarm /system/bin/poweroff_alarm
     disabled
@@ -287,37 +271,10 @@ service sdcard /system/bin/sdcard -u 1023 -g 1023 -l /data/media /mnt/shell/emul
 service fuse_extSdCard /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/extSdCard /storage/extSdCard
     class late_start
     disabled
-    oneshot
 
-service fuse_UsbDriveA /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveA /storage/UsbDriveA
+service fuse_UsbDriveA /system/bin/sdcard -u 1023 -g 1023 /mnt/media_rw/UsbDriveA /storage/UsbDriveA
     class late_start
     disabled
-    oneshot
-
-service fuse_UsbDriveB /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveB /storage/UsbDriveB
-    class late_start
-    disabled
-    oneshot
-
-service fuse_UsbDriveC /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveC /storage/UsbDriveC
-    class late_start
-    disabled
-    oneshot
-
-service fuse_UsbDriveD /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveD /storage/UsbDriveD
-    class late_start
-    disabled
-    oneshot
-
-service fuse_UsbDriveE /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveE /storage/UsbDriveE
-    class late_start
-    disabled
-    oneshot
-
-service fuse_UsbDriveF /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/UsbDriveF /storage/UsbDriveF
-    class late_start
-    disabled
-    oneshot
 
 #modem_control
 service modem_control  /system/bin/modem_control
@@ -370,11 +327,6 @@ service batterysrv /bin/batterysrv
     user system
     group system
     oneshot
-
-#service charge /bin/charge
-#    class charger
-#    user root
-#   oneshot
 
 #td rild service
 service tril-daemon /system/bin/rild_sp -l /system/lib/libreference-ril_sp.so -m t -n 0
