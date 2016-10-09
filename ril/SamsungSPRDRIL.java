@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The CyanogenMod Project
+ * Copyright (c) 2014, The CyanogenMod Project. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,45 +19,51 @@ package com.android.internal.telephony;
 import static com.android.internal.telephony.RILConstants.*;
 
 import android.content.Context;
+import android.telephony.Rlog;
 import android.os.AsyncResult;
 import android.os.Message;
 import android.os.Parcel;
 import android.os.SystemProperties;
-import android.telephony.Rlog;
 import android.telephony.PhoneNumberUtils;
-
-import com.android.internal.telephony.uicc.SpnOverride;
-import com.android.internal.telephony.RILConstants;
-
+import android.telephony.SignalStrength;
+import com.android.internal.telephony.uicc.IccCardApplicationStatus;
+import com.android.internal.telephony.uicc.IccCardStatus;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Custom RIL to handle unique behavior of SPRD RIL
- *
+ * Custom RIL class for Samsung SPRD BASED (3G) devices
  * {@hide}
  */
-public class SamsungSPRDRIL extends RIL implements CommandsInterface {
+public class SamsungSPRDRIL extends RIL {
+
+    private static final int RIL_REQUEST_DIAL_EMERGENCY = 10001;
+    private static final int RIL_UNSOL_ON_SS_LL = 11055;
 
     public SamsungSPRDRIL(Context context, int networkMode, int cdmaSubscription) {
-        this(context, networkMode, cdmaSubscription, null);
+        super(context, networkMode, cdmaSubscription, null);
+        mQANElements = 6;
     }
 
-    public SamsungSPRDRIL(Context context, int networkMode,
+    public SamsungSPRDRIL(Context context, int preferredNetworkType,
             int cdmaSubscription, Integer instanceId) {
-        super(context, networkMode, cdmaSubscription, instanceId);
-        mQANElements = SystemProperties.getInt("ro.telephony.ril_qanelements", 6);
+        super(context, preferredNetworkType, cdmaSubscription, instanceId);
+        mQANElements = 6;
     }
 
     @Override
     public void
     dial(String address, int clirMode, UUSInfo uusInfo, Message result) {
+        if (PhoneNumberUtils.isEmergencyNumber(address)) {
+            dialEmergencyCall(address, clirMode, result);
+            return;
+        }
+
         RILRequest rr = RILRequest.obtain(RIL_REQUEST_DIAL, result);
 
         rr.mParcel.writeString(address);
         rr.mParcel.writeInt(clirMode);
-        rr.mParcel.writeInt(0);     // CallDetails.call_type
+        rr.mParcel.writeInt(0);     // CallDetails.call_type -__________-
         rr.mParcel.writeInt(1);     // CallDetails.call_domain
         rr.mParcel.writeString(""); // CallDetails.getCsvFromExtras
 
@@ -76,32 +82,6 @@ public class SamsungSPRDRIL extends RIL implements CommandsInterface {
     }
 
     @Override
-    public void setUiccSubscription(int slotId, int appIndex, int subId,
-            int subStatus, Message result) {
-        if (RILJ_LOGD) riljLog("setUiccSubscription" + slotId + " " + appIndex + " " + subId + " " + subStatus);
-
-        // Fake response (note: should be sent before mSubscriptionStatusRegistrants or
-        // SubscriptionManager might not set the readiness correctly)
-        AsyncResult.forMessage(result, 0, null);
-        result.sendToTarget();
-
-        // TODO: Actually turn off/on the radio (and don't fight with the ServiceStateTracker)
-        if (subStatus == 1 /* ACTIVATE */) {
-            // Subscription changed: enabled
-            if (mSubscriptionStatusRegistrants != null) {
-                mSubscriptionStatusRegistrants.notifyRegistrants(
-                        new AsyncResult (null, new int[] {1}, null));
-            }
-        } else if (subStatus == 0 /* DEACTIVATE */) {
-            // Subscription changed: disabled
-            if (mSubscriptionStatusRegistrants != null) {
-                mSubscriptionStatusRegistrants.notifyRegistrants(
-                        new AsyncResult (null, new int[] {0}, null));
-            }
-        }
-    }
-
-    @Override
     public void setDataAllowed(boolean allowed, Message result) {
         int simId = mInstanceId == null ? 0 : mInstanceId;
         if (allowed) {
@@ -117,53 +97,44 @@ public class SamsungSPRDRIL extends RIL implements CommandsInterface {
     }
 
     @Override
-    public void getHardwareConfig (Message result) {
-        riljLog("Ignoring call to 'getHardwareConfig'");
-        if (result != null) {
-            AsyncResult.forMessage(result, null, new CommandException(
-                    CommandException.Error.REQUEST_NOT_SUPPORTED));
-            result.sendToTarget();
+    protected Object
+    responseIccCardStatus(Parcel p) {
+        IccCardApplicationStatus appStatus;
+
+        IccCardStatus cardStatus = new IccCardStatus();
+        cardStatus.setCardState(p.readInt());
+        cardStatus.setUniversalPinState(p.readInt());
+        cardStatus.mGsmUmtsSubscriptionAppIndex = p.readInt();
+        cardStatus.mCdmaSubscriptionAppIndex = p.readInt();
+        cardStatus.mImsSubscriptionAppIndex = p.readInt();
+
+        int numApplications = p.readInt();
+
+        // limit to maximum allowed applications
+        if (numApplications > IccCardStatus.CARD_MAX_APPS) {
+            numApplications = IccCardStatus.CARD_MAX_APPS;
         }
-    }
+        cardStatus.mApplications = new IccCardApplicationStatus[numApplications];
 
-    @Override
-    protected RadioState getRadioStateFromInt(int stateInt) {
-        RadioState state;
+        for (int i = 0 ; i < numApplications ; i++) {
+            appStatus = new IccCardApplicationStatus();
+            appStatus.app_type       = appStatus.AppTypeFromRILInt(p.readInt());
+            appStatus.app_state      = appStatus.AppStateFromRILInt(p.readInt());
+            appStatus.perso_substate = appStatus.PersoSubstateFromRILInt(p.readInt());
+            appStatus.aid            = p.readString();
+            appStatus.app_label      = p.readString();
+            appStatus.pin1_replaced  = p.readInt();
+            appStatus.pin1           = appStatus.PinStateFromRILInt(p.readInt());
+            appStatus.pin2           = appStatus.PinStateFromRILInt(p.readInt());
+            p.readInt(); // pin1_num_retries
+            p.readInt(); // puk1_num_retries
+            p.readInt(); // pin2_num_retries
+            p.readInt(); // puk2_num_retries
+            p.readInt(); // perso_unblock_retries
 
-        /* RIL_RadioState ril.h */
-        switch(stateInt) {
-            case 0: state = RadioState.RADIO_OFF; break;
-            case 1: state = RadioState.RADIO_UNAVAILABLE; break;
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 13: state = RadioState.RADIO_ON; break;
-
-            default:
-                throw new RuntimeException(
-                            "Unrecognized RIL_RadioState: " + stateInt);
+            cardStatus.mApplications[i] = appStatus;
         }
-        return state;
-    }
-
-    @Override
-    protected void notifyRegistrantsRilConnectionChanged(int rilVer) {
-        super.notifyRegistrantsRilConnectionChanged(rilVer);
-        if (rilVer != -1) {
-            if (mInstanceId != null) {
-                riljLog("Enable simultaneous data/voice on Multi-SIM");
-                invokeOemRilRequestSprd((byte) 3, (byte) 1, null);
-            } else {
-                riljLog("Set data subscription to allow data in either SIM slot when using single SIM mode");
-                setDataAllowed(true, null);
-            }
-        }
+        return cardStatus;
     }
 
     @Override
@@ -186,23 +157,23 @@ public class SamsungSPRDRIL extends RIL implements CommandsInterface {
             dc = new DriverCall();
 
             dc.state = DriverCall.stateFromCLCC(p.readInt());
-            // & 0xff to truncate to 1 byte added for us, not in RIL.java
             dc.index = p.readInt() & 0xff;
             dc.TOA = p.readInt();
             dc.isMpty = (0 != p.readInt());
             dc.isMT = (0 != p.readInt());
             dc.als = p.readInt();
             voiceSettings = p.readInt();
-            dc.isVoice = (0 != voiceSettings);
-            boolean isVideo = (0 != p.readInt());
+            dc.isVoice = (0 == voiceSettings) ? false : true;
+            boolean isVideo;
             int call_type = p.readInt();            // Samsung CallDetails
             int call_domain = p.readInt();          // Samsung CallDetails
             String csv = p.readString();            // Samsung CallDetails
             dc.isVoicePrivacy = (0 != p.readInt());
             dc.number = p.readString();
-            dc.numberPresentation = DriverCall.presentationFromCLIP(p.readInt());
+            int np = p.readInt();
+            dc.numberPresentation = DriverCall.presentationFromCLIP(np);
             dc.name = p.readString();
-            dc.namePresentation = p.readInt();
+            dc.namePresentation = DriverCall.presentationFromCLIP(p.readInt());
             int uusInfoPresent = p.readInt();
             if (uusInfoPresent == 1) {
                 dc.uusInfo = new UUSInfo();
@@ -248,7 +219,170 @@ public class SamsungSPRDRIL extends RIL implements CommandsInterface {
         return response;
     }
 
-    private void invokeOemRilRequestSprd(byte key, byte value, Message response) {
-        invokeOemRilRequestRaw(new byte[] { 'S', 'P', 'R', 'D', key, value }, response);
+    @Override
+    protected Object
+    responseSignalStrength(Parcel p) {
+        int gsmSignalStrength = p.readInt() & 0xff;
+        int gsmBitErrorRate = p.readInt();
+        int cdmaDbm = p.readInt();
+        int cdmaEcio = p.readInt();
+        int evdoDbm = p.readInt();
+        int evdoEcio = p.readInt();
+        int evdoSnr = p.readInt();
+        int lteSignalStrength = p.readInt();
+        int lteRsrp = p.readInt();
+        int lteRsrq = p.readInt();
+        int lteRssnr = p.readInt();
+        int lteCqi = p.readInt();
+        int tdScdmaRscp = p.readInt();
+        // constructor sets default true, makeSignalStrengthFromRilParcel does not set it
+  	boolean isGsm = true;
+
+        if ((lteSignalStrength & 0xff) == 255 || lteSignalStrength == 99) {
+            lteSignalStrength = 99;
+            lteRsrp = SignalStrength.INVALID;
+            lteRsrq = SignalStrength.INVALID;
+            lteRssnr = SignalStrength.INVALID;
+            lteCqi = SignalStrength.INVALID;
+        } else {
+            lteSignalStrength &= 0xff;
+        }
+
+        if (RILJ_LOGD)
+            riljLog("gsmSignalStrength:" + gsmSignalStrength + " gsmBitErrorRate:" + gsmBitErrorRate +
+                    " cdmaDbm:" + cdmaDbm + " cdmaEcio:" + cdmaEcio + " evdoDbm:" + evdoDbm +
+                    " evdoEcio: " + evdoEcio + " evdoSnr:" + evdoSnr +
+                    " lteSignalStrength:" + lteSignalStrength + " lteRsrp:" + lteRsrp +
+                    " lteRsrq:" + lteRsrq + " lteRssnr:" + lteRssnr + " lteCqi:" + lteCqi +
+                    " tdScdmaRscp:" + tdScdmaRscp + " isGsm:" + (isGsm ? "true" : "false"));
+
+        return new SignalStrength(gsmSignalStrength, gsmBitErrorRate, cdmaDbm, cdmaEcio, evdoDbm,
+                evdoEcio, evdoSnr, lteSignalStrength, lteRsrp, lteRsrq, lteRssnr, lteCqi,
+                tdScdmaRscp, isGsm);
+    }
+
+    @Override
+    protected void
+    processUnsolicited (Parcel p) {
+        Object ret;
+        int dataPosition = p.dataPosition();
+        int response = p.readInt();
+        int newResponse = response;
+
+        switch(response) {
+            case RIL_UNSOL_ON_SS_LL:
+                newResponse = RIL_UNSOL_ON_SS;
+                break;
+        }
+        if (newResponse != response) {
+            p.setDataPosition(dataPosition);
+            p.writeInt(newResponse);
+        }
+        p.setDataPosition(dataPosition);
+        super.processUnsolicited(p);
+    }
+
+    @Override
+    public void
+    acceptCall (Message result) {
+        RILRequest rr
+                = RILRequest.obtain(RIL_REQUEST_ANSWER, result);
+
+        rr.mParcel.writeInt(1);
+        rr.mParcel.writeInt(0);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        send(rr);
+    }
+
+    private void
+    dialEmergencyCall(String address, int clirMode, Message result) {
+        RILRequest rr;
+
+        rr = RILRequest.obtain(RIL_REQUEST_DIAL_EMERGENCY, result);
+        rr.mParcel.writeString(address);
+        rr.mParcel.writeInt(clirMode);
+        rr.mParcel.writeInt(0);        // CallDetails.call_type
+        rr.mParcel.writeInt(3);        // CallDetails.call_domain
+        rr.mParcel.writeString("");    // CallDetails.getCsvFromExtra
+        rr.mParcel.writeInt(0);        // Unknown
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        send(rr);
+    }
+
+    @Override
+    protected RILRequest
+    processSolicited (Parcel p) {
+        int serial, error;
+        boolean found = false;
+        int dataPosition = p.dataPosition(); // save off position within the Parcel
+        serial = p.readInt();
+        error = p.readInt();
+        RILRequest rr = null;
+        /* Pre-process the reply before popping it */
+        synchronized (mRequestList) {
+            RILRequest tr = mRequestList.get(serial);
+            if (tr != null && tr.mSerial == serial) {
+                if (error == 0 || p.dataAvail() > 0) {
+                    try {switch (tr.mRequest) {
+                            /* Get those we're interested in */
+                        case RIL_REQUEST_DATA_REGISTRATION_STATE:
+                            rr = tr;
+                            break;
+                    }} catch (Throwable thr) {
+                        // Exceptions here usually mean invalid RIL responses
+                        if (tr.mResult != null) {
+                            AsyncResult.forMessage(tr.mResult, null, thr);
+                            tr.mResult.sendToTarget();
+                        }
+                        return tr;
+                    }
+                }
+            }
+        }
+        if (rr == null) {
+            /* Nothing we care about, go up */
+            p.setDataPosition(dataPosition);
+            // Forward responses that we are not overriding to the super class
+            return super.processSolicited(p);
+        }
+        rr = findAndRemoveRequestFromList(serial);
+        if (rr == null) {
+            return rr;
+        }
+        Object ret = null;
+        if (error == 0 || p.dataAvail() > 0) {
+            switch (rr.mRequest) {
+                case RIL_REQUEST_DATA_REGISTRATION_STATE: ret = responseDataRegistrationState(p); break;
+                default:
+                    throw new RuntimeException("Unrecognized solicited response: " + rr.mRequest);
+            }
+            //break;
+        }
+        if (RILJ_LOGD) riljLog(rr.serialString() + "< " + requestToString(rr.mRequest)
+                               + " " + retToString(rr.mRequest, ret));
+        if (rr.mResult != null) {
+            AsyncResult.forMessage(rr.mResult, ret, null);
+            rr.mResult.sendToTarget();
+        }
+        return rr;
+    }
+
+    private Object
+    responseDataRegistrationState(Parcel p) {
+        String response[] = (String[])responseStrings(p);
+        /* DANGER WILL ROBINSON
+         * In some cases from Vodaphone we are receiving a RAT of 102
+         * while in tunnels of the metro. Lets Assume that if we
+         * receive 102 we actually want a RAT of 2 for EDGE service */
+        if (response.length > 4 &&
+            response[0].equals("1") &&
+            response[3].equals("102")) {
+            response[3] = "2";
+        }
+        return response;
     }
 }
