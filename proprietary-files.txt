@@ -20,6 +20,7 @@ etc/audio_hw.xml
 etc/audio_para
 etc/codec_pga.xml
 etc/tiny_hw.xml
+etc/audio_policy.conf
 lib/libfactoryutil.so
 lib/libomission_avoidance.so
 lib/libatchannel.so
