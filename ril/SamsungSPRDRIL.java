@@ -25,6 +25,8 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.SystemProperties;
 import android.telephony.PhoneNumberUtils;
+import com.android.internal.telephony.uicc.SpnOverride;
+import com.android.internal.telephony.RILConstants;
 import android.telephony.SignalStrength;
 import com.android.internal.telephony.uicc.IccCardApplicationStatus;
 import com.android.internal.telephony.uicc.IccCardStatus;
@@ -49,6 +51,32 @@ public class SamsungSPRDRIL extends RIL {
             int cdmaSubscription, Integer instanceId) {
         super(context, preferredNetworkType, cdmaSubscription, instanceId);
         mQANElements = 6;
+    }
+
+    @Override
+    public void setUiccSubscription(int slotId, int appIndex, int subId,
+            int subStatus, Message result) {
+        if (RILJ_LOGD) riljLog("setUiccSubscription" + slotId + " " + appIndex + " " + subId + " " + subStatus);
+
+        // Fake response (note: should be sent before mSubscriptionStatusRegistrants or
+        // SubscriptionManager might not set the readiness correctly)
+        AsyncResult.forMessage(result, 0, null);
+        result.sendToTarget();
+
+        // TODO: Actually turn off/on the radio (and don't fight with the ServiceStateTracker)
+        if (subStatus == 1 /* ACTIVATE */) {
+            // Subscription changed: enabled
+            if (mSubscriptionStatusRegistrants != null) {
+                mSubscriptionStatusRegistrants.notifyRegistrants(
+                        new AsyncResult (null, new int[] {1}, null));
+            }
+        } else if (subStatus == 0 /* DEACTIVATE */) {
+            // Subscription changed: disabled
+            if (mSubscriptionStatusRegistrants != null) {
+                mSubscriptionStatusRegistrants.notifyRegistrants(
+                        new AsyncResult (null, new int[] {0}, null));
+            }
+        }
     }
 
     @Override
@@ -94,6 +122,32 @@ public class SamsungSPRDRIL extends RIL {
                 result.sendToTarget();
             }
         }
+    }
+
+    @Override
+    protected RadioState getRadioStateFromInt(int stateInt) {
+        RadioState state;
+
+        /* RIL_RadioState ril.h */
+        switch(stateInt) {
+            case 0: state = RadioState.RADIO_OFF; break;
+            case 1: state = RadioState.RADIO_UNAVAILABLE; break;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 13: state = RadioState.RADIO_ON; break;
+
+            default:
+                throw new RuntimeException(
+                            "Unrecognized RIL_RadioState: " + stateInt);
+        }
+        return state;
     }
 
     @Override
@@ -217,48 +271,6 @@ public class SamsungSPRDRIL extends RIL {
         }
 
         return response;
-    }
-
-    @Override
-    protected Object
-    responseSignalStrength(Parcel p) {
-        int gsmSignalStrength = p.readInt() & 0xff;
-        int gsmBitErrorRate = p.readInt();
-        int cdmaDbm = p.readInt();
-        int cdmaEcio = p.readInt();
-        int evdoDbm = p.readInt();
-        int evdoEcio = p.readInt();
-        int evdoSnr = p.readInt();
-        int lteSignalStrength = p.readInt();
-        int lteRsrp = p.readInt();
-        int lteRsrq = p.readInt();
-        int lteRssnr = p.readInt();
-        int lteCqi = p.readInt();
-        int tdScdmaRscp = p.readInt();
-        // constructor sets default true, makeSignalStrengthFromRilParcel does not set it
-  	boolean isGsm = true;
-
-        if ((lteSignalStrength & 0xff) == 255 || lteSignalStrength == 99) {
-            lteSignalStrength = 99;
-            lteRsrp = SignalStrength.INVALID;
-            lteRsrq = SignalStrength.INVALID;
-            lteRssnr = SignalStrength.INVALID;
-            lteCqi = SignalStrength.INVALID;
-        } else {
-            lteSignalStrength &= 0xff;
-        }
-
-        if (RILJ_LOGD)
-            riljLog("gsmSignalStrength:" + gsmSignalStrength + " gsmBitErrorRate:" + gsmBitErrorRate +
-                    " cdmaDbm:" + cdmaDbm + " cdmaEcio:" + cdmaEcio + " evdoDbm:" + evdoDbm +
-                    " evdoEcio: " + evdoEcio + " evdoSnr:" + evdoSnr +
-                    " lteSignalStrength:" + lteSignalStrength + " lteRsrp:" + lteRsrp +
-                    " lteRsrq:" + lteRsrq + " lteRssnr:" + lteRssnr + " lteCqi:" + lteCqi +
-                    " tdScdmaRscp:" + tdScdmaRscp + " isGsm:" + (isGsm ? "true" : "false"));
-
-        return new SignalStrength(gsmSignalStrength, gsmBitErrorRate, cdmaDbm, cdmaEcio, evdoDbm,
-                evdoEcio, evdoSnr, lteSignalStrength, lteRsrp, lteRsrq, lteRssnr, lteCqi,
-                tdScdmaRscp, isGsm);
     }
 
     @Override
