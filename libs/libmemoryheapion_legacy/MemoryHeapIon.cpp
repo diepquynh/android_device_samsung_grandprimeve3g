@@ -28,7 +28,7 @@
 
 #include <cutils/log.h>
 
-#include "MemoryHeapIon.SPRD.h"
+#include "MemoryHeapIon.h"
 #include <binder/MemoryHeapBase.h>
 
 #ifdef USE_TARGET_SIMULATOR_MODE

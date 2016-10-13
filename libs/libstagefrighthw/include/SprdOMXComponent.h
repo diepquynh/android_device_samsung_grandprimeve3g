@@ -21,7 +21,7 @@
 #include <media/stagefright/foundation/ABase.h>
 #include <media/stagefright/foundation/AString.h>
 #include <utils/RefBase.h>
-#include <MemoryHeapIon.SPRD.h>
+#include <MemoryHeapIon.h>
 #include <OMX_Component.h>
 
 namespace android {

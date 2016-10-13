@@ -29,7 +29,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libstagefright_omx \
 	libstagefright_foundation \
 	libstagefrighthw \
-	libmemoryheapion \
+	libmemoryheapion_legacy \
 	libutils \
 	libui \
 	libdl \

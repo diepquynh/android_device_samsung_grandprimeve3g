@@ -41,7 +41,7 @@ PRODUCT_PACKAGES += \
 
 # HWC
 PRODUCT_PACKAGES += \
-	libmemoryheapion \
+	libmemoryheapion_legacy \
 	libion
 
 # Doze

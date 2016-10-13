@@ -19,10 +19,10 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := libmemoryheapion
+LOCAL_MODULE := libmemoryheapion_legacy
 
 LOCAL_SRC_FILES := \
-	MemoryHeapIon.SPRD.cpp
+	MemoryHeapIon.cpp
 
 LOCAL_ADDITIONAL_DEPENDENCIES += \
 	$(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr

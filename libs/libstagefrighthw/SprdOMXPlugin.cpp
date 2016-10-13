@@ -39,8 +39,6 @@ static const struct {
     { "OMX.sprd.mpeg4.decoder", "sprd_mpeg4dec", "video_decoder.mpeg4" },
     { "OMX.sprd.h264.decoder", "sprd_h264dec", "video_decoder.h264" },
     { "OMX.sprd.vpx.decoder", "sprd_vpxdec", "video_decoder.vpx" },
-    { "OMX.sprd.aac.decoder", "sprd_aacdec", "audio_decoder.aac" },
-    { "OMX.sprd.mp3.decoder", "sprd_mp3dec", "audio_decoder.mp3" },
 
     { "OMX.sprd.h263.encoder", "sprd_mpeg4enc", "video_encoder.h263" },
     { "OMX.sprd.mpeg4.encoder", "sprd_mpeg4enc", "video_encoder.mpeg4" },
