@@ -1,10 +1,14 @@
 #!/system/bin/sh
-a=`getprop zram.disksize 1025`
-b=`getprop sys.vm.swappiness 100`
-echo $(($a*1024*1024)) > /sys/block/zram0/disksize;
-mkswap /dev/block/zram0;
-swapon /dev/block/zram0;
-echo $(($b)) > /proc/sys/vm/swappiness
 
+num_cores=`grep processor /proc/cpuinfo | wc -l`
+totalmem=`free | grep -e "^Mem:" | sed -e 's/^Mem: *//' -e 's/  *.*//'`
+mem=$(((totalmem / ${num_cores}) * 1024))
 
+for i in $(seq ${num_cores}); do
+DEVNUMBER=$((i - 1))
+echo ${mem} > /sys/block/${DEVNUMBER}/disksize;
+mkswap /dev/block/${DEVNUMBER};
+swapon /dev/block/${DEVNUMBER};
+done
 
+echo 100 > /proc/sys/vm/swappiness
