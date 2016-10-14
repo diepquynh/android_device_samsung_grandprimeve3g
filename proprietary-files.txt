@@ -75,12 +75,12 @@ lib/libomx_m4vh263dec_hw_sprd.so
 lib/libomx_m4vh263enc_hw_sprd.so
 
 # Stagefright
-#lib/libstagefrighthw.so
-#lib/libstagefright_sprd_h264dec.so
-#lib/libstagefright_sprd_h264enc.so
-#lib/libstagefright_sprd_mpeg4dec.so
-#lib/libstagefright_sprd_mpeg4enc.so
-#lib/libstagefright_sprd_vpxdec.so
+lib/libstagefrighthw.so
+lib/libstagefright_sprd_h264dec.so
+lib/libstagefright_sprd_h264enc.so
+lib/libstagefright_sprd_mpeg4dec.so
+lib/libstagefright_sprd_mpeg4enc.so
+lib/libstagefright_sprd_vpxdec.so
 
 # HAL
 lib/hw/camera.sc8830.so
