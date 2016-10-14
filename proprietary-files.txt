@@ -7,6 +7,7 @@ lib/libatparser.so
 
 # GPS
 etc/gps.conf
+etc/gps.xml
 bin/gpsd
 bin/gps.cer
 lib/hw/gps.default.so
