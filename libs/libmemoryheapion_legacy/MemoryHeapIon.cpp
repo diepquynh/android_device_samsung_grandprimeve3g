@@ -74,11 +74,11 @@ int  MemoryHeapIon::Get_phy_addr_from_ion(int buffer_fd, int *phy_addr, int *siz
         *phy_addr = phys_data.phys;
         *size = phys_data.size;
         close(fd);
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: Getphyaddr error!",__func__);
             return -2;
-        }
+        }*/
     }
     return 0;
 }
@@ -97,11 +97,11 @@ int MemoryHeapIon::get_phy_addr_from_ion(int *phy_addr, int *size){
         ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
         *phy_addr = phys_data.phys;
         *size = phys_data.size;
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: getphyaddr error!",__func__);
             return -2;
-        }
+        }*/
      }
     return 0;
 }
@@ -120,11 +120,11 @@ int MemoryHeapIon::get_gsp_iova(int *mmu_addr, int *size){
         ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
         *mmu_addr = mmu_data.iova_addr;
         *size = mmu_data.iova_size;
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: get gsp iova error!",__func__);
             return -2;
-        }
+        }*/
      }
     return 0;
 }
@@ -143,11 +143,11 @@ int MemoryHeapIon::free_gsp_iova(int mmu_addr, int size){
         custom_data.cmd = ION_SPRD_CUSTOM_GSP_UNMAP;
         custom_data.arg = (unsigned long)&mmu_data;
         ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: free gsp iova error!",__func__);
             return -2;
-        }
+        }*/
      }
     return 0;
 }
@@ -166,11 +166,11 @@ int MemoryHeapIon::get_mm_iova(int *mmu_addr, int *size){
         ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
         *mmu_addr = mmu_data.iova_addr;
         *size = mmu_data.iova_size;
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: get mm iova error!",__func__);
             return -2;
-        }
+        }*/
      }
     return 0;
 }
@@ -189,11 +189,11 @@ int MemoryHeapIon::free_mm_iova(int mmu_addr, int size){
         custom_data.cmd = ION_SPRD_CUSTOM_MM_UNMAP;
         custom_data.arg = (unsigned long)&mmu_data;
         ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: free mm iova error!",__func__);
             return -2;
-        }
+        }*/
      }
     return 0;
 }
@@ -214,11 +214,11 @@ int MemoryHeapIon::Get_gsp_iova(int buffer_fd,int *mmu_addr, int *size){
         *mmu_addr = mmu_data.iova_addr;
         *size = mmu_data.iova_size;
         close(fd);
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: Get gsp iova error!",__func__);
             return -2;
-        }
+        }*/
     }
     return 0;
 }
@@ -239,11 +239,11 @@ int MemoryHeapIon::Get_mm_iova(int buffer_fd,int *mmu_addr, int *size){
         *mmu_addr = mmu_data.iova_addr;
         *size = mmu_data.iova_size;
         close(fd);
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: Get mm iova error!",__func__);
             return -2;
-        }
+        }*/
     }
     return 0;
 }
@@ -265,11 +265,11 @@ int MemoryHeapIon::Free_gsp_iova(int buffer_fd,int mmu_addr, int size){
         custom_data.arg = (unsigned long)&mmu_data;
         ret = ioctl(fd,ION_IOC_CUSTOM,&custom_data);
         close(fd);
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: Free gsp iova error!",__func__);
             return -2;
-        }
+        }*/
     }
     return 0;
 }
@@ -290,11 +290,11 @@ int MemoryHeapIon::Free_mm_iova(int buffer_fd,int mmu_addr, int size){
         custom_data.arg = (unsigned long)&mmu_data;
         ret = ioctl(fd,ION_IOC_CUSTOM,&custom_data);
         close(fd);
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: Free mm iova error!",__func__);
             return -2;
-        }
+        }*/
     }
     return 0;
 }
@@ -335,11 +335,11 @@ int  MemoryHeapIon::Flush_ion_buffer(int buffer_fd, void *v_addr,void *p_addr,in
         custom_data.arg = (unsigned long)&msync_data;
         ret = ioctl(fd,ION_IOC_CUSTOM,&custom_data);
         close(fd);
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s: Flush ion buffer error!",__func__);
             return -2;
-        }
+        }*/
     }
     return 0;
 }
@@ -364,16 +364,16 @@ int MemoryHeapIon::flush_ion_buffer(void *v_addr, void *p_addr,int size){
         custom_data.cmd = ION_SPRD_CUSTOM_MSYNC;
         custom_data.arg = (unsigned long)&msync_data;
         ret = ioctl(mIonDeviceFd,ION_IOC_CUSTOM,&custom_data);
-        if(ret)
+        /*if(ret)
         {
             ALOGE("%s:flush ion buffer error!",__func__);
             return -2;
-        }
+        }*/
      }
     return 0;
 }
 
-MemoryHeapIon::MemoryHeapIon() : mIonDeviceFd(-1), mIonHandle(NULL)
+MemoryHeapIon::MemoryHeapIon() : mIonDeviceFd(-1)
 {
 }
 
@@ -398,7 +398,7 @@ MemoryHeapIon::MemoryHeapIon(const char* device, size_t size,
 }
 
 status_t MemoryHeapIon::ionInit(int ionFd, void *base, int size, int flags,
-                const char* device, struct ion_handle *handle,
+                const char* device, ion_user_handle_t handle,
                 int ionMapFd) {
     mIonDeviceFd = ionFd;
     mIonHandle = handle;
@@ -422,7 +422,7 @@ status_t MemoryHeapIon::mapIonFd(int fd, size_t size, unsigned long memory_type,
     data.len = size;
     data.align = getpagesize();
 #if (ION_DRIVER_VERSION == 1)
-    data.heap_mask = memory_type;
+    data.heap_id_mask = memory_type;
     //if cached buffer , force set the lowest two bits 11
     if((memory_type&(1<<31)))
     {
