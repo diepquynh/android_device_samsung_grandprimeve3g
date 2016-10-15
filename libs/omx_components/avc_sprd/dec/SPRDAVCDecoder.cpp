@@ -1201,7 +1201,7 @@ void SPRDAVCDecoder::onQueueFilled(OMX_U32 portIndex) {
                 return;
             }
         } else {
-            ALOGE("failed to get decoder information.");
+            ALOGE("ret: %d, failed to get decoder information", ret);
         }
 
         bufferSize = dec_in.dataLen;
