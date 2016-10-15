@@ -472,7 +472,7 @@ SPRDAVCEncoder::SPRDAVCEncoder(
       mVideoHeight(144),
       mVideoFrameRate(30),
       mVideoBitRate(192000),
-      mVideoColorFormat(OMX_SPRD_COLOR_FormatYVU420SemiPlanar),
+      mVideoColorFormat((OMX_COLOR_FORMATTYPE) OMX_SPRD_COLOR_FormatYVU420SemiPlanar),
       mAVCEncProfile(AVC_BASELINE),
       mAVCEncLevel(AVC_LEVEL2),
       mPFrames(29),
@@ -923,7 +923,7 @@ void SPRDAVCEncoder::initPorts() {
 
     def.format.video.cMIMEType = const_cast<char *>("video/raw");
     def.format.video.eCompressionFormat = OMX_VIDEO_CodingUnused;
-    def.format.video.eColorFormat = OMX_SPRD_COLOR_FormatYVU420SemiPlanar;
+    def.format.video.eColorFormat = (OMX_COLOR_FORMATTYPE) OMX_SPRD_COLOR_FormatYVU420SemiPlanar;
     def.format.video.xFramerate = (mVideoFrameRate << 16);  // Q16 format
     def.format.video.nBitrate = mVideoBitRate;
     def.format.video.nFrameWidth = mVideoWidth;
@@ -999,7 +999,7 @@ OMX_ERRORTYPE SPRDAVCEncoder::internalGetParameter(
             } else if (formatParams->nIndex == 1) {
                 formatParams->eColorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
             } else if (formatParams->nIndex == 2) {
-                formatParams->eColorFormat = OMX_SPRD_COLOR_FormatYVU420SemiPlanar;
+                formatParams->eColorFormat = (OMX_COLOR_FORMATTYPE) OMX_SPRD_COLOR_FormatYVU420SemiPlanar;
             } else {
                 formatParams->eColorFormat = OMX_COLOR_FormatAndroidOpaque;
             }
@@ -1138,7 +1138,7 @@ OMX_ERRORTYPE SPRDAVCEncoder::internalSetParameter(
             if (def->format.video.eCompressionFormat != OMX_VIDEO_CodingUnused ||
                     (def->format.video.eColorFormat != OMX_COLOR_FormatYUV420Planar &&
                      def->format.video.eColorFormat != OMX_COLOR_FormatYUV420SemiPlanar &&
-                     def->format.video.eColorFormat != OMX_SPRD_COLOR_FormatYVU420SemiPlanar &&
+                     def->format.video.eColorFormat != (OMX_COLOR_FORMATTYPE) OMX_SPRD_COLOR_FormatYVU420SemiPlanar &&
                      def->format.video.eColorFormat != OMX_COLOR_FormatAndroidOpaque)) {
                 return OMX_ErrorUndefined;
             }
@@ -1209,7 +1209,7 @@ OMX_ERRORTYPE SPRDAVCEncoder::internalSetParameter(
                      (formatParams->nIndex == 1 &&
                       formatParams->eColorFormat != OMX_COLOR_FormatYUV420SemiPlanar) ||
                      (formatParams->nIndex == 2 &&
-                      formatParams->eColorFormat != OMX_SPRD_COLOR_FormatYVU420SemiPlanar) ||
+                      formatParams->eColorFormat != (OMX_COLOR_FORMATTYPE) OMX_SPRD_COLOR_FormatYVU420SemiPlanar) ||
                      (formatParams->nIndex == 3 &&
                       formatParams->eColorFormat != OMX_COLOR_FormatAndroidOpaque) )) {
                 return OMX_ErrorUndefined;

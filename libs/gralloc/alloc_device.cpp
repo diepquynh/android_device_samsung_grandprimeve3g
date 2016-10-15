@@ -100,7 +100,7 @@ static int gralloc_alloc_buffer(alloc_device_t *dev, size_t size, int usage, buf
 #if GRALLOC_ARM_DMA_BUF_MODULE
 	{
 		private_module_t *m = reinterpret_cast<private_module_t *>(dev->common.module);
-		struct ion_handle *ion_hnd;
+		ion_user_handle_t *ion_hnd;
 		unsigned char *cpu_ptr;
 		int shared_fd;
 		int ret;
@@ -126,7 +126,7 @@ static int gralloc_alloc_buffer(alloc_device_t *dev, size_t size, int usage, buf
 			ion_flag = ION_FLAG_CACHED | ION_FLAG_CACHED_NEEDS_SYNC;
 		}
 
-		ret = ion_alloc(m->ion_client, size, 0, ion_heap_mask, ion_flag, &ion_hnd);
+		ret = ion_alloc(m->ion_client, size, 0, ion_heap_mask, ion_flag, ion_hnd);
 
 		if (ret != 0)
 		{

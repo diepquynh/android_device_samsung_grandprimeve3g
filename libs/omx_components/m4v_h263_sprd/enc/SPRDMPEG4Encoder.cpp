@@ -126,7 +126,7 @@ SPRDMPEG4Encoder::SPRDMPEG4Encoder(
       mVideoHeight(144),
       mVideoFrameRate(30),
       mVideoBitRate(192000),
-      mVideoColorFormat(OMX_SPRD_COLOR_FormatYVU420SemiPlanar),
+      mVideoColorFormat((OMX_COLOR_FORMATTYPE) OMX_SPRD_COLOR_FormatYVU420SemiPlanar),
       mPFrames(29),
       mNumInputFrames(-1),
       mStarted(false),
@@ -465,7 +465,7 @@ void SPRDMPEG4Encoder::initPorts() {
 
     def.format.video.cMIMEType = const_cast<char *>("video/raw");
     def.format.video.eCompressionFormat = OMX_VIDEO_CodingUnused;
-    def.format.video.eColorFormat = OMX_SPRD_COLOR_FormatYVU420SemiPlanar;
+    def.format.video.eColorFormat = (OMX_COLOR_FORMATTYPE) OMX_SPRD_COLOR_FormatYVU420SemiPlanar;
     def.format.video.xFramerate = (mVideoFrameRate << 16);  // Q16 format
     def.format.video.nBitrate = mVideoBitRate;
     def.format.video.nFrameWidth = mVideoWidth;
@@ -549,7 +549,7 @@ OMX_ERRORTYPE SPRDMPEG4Encoder::internalGetParameter(
             } else if (formatParams->nIndex == 1) {
                 formatParams->eColorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
             } else {
-                formatParams->eColorFormat = OMX_SPRD_COLOR_FormatYVU420SemiPlanar;
+                formatParams->eColorFormat = (OMX_COLOR_FORMATTYPE) OMX_SPRD_COLOR_FormatYVU420SemiPlanar;
             }
         } else {
             formatParams->eCompressionFormat =
@@ -678,7 +678,7 @@ OMX_ERRORTYPE SPRDMPEG4Encoder::internalSetParameter(
             if (def->format.video.eCompressionFormat != OMX_VIDEO_CodingUnused ||
                     (def->format.video.eColorFormat != OMX_COLOR_FormatYUV420Planar &&
                      def->format.video.eColorFormat != OMX_COLOR_FormatYUV420SemiPlanar &&
-                     def->format.video.eColorFormat != OMX_SPRD_COLOR_FormatYVU420SemiPlanar)) {
+                     def->format.video.eColorFormat != (OMX_COLOR_FORMATTYPE) OMX_SPRD_COLOR_FormatYVU420SemiPlanar)) {
                 return OMX_ErrorUndefined;
             }
         } else {
@@ -751,7 +751,7 @@ OMX_ERRORTYPE SPRDMPEG4Encoder::internalSetParameter(
                      (formatParams->nIndex == 1 &&
                       formatParams->eColorFormat != OMX_COLOR_FormatYUV420SemiPlanar) ||
                       (formatParams->nIndex == 2 &&
-                      formatParams->eColorFormat != OMX_SPRD_COLOR_FormatYVU420SemiPlanar))) {
+                      formatParams->eColorFormat != (OMX_COLOR_FORMATTYPE) OMX_SPRD_COLOR_FormatYVU420SemiPlanar))) {
                 return OMX_ErrorUndefined;
             }
             mVideoColorFormat = formatParams->eColorFormat;
