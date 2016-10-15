@@ -15,7 +15,6 @@
 LOCAL_PATH := device/samsung/grandprimeve3g
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
-$(call inherit-product, $(LOCAL_PATH)/device.mk)
 $(call inherit-product, device/common/gps/gps_us_supl.mk)
 
 $(call inherit-product-if-exists, vendor/samsung/grandprimeve3g/grandprimeve3g-vendor.mk)
@@ -197,6 +196,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.com.google.locationfeatures=1 \
 	ro.com.google.networklocation=1
+
+# For userdebug builds
+ADDITIONAL_DEFAULT_PROPERTIES += \
+	ro.secure=0 \
+	ro.adb.secure=0 \
+	ro.debuggable=1 \
+	persist.service.adb.enable=1
 
 # Dalvik heap config
 $(call inherit-product, frameworks/native/build/phone-hdpi-2048-dalvik-heap.mk)
