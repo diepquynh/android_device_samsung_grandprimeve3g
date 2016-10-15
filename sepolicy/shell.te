@@ -1,1 +1,0 @@
-allow shell unlabeled:filesystem {getattr mount};
