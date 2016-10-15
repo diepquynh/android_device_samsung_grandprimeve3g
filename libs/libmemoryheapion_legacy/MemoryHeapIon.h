@@ -34,36 +34,36 @@ class MemoryHeapBase;
 
 // ---------------------------------------------------------------------------
 
-class MemoryHeapIon : public MemoryHeapBase
-{
+class MemoryHeapIon : public MemoryHeapBase {
 public:
-    MemoryHeapIon(const char*, size_t, uint32_t, long unsigned int);
-    MemoryHeapIon();
-    ~MemoryHeapIon();
+	MemoryHeapIon(const char*, size_t, uint32_t, long unsigned int);
+	MemoryHeapIon();
+	~MemoryHeapIon();
 
-    status_t mapIonFd(int fd, size_t size, unsigned long memory_type, int flags);
+	status_t mapIonFd(int fd, size_t size, unsigned long memory_type, int flags);
 
-    status_t ionInit(int ionFd, void *base, int size, int flags,
-                                const char* device, ion_user_handle_t handle,
-                                int ionMapFd);
-    int get_phy_addr_from_ion(int *phy_addr, int *size);
-    int flush_ion_buffer(void *v_addr, void *p_addr,int size);
-    int get_gsp_iova(int *mmu_addr, int *size);
-    int free_gsp_iova(int mmu_addr, int size);
-    int get_mm_iova(int *mmu_addr, int *size);
-    int free_mm_iova(int mmu_addr, int size);
-    static int Get_gsp_iova(int buffer_fd, int *mmu_addr, int *size);
-    static int Free_gsp_iova(int buffer_fd, int mmu_addr, int size);
-    static int Get_mm_iova(int buffer_fd,int *mmu_addr, int *size);
-    static int Free_mm_iova(int buffer_fd,int mmu_addr, int size);
-    static int Get_phy_addr_from_ion(int fd, int *phy_addr, int *size);/*fd is "fd of the corresponding ion hanlde"*/
-    static int Flush_ion_buffer(int buffer_fd, void *v_addr,void *p_addr, int size);
-    static bool Gsp_iommu_is_enabled(void);
-    static bool Mm_iommu_is_enabled(void);
+	status_t ionInit(int ionFd, void *base, int size, int flags,
+			 const char* device, ion_user_handle_t handle,
+			 int ionMapFd);
+	int get_phy_addr_from_ion(int *phy_addr, int *size);
+	int flush_ion_buffer(void *v_addr, void *p_addr,int size);
+	int get_gsp_iova(int *mmu_addr, int *size);
+	int free_gsp_iova(int mmu_addr, int size);
+	int get_mm_iova(int *mmu_addr, int *size);
+	int free_mm_iova(int mmu_addr, int size);
+	static int Get_gsp_iova(int buffer_fd, int *mmu_addr, int *size);
+	static int Free_gsp_iova(int buffer_fd, int mmu_addr, int size);
+	static int Get_mm_iova(int buffer_fd,int *mmu_addr, int *size);
+	static int Free_mm_iova(int buffer_fd,int mmu_addr, int size);
+	static int Get_phy_addr_from_ion(int fd, int *phy_addr, int *size); /* fd is "fd of the corresponding ion hanlde" */
+	static int Flush_ion_buffer(int buffer_fd, void *v_addr,void *p_addr, int size);
+	static bool Gsp_iommu_is_enabled(void);
+	static bool Mm_iommu_is_enabled(void);
 
 private:
-    int mIonDeviceFd;  /*fd we get from open("/dev/ion")*/
-    ion_user_handle_t mIonHandle;  /*handle we get from ION_IOC_ALLOC*/ };
+	int mIonDeviceFd;  /* fd we get from open("/dev/ion") */
+	ion_user_handle_t mIonHandle;  /* handle we get from ION_IOC_ALLOC */
+};
 
 // ---------------------------------------------------------------------------
 }; // namespace android
