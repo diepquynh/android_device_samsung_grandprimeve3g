@@ -24,7 +24,27 @@
 #include <MemoryHeapIon.h>
 #include <OMX_Component.h>
 
+#define SPRD_INDEX_PARAM_ENABLE_ANB "OMX.google.android.index.enableAndroidNativeBuffers"
+#define SPRD_INDEX_PARAM_GET_ANB "OMX.google.android.index.getAndroidNativeBufferUsage"
+#define SPRD_INDEX_PARAM_USE_ANB "OMX.google.android.index.useAndroidNativeBuffer2"
+#define SPRD_INDEX_PARAM_STORE_METADATA_BUFFER "OMX.google.android.index.storeMetaDataInBuffers"
+#define SPRD_INDEX_PARAM_PREPEND_SPSPPS_TO_IDR "OMX.google.android.index.prependSPSPPSToIDRFrames"
+#define SPRD_INDEX_CONFIG_THUMBNAIL_MODE "OMX.sprd.index.ThumbnailMode"
+
 namespace android {
+
+typedef enum SPRD_OMX_COLOR_FORMATTYPE {
+    OMX_SPRD_COLOR_FormatYVU420SemiPlanar = 0x7FD00001,
+} SPRD_OMX_COLOR_FORMATTYPE;
+
+typedef enum SPRD_OMX_INDEXTYPE {
+    OMX_IndexParamEnableAndroidBuffers = 0x7F000011,
+    OMX_IndexParamGetAndroidNativeBuffer,
+    OMX_IndexParamUseAndroidNativeBuffer2,
+    OMX_IndexParamStoreMetaDataBuffer,
+    OMX_IndexParamPrependSPSPPSToIDR,
+    OMX_IndexConfigThumbnailMode,
+} SPRD_OMX_INDEXTYPE;
 
 typedef struct BufferCtrlStruct
 {
