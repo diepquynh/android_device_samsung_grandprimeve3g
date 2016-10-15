@@ -76,15 +76,10 @@ WIFI_BAND := 802_11_ABG
 BOARD_HAVE_SAMSUNG_WIFI := true
 
 # Hardware rendering
-BOARD_EGL_CFG := device/samsung/grandprimeve3g/configs/egl.cfg
 BOARD_USE_MHEAP_SCREENSHOT := true
-BOARD_EGL_WORKAROUND_BUG_10194508 := true
 TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
 HWUI_COMPILE_FOR_PERF := true
-USE_SPRD_HWCOMPOSER := true
 USE_OPENGL_RENDERER := true
-USE_OVERLAY_COMPOSER_GPU := true
-DEVICE_FORCE_VIDEO_GO_OVERLAYCOMPOSER := true
 COMMON_GLOBAL_CFLAGS += -DSC8830_HWC
 
 # Include an expanded selection of fonts
@@ -106,11 +101,6 @@ COMMON_GLOBAL_CFLAGS += -DSPRD_HARDWARE
 # healthd
 BOARD_HAL_STATIC_LIBRARIES := libhealthd.sc8830
 
-# Use the CM PowerHAL
-TARGET_USES_CM_POWERHAL := true
-CM_POWERHAL_EXTENSION := sc8830
-TARGET_POWERHAL_VARIANT := cm
-
 # Init
 TARGET_NR_SVC_SUPP_GIDS := 24
 TARGET_PROVIDES_INIT_RC := true
@@ -122,24 +112,6 @@ TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 
 # Assert
 TARGET_OTA_ASSERT_DEVICE := SM-G531H,SM-G531BT,grandprimeve3g,grandprimeve3gdtv,grandprimeve3gub,grandprimeve3gxx,grandprimeve3gdtvvj
-
-# SELinux
-#BOARD_SEPOLICY_DIRS += device/samsung/grandprimeve3g/sepolicy
-#BOARD_SEPOLICY_UNION :=	\
-#	file.te	\
-#	file_contexts \
-#	seapp_contexts \
-#	theme.te \
-#	healthd.te \
-#	init.te \
-#	init_shell.te \
-#	installd.te \
-#	netd.te \
-#	shell.te \
-#	system.te \
-#	untrusted_app.te \
-#	vold.te	\
-#	zygote.te
 
 # Use dmalloc() for such low memory devices like us
 MALLOC_IMPL := dlmalloc
