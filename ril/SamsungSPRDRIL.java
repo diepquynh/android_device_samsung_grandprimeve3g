@@ -397,4 +397,8 @@ public class SamsungSPRDRIL extends RIL {
         }
         return response;
     }
+
+    private void invokeOemRilRequestSprd(byte key, byte value, Message response) {
+        invokeOemRilRequestRaw(new byte[] { 'S', 'P', 'R', 'D', key, value }, response);
+    }
 }
