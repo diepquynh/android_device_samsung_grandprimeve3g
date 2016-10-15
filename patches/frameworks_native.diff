@@ -10,59 +10,6 @@ index a516df8..c51d810 100644
  /** WMA Version */
  typedef enum OMX_AUDIO_WMAFORMATTYPE {
    OMX_AUDIO_WMAFormatUnused = 0, /**< format unused or unknown */
-diff --git a/include/media/openmax/OMX_IVCommon.h b/include/media/openmax/OMX_IVCommon.h
-index a5b9d18..d57afa1 100644
---- a/include/media/openmax/OMX_IVCommon.h
-+++ b/include/media/openmax/OMX_IVCommon.h
-@@ -169,6 +169,9 @@ typedef enum OMX_COLOR_FORMATTYPE {
-     OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03,
-     OMX_SEC_COLOR_FormatNV12Tiled = 0x7FC00002,
-     OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar32m = 0x7FA30C04,
-+#ifdef SPRD_HARDWARE
-+    OMX_SPRD_COLOR_FormatYVU420SemiPlanar = 0x7FD00001,
-+#endif
-     OMX_COLOR_FormatMax = 0x7FFFFFFF
- } OMX_COLOR_FORMATTYPE;
- 
-diff --git a/include/media/openmax/OMX_Index.h b/include/media/openmax/OMX_Index.h
-index 1a2a548..45f9515 100644
---- a/include/media/openmax/OMX_Index.h
-+++ b/include/media/openmax/OMX_Index.h
-@@ -134,6 +134,10 @@ typedef enum OMX_INDEXTYPE {
-     OMX_IndexParamAudioSmv,                 /**< reference: OMX_AUDIO_PARAM_SMVTYPE */
-     OMX_IndexParamAudioVorbis,              /**< reference: OMX_AUDIO_PARAM_VORBISTYPE */
-     OMX_IndexParamAudioFlac,                /**< reference: OMX_AUDIO_PARAM_FLACTYPE */
-+#ifdef MTK_HARDWARE
-+    OMX_IndexParamAudioRaw,
-+    OMX_IndexParamAudioWmaProfile,
-+#endif
- 
-     OMX_IndexConfigAudioMidiImmediateEvent, /**< reference: OMX_AUDIO_CONFIG_MIDIIMMEDIATEEVENTTYPE */
-     OMX_IndexConfigAudioMidiControl,        /**< reference: OMX_AUDIO_CONFIG_MIDICONTROLTYPE */
-@@ -262,6 +266,23 @@ typedef enum OMX_INDEXTYPE {
-        private indexes are not guaranteed unique and therefore should
-        only be sent to the appropriate component. */
- 
-+#ifdef SPRD_HARDWARE
-+    /* for Android Native Window */
-+#define SPRD_INDEX_PARAM_ENABLE_ANB "OMX.google.android.index.enableAndroidNativeBuffers"
-+    OMX_IndexParamEnableAndroidBuffers         = 0x7F000011,
-+#define SPRD_INDEX_PARAM_GET_ANB "OMX.google.android.index.getAndroidNativeBufferUsage"
-+    OMX_IndexParamGetAndroidNativeBuffer       = 0x7F000012,
-+#define SPRD_INDEX_PARAM_USE_ANB "OMX.google.android.index.useAndroidNativeBuffer2"
-+    OMX_IndexParamUseAndroidNativeBuffer2      = 0x7F000013,
-+    /* for Android Store Metadata Inbuffer */
-+#define SPRD_INDEX_PARAM_STORE_METADATA_BUFFER "OMX.google.android.index.storeMetaDataInBuffers"
-+    OMX_IndexParamStoreMetaDataBuffer          = 0x7F000014,
-+#define SPRD_INDEX_PARAM_PREPEND_SPSPPS_TO_IDR "OMX.google.android.index.prependSPSPPSToIDRFrames"
-+    OMX_IndexParamPrependSPSPPSToIDR           = 0x7F000015,
-+#define SPRD_INDEX_CONFIG_THUMBNAIL_MODE "OMX.sprd.index.ThumbnailMode"
-+    OMX_IndexConfigThumbnailMode               = 0x7F000016,
-+#endif
-+
-     OMX_IndexMax = 0x7FFFFFFF
- 
- } OMX_INDEXTYPE;
 diff --git a/include/ui/PixelFormat.h b/include/ui/PixelFormat.h
 index ed7c1d8..8528a8b 100644
 --- a/include/ui/PixelFormat.h

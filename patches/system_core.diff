@@ -267,6 +267,432 @@ index 322f4d8..588c5aa 100644
              }
  
              // Note: bionic's property client code assumes that the
+diff --git a/init/ubi-user.h b/init/ubi-user.h
+new file mode 100644
+index 0000000..53cae1e
+--- /dev/null
++++ b/init/ubi-user.h
+@@ -0,0 +1,420 @@
++/*
++ * Copyright © International Business Machines Corp., 2006
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
++ * the GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ *
++ * Author: Artem Bityutskiy (Битюцкий Артём)
++ */
++
++#ifndef __UBI_USER_H__
++#define __UBI_USER_H__
++
++#include <linux/types.h>
++
++/*
++ * UBI device creation (the same as MTD device attachment)
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ * MTD devices may be attached using %UBI_IOCATT ioctl command of the UBI
++ * control device. The caller has to properly fill and pass
++ * &struct ubi_attach_req object - UBI will attach the MTD device specified in
++ * the request and return the newly created UBI device number as the ioctl
++ * return value.
++ *
++ * UBI device deletion (the same as MTD device detachment)
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ * An UBI device maybe deleted with %UBI_IOCDET ioctl command of the UBI
++ * control device.
++ *
++ * UBI volume creation
++ * ~~~~~~~~~~~~~~~~~~~
++ *
++ * UBI volumes are created via the %UBI_IOCMKVOL ioctl command of UBI character
++ * device. A &struct ubi_mkvol_req object has to be properly filled and a
++ * pointer to it has to be passed to the ioctl.
++ *
++ * UBI volume deletion
++ * ~~~~~~~~~~~~~~~~~~~
++ *
++ * To delete a volume, the %UBI_IOCRMVOL ioctl command of the UBI character
++ * device should be used. A pointer to the 32-bit volume ID hast to be passed
++ * to the ioctl.
++ *
++ * UBI volume re-size
++ * ~~~~~~~~~~~~~~~~~~
++ *
++ * To re-size a volume, the %UBI_IOCRSVOL ioctl command of the UBI character
++ * device should be used. A &struct ubi_rsvol_req object has to be properly
++ * filled and a pointer to it has to be passed to the ioctl.
++ *
++ * UBI volumes re-name
++ * ~~~~~~~~~~~~~~~~~~~
++ *
++ * To re-name several volumes atomically at one go, the %UBI_IOCRNVOL command
++ * of the UBI character device should be used. A &struct ubi_rnvol_req object
++ * has to be properly filled and a pointer to it has to be passed to the ioctl.
++ *
++ * UBI volume update
++ * ~~~~~~~~~~~~~~~~~
++ *
++ * Volume update should be done via the %UBI_IOCVOLUP ioctl command of the
++ * corresponding UBI volume character device. A pointer to a 64-bit update
++ * size should be passed to the ioctl. After this, UBI expects user to write
++ * this number of bytes to the volume character device. The update is finished
++ * when the claimed number of bytes is passed. So, the volume update sequence
++ * is something like:
++ *
++ * fd = open("/dev/my_volume");
++ * ioctl(fd, UBI_IOCVOLUP, &image_size);
++ * write(fd, buf, image_size);
++ * close(fd);
++ *
++ * Logical eraseblock erase
++ * ~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ * To erase a logical eraseblock, the %UBI_IOCEBER ioctl command of the
++ * corresponding UBI volume character device should be used. This command
++ * unmaps the requested logical eraseblock, makes sure the corresponding
++ * physical eraseblock is successfully erased, and returns.
++ *
++ * Atomic logical eraseblock change
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ * Atomic logical eraseblock change operation is called using the %UBI_IOCEBCH
++ * ioctl command of the corresponding UBI volume character device. A pointer to
++ * a &struct ubi_leb_change_req object has to be passed to the ioctl. Then the
++ * user is expected to write the requested amount of bytes (similarly to what
++ * should be done in case of the "volume update" ioctl).
++ *
++ * Logical eraseblock map
++ * ~~~~~~~~~~~~~~~~~~~~~
++ *
++ * To map a logical eraseblock to a physical eraseblock, the %UBI_IOCEBMAP
++ * ioctl command should be used. A pointer to a &struct ubi_map_req object is
++ * expected to be passed. The ioctl maps the requested logical eraseblock to
++ * a physical eraseblock and returns.  Only non-mapped logical eraseblocks can
++ * be mapped. If the logical eraseblock specified in the request is already
++ * mapped to a physical eraseblock, the ioctl fails and returns error.
++ *
++ * Logical eraseblock unmap
++ * ~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ * To unmap a logical eraseblock to a physical eraseblock, the %UBI_IOCEBUNMAP
++ * ioctl command should be used. The ioctl unmaps the logical eraseblocks,
++ * schedules corresponding physical eraseblock for erasure, and returns. Unlike
++ * the "LEB erase" command, it does not wait for the physical eraseblock being
++ * erased. Note, the side effect of this is that if an unclean reboot happens
++ * after the unmap ioctl returns, you may find the LEB mapped again to the same
++ * physical eraseblock after the UBI is run again.
++ *
++ * Check if logical eraseblock is mapped
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ * To check if a logical eraseblock is mapped to a physical eraseblock, the
++ * %UBI_IOCEBISMAP ioctl command should be used. It returns %0 if the LEB is
++ * not mapped, and %1 if it is mapped.
++ *
++ * Set an UBI volume property
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ * To set an UBI volume property the %UBI_IOCSETPROP ioctl command should be
++ * used. A pointer to a &struct ubi_set_vol_prop_req object is expected to be
++ * passed. The object describes which property should be set, and to which value
++ * it should be set.
++ */
++
++/*
++ * When a new UBI volume or UBI device is created, users may either specify the
++ * volume/device number they want to create or to let UBI automatically assign
++ * the number using these constants.
++ */
++#define UBI_VOL_NUM_AUTO (-1)
++#define UBI_DEV_NUM_AUTO (-1)
++
++/* Maximum volume name length */
++#define UBI_MAX_VOLUME_NAME 127
++
++/* ioctl commands of UBI character devices */
++
++#define UBI_IOC_MAGIC 'o'
++
++/* Create an UBI volume */
++#define UBI_IOCMKVOL _IOW(UBI_IOC_MAGIC, 0, struct ubi_mkvol_req)
++/* Remove an UBI volume */
++#define UBI_IOCRMVOL _IOW(UBI_IOC_MAGIC, 1, __s32)
++/* Re-size an UBI volume */
++#define UBI_IOCRSVOL _IOW(UBI_IOC_MAGIC, 2, struct ubi_rsvol_req)
++/* Re-name volumes */
++#define UBI_IOCRNVOL _IOW(UBI_IOC_MAGIC, 3, struct ubi_rnvol_req)
++
++/* ioctl commands of the UBI control character device */
++
++#define UBI_CTRL_IOC_MAGIC 'o'
++
++/* Attach an MTD device */
++#define UBI_IOCATT _IOW(UBI_CTRL_IOC_MAGIC, 64, struct ubi_attach_req)
++/* Detach an MTD device */
++#define UBI_IOCDET _IOW(UBI_CTRL_IOC_MAGIC, 65, __s32)
++
++/* ioctl commands of UBI volume character devices */
++
++#define UBI_VOL_IOC_MAGIC 'O'
++
++/* Start UBI volume update */
++#define UBI_IOCVOLUP _IOW(UBI_VOL_IOC_MAGIC, 0, __s64)
++/* LEB erasure command, used for debugging, disabled by default */
++#define UBI_IOCEBER _IOW(UBI_VOL_IOC_MAGIC, 1, __s32)
++/* Atomic LEB change command */
++#define UBI_IOCEBCH _IOW(UBI_VOL_IOC_MAGIC, 2, __s32)
++/* Map LEB command */
++#define UBI_IOCEBMAP _IOW(UBI_VOL_IOC_MAGIC, 3, struct ubi_map_req)
++/* Unmap LEB command */
++#define UBI_IOCEBUNMAP _IOW(UBI_VOL_IOC_MAGIC, 4, __s32)
++/* Check if LEB is mapped command */
++#define UBI_IOCEBISMAP _IOR(UBI_VOL_IOC_MAGIC, 5, __s32)
++/* Set an UBI volume property */
++#define UBI_IOCSETVOLPROP _IOW(UBI_VOL_IOC_MAGIC, 6, \
++			       struct ubi_set_vol_prop_req)
++
++/* Maximum MTD device name length supported by UBI */
++#define MAX_UBI_MTD_NAME_LEN 127
++
++/* Maximum amount of UBI volumes that can be re-named at one go */
++#define UBI_MAX_RNVOL 32
++
++/*
++ * UBI volume type constants.
++ *
++ * @UBI_DYNAMIC_VOLUME: dynamic volume
++ * @UBI_STATIC_VOLUME:  static volume
++ */
++enum {
++	UBI_DYNAMIC_VOLUME = 3,
++	UBI_STATIC_VOLUME  = 4,
++};
++
++/*
++ * UBI set volume property ioctl constants.
++ *
++ * @UBI_VOL_PROP_DIRECT_WRITE: allow (any non-zero value) or disallow (value 0)
++ *                             user to directly write and erase individual
++ *                             eraseblocks on dynamic volumes
++ */
++enum {
++	UBI_VOL_PROP_DIRECT_WRITE = 1,
++};
++
++/**
++ * struct ubi_attach_req - attach MTD device request.
++ * @ubi_num: UBI device number to create
++ * @mtd_num: MTD device number to attach
++ * @vid_hdr_offset: VID header offset (use defaults if %0)
++ * @max_beb_per1024: maximum expected number of bad PEB per 1024 PEBs
++ * @padding: reserved for future, not used, has to be zeroed
++ *
++ * This data structure is used to specify MTD device UBI has to attach and the
++ * parameters it has to use. The number which should be assigned to the new UBI
++ * device is passed in @ubi_num. UBI may automatically assign the number if
++ * @UBI_DEV_NUM_AUTO is passed. In this case, the device number is returned in
++ * @ubi_num.
++ *
++ * Most applications should pass %0 in @vid_hdr_offset to make UBI use default
++ * offset of the VID header within physical eraseblocks. The default offset is
++ * the next min. I/O unit after the EC header. For example, it will be offset
++ * 512 in case of a 512 bytes page NAND flash with no sub-page support. Or
++ * it will be 512 in case of a 2KiB page NAND flash with 4 512-byte sub-pages.
++ *
++ * But in rare cases, if this optimizes things, the VID header may be placed to
++ * a different offset. For example, the boot-loader might do things faster if
++ * the VID header sits at the end of the first 2KiB NAND page with 4 sub-pages.
++ * As the boot-loader would not normally need to read EC headers (unless it
++ * needs UBI in RW mode), it might be faster to calculate ECC. This is weird
++ * example, but it real-life example. So, in this example, @vid_hdr_offer would
++ * be 2KiB-64 bytes = 1984. Note, that this position is not even 512-bytes
++ * aligned, which is OK, as UBI is clever enough to realize this is 4th
++ * sub-page of the first page and add needed padding.
++ *
++ * The @max_beb_per1024 is the maximum amount of bad PEBs UBI expects on the
++ * UBI device per 1024 eraseblocks.  This value is often given in an other form
++ * in the NAND datasheet (min NVB i.e. minimal number of valid blocks). The
++ * maximum expected bad eraseblocks per 1024 is then:
++ *    1024 * (1 - MinNVB / MaxNVB)
++ * Which gives 20 for most NAND devices.  This limit is used in order to derive
++ * amount of eraseblock UBI reserves for handling new bad blocks. If the device
++ * has more bad eraseblocks than this limit, UBI does not reserve any physical
++ * eraseblocks for new bad eraseblocks, but attempts to use available
++ * eraseblocks (if any). The accepted range is 0-768. If 0 is given, the
++ * default kernel value of %CONFIG_MTD_UBI_BEB_LIMIT will be used.
++ */
++struct ubi_attach_req {
++	__s32 ubi_num;
++	__s32 mtd_num;
++	__s32 vid_hdr_offset;
++	__s16 max_beb_per1024;
++	__s8 padding[10];
++};
++
++/**
++ * struct ubi_mkvol_req - volume description data structure used in
++ *                        volume creation requests.
++ * @vol_id: volume number
++ * @alignment: volume alignment
++ * @bytes: volume size in bytes
++ * @vol_type: volume type (%UBI_DYNAMIC_VOLUME or %UBI_STATIC_VOLUME)
++ * @padding1: reserved for future, not used, has to be zeroed
++ * @name_len: volume name length
++ * @padding2: reserved for future, not used, has to be zeroed
++ * @name: volume name
++ *
++ * This structure is used by user-space programs when creating new volumes. The
++ * @used_bytes field is only necessary when creating static volumes.
++ *
++ * The @alignment field specifies the required alignment of the volume logical
++ * eraseblock. This means, that the size of logical eraseblocks will be aligned
++ * to this number, i.e.,
++ *	(UBI device logical eraseblock size) mod (@alignment) = 0.
++ *
++ * To put it differently, the logical eraseblock of this volume may be slightly
++ * shortened in order to make it properly aligned. The alignment has to be
++ * multiple of the flash minimal input/output unit, or %1 to utilize the entire
++ * available space of logical eraseblocks.
++ *
++ * The @alignment field may be useful, for example, when one wants to maintain
++ * a block device on top of an UBI volume. In this case, it is desirable to fit
++ * an integer number of blocks in logical eraseblocks of this UBI volume. With
++ * alignment it is possible to update this volume using plane UBI volume image
++ * BLOBs, without caring about how to properly align them.
++ */
++struct ubi_mkvol_req {
++	__s32 vol_id;
++	__s32 alignment;
++	__s64 bytes;
++	__s8 vol_type;
++	__s8 padding1;
++	__s16 name_len;
++	__s8 padding2[4];
++	char name[UBI_MAX_VOLUME_NAME + 1];
++} __packed;
++
++/**
++ * struct ubi_rsvol_req - a data structure used in volume re-size requests.
++ * @vol_id: ID of the volume to re-size
++ * @bytes: new size of the volume in bytes
++ *
++ * Re-sizing is possible for both dynamic and static volumes. But while dynamic
++ * volumes may be re-sized arbitrarily, static volumes cannot be made to be
++ * smaller than the number of bytes they bear. To arbitrarily shrink a static
++ * volume, it must be wiped out first (by means of volume update operation with
++ * zero number of bytes).
++ */
++struct ubi_rsvol_req {
++	__s64 bytes;
++	__s32 vol_id;
++} __packed;
++
++/**
++ * struct ubi_rnvol_req - volumes re-name request.
++ * @count: count of volumes to re-name
++ * @padding1:  reserved for future, not used, has to be zeroed
++ * @vol_id: ID of the volume to re-name
++ * @name_len: name length
++ * @padding2:  reserved for future, not used, has to be zeroed
++ * @name: new volume name
++ *
++ * UBI allows to re-name up to %32 volumes at one go. The count of volumes to
++ * re-name is specified in the @count field. The ID of the volumes to re-name
++ * and the new names are specified in the @vol_id and @name fields.
++ *
++ * The UBI volume re-name operation is atomic, which means that should power cut
++ * happen, the volumes will have either old name or new name. So the possible
++ * use-cases of this command is atomic upgrade. Indeed, to upgrade, say, volumes
++ * A and B one may create temporary volumes %A1 and %B1 with the new contents,
++ * then atomically re-name A1->A and B1->B, in which case old %A and %B will
++ * be removed.
++ *
++ * If it is not desirable to remove old A and B, the re-name request has to
++ * contain 4 entries: A1->A, A->A1, B1->B, B->B1, in which case old A1 and B1
++ * become A and B, and old A and B will become A1 and B1.
++ *
++ * It is also OK to request: A1->A, A1->X, B1->B, B->Y, in which case old A1
++ * and B1 become A and B, and old A and B become X and Y.
++ *
++ * In other words, in case of re-naming into an existing volume name, the
++ * existing volume is removed, unless it is re-named as well at the same
++ * re-name request.
++ */
++struct ubi_rnvol_req {
++	__s32 count;
++	__s8 padding1[12];
++	struct {
++		__s32 vol_id;
++		__s16 name_len;
++		__s8  padding2[2];
++		char    name[UBI_MAX_VOLUME_NAME + 1];
++	} ents[UBI_MAX_RNVOL];
++} __packed;
++
++/**
++ * struct ubi_leb_change_req - a data structure used in atomic LEB change
++ *                             requests.
++ * @lnum: logical eraseblock number to change
++ * @bytes: how many bytes will be written to the logical eraseblock
++ * @dtype: pass "3" for better compatibility with old kernels
++ * @padding: reserved for future, not used, has to be zeroed
++ *
++ * The @dtype field used to inform UBI about what kind of data will be written
++ * to the LEB: long term (value 1), short term (value 2), unknown (value 3).
++ * UBI tried to pick a PEB with lower erase counter for short term data and a
++ * PEB with higher erase counter for long term data. But this was not really
++ * used because users usually do not know this and could easily mislead UBI. We
++ * removed this feature in May 2012. UBI currently just ignores the @dtype
++ * field. But for better compatibility with older kernels it is recommended to
++ * set @dtype to 3 (unknown).
++ */
++struct ubi_leb_change_req {
++	__s32 lnum;
++	__s32 bytes;
++	__s8  dtype; /* obsolete, do not use! */
++	__s8  padding[7];
++} __packed;
++
++/**
++ * struct ubi_map_req - a data structure used in map LEB requests.
++ * @dtype: pass "3" for better compatibility with old kernels
++ * @lnum: logical eraseblock number to unmap
++ * @padding: reserved for future, not used, has to be zeroed
++ */
++struct ubi_map_req {
++	__s32 lnum;
++	__s8  dtype; /* obsolete, do not use! */
++	__s8  padding[3];
++} __packed;
++
++
++/**
++ * struct ubi_set_vol_prop_req - a data structure used to set an UBI volume
++ *                               property.
++ * @property: property to set (%UBI_VOL_PROP_DIRECT_WRITE)
++ * @padding: reserved for future, not used, has to be zeroed
++ * @value: value to set
++ */
++struct ubi_set_vol_prop_req {
++	__u8  property;
++	__u8  padding[7];
++	__u64 value;
++}  __packed;
++
++#endif /* __UBI_USER_H__ */
 diff --git a/libcutils/properties.c b/libcutils/properties.c
 index b283658..7bc65bc1 100644
 --- a/libcutils/properties.c
@@ -319,10 +745,10 @@ index 6562cd3..ae61e15 100644
 -
 -include $(call first-makefiles-under,$(LOCAL_PATH))
 diff --git a/libion/include/ion/ion.h b/libion/include/ion/ion.h
-index f47793d..6122539 100644
+index f47793d..475bc87 100644
 --- a/libion/include/ion/ion.h
 +++ b/libion/include/ion/ion.h
-@@ -21,25 +21,23 @@
+@@ -21,24 +21,22 @@
  #ifndef __SYS_CORE_ION_H
  #define __SYS_CORE_ION_H
  
@@ -335,28 +761,28 @@ index f47793d..6122539 100644
 -
  int ion_open();
  int ion_close(int fd);
- int ion_alloc(int fd, size_t len, size_t align, unsigned int heap_mask,
+-int ion_alloc(int fd, size_t len, size_t align, unsigned int heap_mask,
 -              unsigned int flags, ion_user_handle_t *handle);
-+	      unsigned int flags, struct ion_handle **handle);
- int ion_alloc_fd(int fd, size_t len, size_t align, unsigned int heap_mask,
+-int ion_alloc_fd(int fd, size_t len, size_t align, unsigned int heap_mask,
 -              unsigned int flags, int *handle_fd);
++int ion_alloc(int fd, size_t len, size_t align, unsigned int heap_id_mask,
++	      unsigned int flags, ion_user_handle_t *handle);
++int ion_alloc_fd(int fd, size_t len, size_t align, unsigned int heap_id_mask,
 +		 unsigned int flags, int *handle_fd);
 +int ion_invalidate_fd(int fd, int handle_fd);
  int ion_sync_fd(int fd, int handle_fd);
 -int ion_free(int fd, ion_user_handle_t handle);
 -int ion_map(int fd, ion_user_handle_t handle, size_t length, int prot,
-+int ion_free(int fd, struct ion_handle *handle);
-+int ion_map(int fd, struct ion_handle *handle, size_t length, int prot,
++int ion_free(int fd, ion_user_handle_t *handle);
++int ion_map(int fd, ion_user_handle_t *handle, size_t length, int prot,
              int flags, off_t offset, unsigned char **ptr, int *map_fd);
 -int ion_share(int fd, ion_user_handle_t handle, int *share_fd);
--int ion_import(int fd, int share_fd, ion_user_handle_t *handle);
-+int ion_share(int fd, struct ion_handle *handle, int *share_fd);
-+int ion_import(int fd, int share_fd, struct ion_handle **handle);
++int ion_share(int fd, ion_user_handle_t *handle, int *share_fd);
+ int ion_import(int fd, int share_fd, ion_user_handle_t *handle);
  
  __END_DECLS
- 
 diff --git a/libion/ion.c b/libion/ion.c
-index 80bdc2a..8c5ab7f 100644
+index 80bdc2a..009379a 100644
 --- a/libion/ion.c
 +++ b/libion/ion.c
 @@ -32,139 +32,127 @@
@@ -400,9 +826,10 @@ index 80bdc2a..8c5ab7f 100644
 +        return ret;
  }
  
- int ion_alloc(int fd, size_t len, size_t align, unsigned int heap_mask,
+-int ion_alloc(int fd, size_t len, size_t align, unsigned int heap_mask,
 -              unsigned int flags, ion_user_handle_t *handle)
-+	      unsigned int flags, struct ion_handle **handle)
++int ion_alloc(int fd, size_t len, size_t align, unsigned int heap_id_mask,
++	      unsigned int flags, ion_user_handle_t *handle)
  {
 -    int ret;
 -    struct ion_allocation_data data = {
@@ -421,7 +848,7 @@ index 80bdc2a..8c5ab7f 100644
 +        struct ion_allocation_data data = {
 +                .len = len,
 +                .align = align,
-+		.heap_mask = heap_mask,
++		.heap_id_mask = heap_id_mask,
 +                .flags = flags,
 +        };
 +
@@ -435,7 +862,7 @@ index 80bdc2a..8c5ab7f 100644
  }
  
 -int ion_free(int fd, ion_user_handle_t handle)
-+int ion_free(int fd, struct ion_handle *handle)
++int ion_free(int fd, ion_user_handle_t *handle)
  {
 -    struct ion_handle_data data = {
 -        .handle = handle,
@@ -448,7 +875,7 @@ index 80bdc2a..8c5ab7f 100644
  }
  
 -int ion_map(int fd, ion_user_handle_t handle, size_t length, int prot,
-+int ion_map(int fd, struct ion_handle *handle, size_t length, int prot,
++int ion_map(int fd, ion_user_handle_t *handle, size_t length, int prot,
              int flags, off_t offset, unsigned char **ptr, int *map_fd)
  {
 -    int ret;
@@ -495,7 +922,7 @@ index 80bdc2a..8c5ab7f 100644
  }
  
 -int ion_share(int fd, ion_user_handle_t handle, int *share_fd)
-+int ion_share(int fd, struct ion_handle *handle, int *share_fd)
++int ion_share(int fd, ion_user_handle_t *handle, int *share_fd)
  {
 -    int map_fd;
 -    int ret;
@@ -530,15 +957,16 @@ index 80bdc2a..8c5ab7f 100644
 -    return ret;
  }
  
- int ion_alloc_fd(int fd, size_t len, size_t align, unsigned int heap_mask,
+-int ion_alloc_fd(int fd, size_t len, size_t align, unsigned int heap_mask,
 -                 unsigned int flags, int *handle_fd) {
 -    ion_user_handle_t handle;
 -    int ret;
++int ion_alloc_fd(int fd, size_t len, size_t align, unsigned int heap_id_mask,
 +		 unsigned int flags, int *handle_fd) {
-+	struct ion_handle *handle;
++	ion_user_handle_t *handle;
 +	int ret;
 +
-+	ret = ion_alloc(fd, len, align, heap_mask, flags, &handle);
++	ret = ion_alloc(fd, len, align, heap_id_mask, flags, &handle);
 +	if (ret < 0)
 +		return ret;
 +	ret = ion_share(fd, handle, handle_fd);
@@ -548,7 +976,7 @@ index 80bdc2a..8c5ab7f 100644
  
 -    ret = ion_alloc(fd, len, align, heap_mask, flags, &handle);
 -    if (ret < 0)
-+int ion_import(int fd, int share_fd, struct ion_handle **handle)
++int ion_import(int fd, int share_fd, ion_user_handle_t *handle)
 +{
 +        struct ion_fd_data data = {
 +                .fd = share_fd,
@@ -1084,134 +1512,6 @@ index 8872282..0caaa2a 100644
 +	}
 +	return 0;
  }
-diff --git a/libion/kernel-headers/linux/ion.h b/libion/kernel-headers/linux/ion.h
-deleted file mode 100644
-index 5af39d0..0000000
---- a/libion/kernel-headers/linux/ion.h
-+++ /dev/null
-@@ -1,78 +0,0 @@
--/****************************************************************************
-- ****************************************************************************
-- ***
-- ***   This header was automatically generated from a Linux kernel header
-- ***   of the same name, to make information necessary for userspace to
-- ***   call into the kernel available to libc.  It contains only constants,
-- ***   structures, and macros generated from the original header, and thus,
-- ***   contains no copyrightable information.
-- ***
-- ***   To edit the content of this header, modify the corresponding
-- ***   source file (e.g. under external/kernel-headers/original/) then
-- ***   run bionic/libc/kernel/tools/update_all.py
-- ***
-- ***   Any manual change here will be lost the next time this script will
-- ***   be run. You've been warned!
-- ***
-- ****************************************************************************
-- ****************************************************************************/
--#ifndef _UAPI_LINUX_ION_H
--#define _UAPI_LINUX_ION_H
--#include <linux/ioctl.h>
--#include <linux/types.h>
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
--typedef int ion_user_handle_t;
--enum ion_heap_type {
-- ION_HEAP_TYPE_SYSTEM,
-- ION_HEAP_TYPE_SYSTEM_CONTIG,
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-- ION_HEAP_TYPE_CARVEOUT,
-- ION_HEAP_TYPE_CHUNK,
-- ION_HEAP_TYPE_DMA,
-- ION_HEAP_TYPE_CUSTOM,
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-- ION_NUM_HEAPS = 16,
--};
--#define ION_HEAP_SYSTEM_MASK (1 << ION_HEAP_TYPE_SYSTEM)
--#define ION_HEAP_SYSTEM_CONTIG_MASK (1 << ION_HEAP_TYPE_SYSTEM_CONTIG)
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
--#define ION_HEAP_CARVEOUT_MASK (1 << ION_HEAP_TYPE_CARVEOUT)
--#define ION_HEAP_TYPE_DMA_MASK (1 << ION_HEAP_TYPE_DMA)
--#define ION_NUM_HEAP_IDS sizeof(unsigned int) * 8
--#define ION_FLAG_CACHED 1
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
--#define ION_FLAG_CACHED_NEEDS_SYNC 2
--struct ion_allocation_data {
-- size_t len;
-- size_t align;
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-- unsigned int heap_id_mask;
-- unsigned int flags;
-- ion_user_handle_t handle;
--};
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
--struct ion_fd_data {
-- ion_user_handle_t handle;
-- int fd;
--};
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
--struct ion_handle_data {
-- ion_user_handle_t handle;
--};
--struct ion_custom_data {
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-- unsigned int cmd;
-- unsigned long arg;
--};
--#define ION_IOC_MAGIC 'I'
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
--#define ION_IOC_ALLOC _IOWR(ION_IOC_MAGIC, 0,   struct ion_allocation_data)
--#define ION_IOC_FREE _IOWR(ION_IOC_MAGIC, 1, struct ion_handle_data)
--#define ION_IOC_MAP _IOWR(ION_IOC_MAGIC, 2, struct ion_fd_data)
--#define ION_IOC_SHARE _IOWR(ION_IOC_MAGIC, 4, struct ion_fd_data)
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
--#define ION_IOC_IMPORT _IOWR(ION_IOC_MAGIC, 5, struct ion_fd_data)
--#define ION_IOC_SYNC _IOWR(ION_IOC_MAGIC, 7, struct ion_fd_data)
--#define ION_IOC_CUSTOM _IOWR(ION_IOC_MAGIC, 6, struct ion_custom_data)
--#endif
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-diff --git a/libion/kernel-headers/linux/ion_test.h b/libion/kernel-headers/linux/ion_test.h
-deleted file mode 100644
-index 6f3e2a7..0000000
---- a/libion/kernel-headers/linux/ion_test.h
-+++ /dev/null
-@@ -1,38 +0,0 @@
--/****************************************************************************
-- ****************************************************************************
-- ***
-- ***   This header was automatically generated from a Linux kernel header
-- ***   of the same name, to make information necessary for userspace to
-- ***   call into the kernel available to libc.  It contains only constants,
-- ***   structures, and macros generated from the original header, and thus,
-- ***   contains no copyrightable information.
-- ***
-- ***   To edit the content of this header, modify the corresponding
-- ***   source file (e.g. under external/kernel-headers/original/) then
-- ***   run bionic/libc/kernel/tools/update_all.py
-- ***
-- ***   Any manual change here will be lost the next time this script will
-- ***   be run. You've been warned!
-- ***
-- ****************************************************************************
-- ****************************************************************************/
--#ifndef _UAPI_LINUX_ION_TEST_H
--#define _UAPI_LINUX_ION_TEST_H
--#include <linux/ioctl.h>
--#include <linux/types.h>
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
--struct ion_test_rw_data {
-- __u64 ptr;
-- __u64 offset;
-- __u64 size;
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-- int write;
-- int __padding;
--};
--#define ION_IOC_MAGIC 'I'
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
--#define ION_IOC_TEST_SET_FD   _IO(ION_IOC_MAGIC, 0xf0)
--#define ION_IOC_TEST_DMA_MAPPING   _IOW(ION_IOC_MAGIC, 0xf1, struct ion_test_rw_data)
--#define ION_IOC_TEST_KERNEL_MAPPING   _IOW(ION_IOC_MAGIC, 0xf2, struct ion_test_rw_data)
--#endif
--/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 diff --git a/libion/kernel-headers/linux/omap_ion.h b/libion/kernel-headers/linux/omap_ion.h
 new file mode 100644
 index 0000000..65af914
@@ -1277,1839 +1577,5 @@ index 0000000..65af914
 +};
 +/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 +#endif
-diff --git a/libion/original-kernel-headers/linux/ion.h b/libion/original-kernel-headers/linux/ion.h
-deleted file mode 100644
-index f09e7c1..0000000
---- a/libion/original-kernel-headers/linux/ion.h
-+++ /dev/null
-@@ -1,196 +0,0 @@
--/*
-- * drivers/staging/android/uapi/ion.h
-- *
-- * Copyright (C) 2011 Google, Inc.
-- *
-- * This software is licensed under the terms of the GNU General Public
-- * License version 2, as published by the Free Software Foundation, and
-- * may be copied, distributed, and modified under those terms.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- */
--
--#ifndef _UAPI_LINUX_ION_H
--#define _UAPI_LINUX_ION_H
--
--#include <linux/ioctl.h>
--#include <linux/types.h>
--
--typedef int ion_user_handle_t;
--
--/**
-- * enum ion_heap_types - list of all possible types of heaps
-- * @ION_HEAP_TYPE_SYSTEM:	 memory allocated via vmalloc
-- * @ION_HEAP_TYPE_SYSTEM_CONTIG: memory allocated via kmalloc
-- * @ION_HEAP_TYPE_CARVEOUT:	 memory allocated from a prereserved
-- * 				 carveout heap, allocations are physically
-- * 				 contiguous
-- * @ION_HEAP_TYPE_DMA:		 memory allocated via DMA API
-- * @ION_NUM_HEAPS:		 helper for iterating over heaps, a bit mask
-- * 				 is used to identify the heaps, so only 32
-- * 				 total heap types are supported
-- */
--enum ion_heap_type {
--	ION_HEAP_TYPE_SYSTEM,
--	ION_HEAP_TYPE_SYSTEM_CONTIG,
--	ION_HEAP_TYPE_CARVEOUT,
--	ION_HEAP_TYPE_CHUNK,
--	ION_HEAP_TYPE_DMA,
--	ION_HEAP_TYPE_CUSTOM, /* must be last so device specific heaps always
--				 are at the end of this enum */
--	ION_NUM_HEAPS = 16,
--};
--
--#define ION_HEAP_SYSTEM_MASK		(1 << ION_HEAP_TYPE_SYSTEM)
--#define ION_HEAP_SYSTEM_CONTIG_MASK	(1 << ION_HEAP_TYPE_SYSTEM_CONTIG)
--#define ION_HEAP_CARVEOUT_MASK		(1 << ION_HEAP_TYPE_CARVEOUT)
--#define ION_HEAP_TYPE_DMA_MASK		(1 << ION_HEAP_TYPE_DMA)
--
--#define ION_NUM_HEAP_IDS		sizeof(unsigned int) * 8
--
--/**
-- * allocation flags - the lower 16 bits are used by core ion, the upper 16
-- * bits are reserved for use by the heaps themselves.
-- */
--#define ION_FLAG_CACHED 1		/* mappings of this buffer should be
--					   cached, ion will do cache
--					   maintenance when the buffer is
--					   mapped for dma */
--#define ION_FLAG_CACHED_NEEDS_SYNC 2	/* mappings of this buffer will created
--					   at mmap time, if this is set
--					   caches must be managed manually */
--
--/**
-- * DOC: Ion Userspace API
-- *
-- * create a client by opening /dev/ion
-- * most operations handled via following ioctls
-- *
-- */
--
--/**
-- * struct ion_allocation_data - metadata passed from userspace for allocations
-- * @len:		size of the allocation
-- * @align:		required alignment of the allocation
-- * @heap_id_mask:	mask of heap ids to allocate from
-- * @flags:		flags passed to heap
-- * @handle:		pointer that will be populated with a cookie to use to 
-- *			refer to this allocation
-- *
-- * Provided by userspace as an argument to the ioctl
-- */
--struct ion_allocation_data {
--	size_t len;
--	size_t align;
--	unsigned int heap_id_mask;
--	unsigned int flags;
--	ion_user_handle_t handle;
--};
--
--/**
-- * struct ion_fd_data - metadata passed to/from userspace for a handle/fd pair
-- * @handle:	a handle
-- * @fd:		a file descriptor representing that handle
-- *
-- * For ION_IOC_SHARE or ION_IOC_MAP userspace populates the handle field with
-- * the handle returned from ion alloc, and the kernel returns the file
-- * descriptor to share or map in the fd field.  For ION_IOC_IMPORT, userspace
-- * provides the file descriptor and the kernel returns the handle.
-- */
--struct ion_fd_data {
--	ion_user_handle_t handle;
--	int fd;
--};
--
--/**
-- * struct ion_handle_data - a handle passed to/from the kernel
-- * @handle:	a handle
-- */
--struct ion_handle_data {
--	ion_user_handle_t handle;
--};
--
--/**
-- * struct ion_custom_data - metadata passed to/from userspace for a custom ioctl
-- * @cmd:	the custom ioctl function to call
-- * @arg:	additional data to pass to the custom ioctl, typically a user
-- *		pointer to a predefined structure
-- *
-- * This works just like the regular cmd and arg fields of an ioctl.
-- */
--struct ion_custom_data {
--	unsigned int cmd;
--	unsigned long arg;
--};
--
--#define ION_IOC_MAGIC		'I'
--
--/**
-- * DOC: ION_IOC_ALLOC - allocate memory
-- *
-- * Takes an ion_allocation_data struct and returns it with the handle field
-- * populated with the opaque handle for the allocation.
-- */
--#define ION_IOC_ALLOC		_IOWR(ION_IOC_MAGIC, 0, \
--				      struct ion_allocation_data)
--
--/**
-- * DOC: ION_IOC_FREE - free memory
-- *
-- * Takes an ion_handle_data struct and frees the handle.
-- */
--#define ION_IOC_FREE		_IOWR(ION_IOC_MAGIC, 1, struct ion_handle_data)
--
--/**
-- * DOC: ION_IOC_MAP - get a file descriptor to mmap
-- *
-- * Takes an ion_fd_data struct with the handle field populated with a valid
-- * opaque handle.  Returns the struct with the fd field set to a file
-- * descriptor open in the current address space.  This file descriptor
-- * can then be used as an argument to mmap.
-- */
--#define ION_IOC_MAP		_IOWR(ION_IOC_MAGIC, 2, struct ion_fd_data)
--
--/**
-- * DOC: ION_IOC_SHARE - creates a file descriptor to use to share an allocation
-- *
-- * Takes an ion_fd_data struct with the handle field populated with a valid
-- * opaque handle.  Returns the struct with the fd field set to a file
-- * descriptor open in the current address space.  This file descriptor
-- * can then be passed to another process.  The corresponding opaque handle can
-- * be retrieved via ION_IOC_IMPORT.
-- */
--#define ION_IOC_SHARE		_IOWR(ION_IOC_MAGIC, 4, struct ion_fd_data)
--
--/**
-- * DOC: ION_IOC_IMPORT - imports a shared file descriptor
-- *
-- * Takes an ion_fd_data struct with the fd field populated with a valid file
-- * descriptor obtained from ION_IOC_SHARE and returns the struct with the handle
-- * filed set to the corresponding opaque handle.
-- */
--#define ION_IOC_IMPORT		_IOWR(ION_IOC_MAGIC, 5, struct ion_fd_data)
--
--/**
-- * DOC: ION_IOC_SYNC - syncs a shared file descriptors to memory
-- *
-- * Deprecated in favor of using the dma_buf api's correctly (syncing
-- * will happend automatically when the buffer is mapped to a device).
-- * If necessary should be used after touching a cached buffer from the cpu,
-- * this will make the buffer in memory coherent.
-- */
--#define ION_IOC_SYNC		_IOWR(ION_IOC_MAGIC, 7, struct ion_fd_data)
--
--/**
-- * DOC: ION_IOC_CUSTOM - call architecture specific ion ioctl
-- *
-- * Takes the argument of the architecture specific ioctl to call and
-- * passes appropriate userdata for that ioctl
-- */
--#define ION_IOC_CUSTOM		_IOWR(ION_IOC_MAGIC, 6, struct ion_custom_data)
--
--#endif /* _UAPI_LINUX_ION_H */
-diff --git a/libion/original-kernel-headers/linux/ion_test.h b/libion/original-kernel-headers/linux/ion_test.h
-deleted file mode 100644
-index ffef06f..0000000
---- a/libion/original-kernel-headers/linux/ion_test.h
-+++ /dev/null
-@@ -1,70 +0,0 @@
--/*
-- * drivers/staging/android/uapi/ion.h
-- *
-- * Copyright (C) 2011 Google, Inc.
-- *
-- * This software is licensed under the terms of the GNU General Public
-- * License version 2, as published by the Free Software Foundation, and
-- * may be copied, distributed, and modified under those terms.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- */
--
--#ifndef _UAPI_LINUX_ION_TEST_H
--#define _UAPI_LINUX_ION_TEST_H
--
--#include <linux/ioctl.h>
--#include <linux/types.h>
--
--/**
-- * struct ion_test_rw_data - metadata passed to the kernel to read handle
-- * @ptr:	a pointer to an area at least as large as size
-- * @offset:	offset into the ion buffer to start reading
-- * @size:	size to read or write
-- * @write:	1 to write, 0 to read
-- */
--struct ion_test_rw_data {
--	__u64 ptr;
--	__u64 offset;
--	__u64 size;
--	int write;
--	int __padding;
--};
--
--#define ION_IOC_MAGIC		'I'
--
--/**
-- * DOC: ION_IOC_TEST_SET_DMA_BUF - attach a dma buf to the test driver
-- *
-- * Attaches a dma buf fd to the test driver.  Passing a second fd or -1 will
-- * release the first fd.
-- */
--#define ION_IOC_TEST_SET_FD \
--			_IO(ION_IOC_MAGIC, 0xf0)
--
--/**
-- * DOC: ION_IOC_TEST_DMA_MAPPING - read or write memory from a handle as DMA
-- *
-- * Reads or writes the memory from a handle using an uncached mapping.  Can be
-- * used by unit tests to emulate a DMA engine as close as possible.  Only
-- * expected to be used for debugging and testing, may not always be available.
-- */
--#define ION_IOC_TEST_DMA_MAPPING \
--			_IOW(ION_IOC_MAGIC, 0xf1, struct ion_test_rw_data)
--
--/**
-- * DOC: ION_IOC_TEST_KERNEL_MAPPING - read or write memory from a handle
-- *
-- * Reads or writes the memory from a handle using a kernel mapping.  Can be
-- * used by unit tests to test heap map_kernel functions.  Only expected to be
-- * used for debugging and testing, may not always be available.
-- */
--#define ION_IOC_TEST_KERNEL_MAPPING \
--			_IOW(ION_IOC_MAGIC, 0xf2, struct ion_test_rw_data)
--
--
--#endif /* _UAPI_LINUX_ION_H */
-diff --git a/libion/tests/Android.mk b/libion/tests/Android.mk
-deleted file mode 100644
-index 8dc7f9d..0000000
---- a/libion/tests/Android.mk
-+++ /dev/null
-@@ -1,34 +0,0 @@
--#
--# Copyright (C) 2013 The Android Open Source Project
--#
--# Licensed under the Apache License, Version 2.0 (the "License");
--# you may not use this file except in compliance with the License.
--# You may obtain a copy of the License at
--#
--#      http://www.apache.org/licenses/LICENSE-2.0
--#
--# Unless required by applicable law or agreed to in writing, software
--# distributed under the License is distributed on an "AS IS" BASIS,
--# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--# See the License for the specific language governing permissions and
--# limitations under the License.
--#
--
--LOCAL_PATH:= $(call my-dir)
--
--include $(CLEAR_VARS)
--LOCAL_MODULE := ion-unit-tests
--LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
--LOCAL_CFLAGS += -g -Wall -Werror -std=gnu++11 -Wno-missing-field-initializers
--LOCAL_SHARED_LIBRARIES += libion
--LOCAL_STATIC_LIBRARIES += libgtest_main
--LOCAL_C_INCLUDES := $(LOCAL_PATH)/../kernel-headers
--LOCAL_SRC_FILES := \
--	ion_test_fixture.cpp \
--	allocate_test.cpp \
--	formerly_valid_handle_test.cpp \
--	invalid_values_test.cpp \
--	map_test.cpp \
--	device_test.cpp \
--	exit_test.cpp
--include $(BUILD_NATIVE_TEST)
-diff --git a/libion/tests/allocate_test.cpp b/libion/tests/allocate_test.cpp
-deleted file mode 100644
-index e26b302..0000000
---- a/libion/tests/allocate_test.cpp
-+++ /dev/null
-@@ -1,145 +0,0 @@
--/*
-- * Copyright (C) 2013 The Android Open Source Project
-- *
-- * Licensed under the Apache License, Version 2.0 (the "License");
-- * you may not use this file except in compliance with the License.
-- * You may obtain a copy of the License at
-- *
-- *      http://www.apache.org/licenses/LICENSE-2.0
-- *
-- * Unless required by applicable law or agreed to in writing, software
-- * distributed under the License is distributed on an "AS IS" BASIS,
-- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-- * See the License for the specific language governing permissions and
-- * limitations under the License.
-- */
--
--#include <sys/mman.h>
--
--#include <gtest/gtest.h>
--
--#include <ion/ion.h>
--#include "ion_test_fixture.h"
--
--class Allocate : public IonAllHeapsTest {
--};
--
--TEST_F(Allocate, Allocate)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            ion_user_handle_t handle = 0;
--            ASSERT_EQ(0, ion_alloc(m_ionFd, size, 0, heapMask, 0, &handle));
--            ASSERT_TRUE(handle != 0);
--            ASSERT_EQ(0, ion_free(m_ionFd, handle));
--        }
--    }
--}
--
--TEST_F(Allocate, AllocateCached)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            ion_user_handle_t handle = 0;
--            ASSERT_EQ(0, ion_alloc(m_ionFd, size, 0, heapMask, ION_FLAG_CACHED, &handle));
--            ASSERT_TRUE(handle != 0);
--            ASSERT_EQ(0, ion_free(m_ionFd, handle));
--        }
--    }
--}
--
--TEST_F(Allocate, AllocateCachedNeedsSync)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            ion_user_handle_t handle = 0;
--            ASSERT_EQ(0, ion_alloc(m_ionFd, size, 0, heapMask, ION_FLAG_CACHED_NEEDS_SYNC, &handle));
--            ASSERT_TRUE(handle != 0);
--            ASSERT_EQ(0, ion_free(m_ionFd, handle));
--        }
--    }
--}
--
--TEST_F(Allocate, RepeatedAllocate)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            ion_user_handle_t handle = 0;
--
--            for (unsigned int i = 0; i < 1024; i++) {
--                SCOPED_TRACE(::testing::Message() << "iteration " << i);
--                ASSERT_EQ(0, ion_alloc(m_ionFd, size, 0, heapMask, 0, &handle));
--                ASSERT_TRUE(handle != 0);
--                ASSERT_EQ(0, ion_free(m_ionFd, handle));
--            }
--        }
--    }
--}
--
--TEST_F(Allocate, Zeroed)
--{
--    void *zeroes = calloc(4096, 1);
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int fds[16];
--        for (unsigned int i = 0; i < 16; i++) {
--            int map_fd = -1;
--
--            ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, 0, &map_fd));
--            ASSERT_GE(map_fd, 0);
--
--            void *ptr = NULL;
--            ptr = mmap(NULL, 4096, PROT_WRITE, MAP_SHARED, map_fd, 0);
--            ASSERT_TRUE(ptr != NULL);
--
--            memset(ptr, 0xaa, 4096);
--
--            ASSERT_EQ(0, munmap(ptr, 4096));
--            fds[i] = map_fd;
--        }
--
--        for (unsigned int i = 0; i < 16; i++) {
--            ASSERT_EQ(0, close(fds[i]));
--        }
--
--        int newIonFd = ion_open();
--        int map_fd = -1;
--
--        ASSERT_EQ(0, ion_alloc_fd(newIonFd, 4096, 0, heapMask, 0, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr = NULL;
--        ptr = mmap(NULL, 4096, PROT_READ, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        ASSERT_EQ(0, memcmp(ptr, zeroes, 4096));
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(zeroes);
--
--}
--
--TEST_F(Allocate, Large)
--{
--    for (unsigned int heapMask : m_allHeaps) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        ion_user_handle_t handle = 0;
--        ASSERT_EQ(-ENOMEM, ion_alloc(m_ionFd, 3UL*1024*1024*1024, 0, heapMask, 0, &handle));
--    }
--}
-diff --git a/libion/tests/device_test.cpp b/libion/tests/device_test.cpp
-deleted file mode 100644
-index 6f6e1bd..0000000
---- a/libion/tests/device_test.cpp
-+++ /dev/null
-@@ -1,568 +0,0 @@
--/*
-- * Copyright (C) 2013 The Android Open Source Project
-- *
-- * Licensed under the Apache License, Version 2.0 (the "License");
-- * you may not use this file except in compliance with the License.
-- * You may obtain a copy of the License at
-- *
-- *      http://www.apache.org/licenses/LICENSE-2.0
-- *
-- * Unless required by applicable law or agreed to in writing, software
-- * distributed under the License is distributed on an "AS IS" BASIS,
-- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-- * See the License for the specific language governing permissions and
-- * limitations under the License.
-- */
--
--#include <fcntl.h>
--#include <sys/mman.h>
--#include <sys/stat.h>
--#include <sys/types.h>
--
--#include <linux/ion_test.h>
--
--#include <gtest/gtest.h>
--
--#include <ion/ion.h>
--
--#include "ion_test_fixture.h"
--
--#define ALIGN(x,y) (((x) + ((y) - 1)) & ~((y) - 1))
--
--class Device : public IonAllHeapsTest {
-- public:
--    virtual void SetUp();
--    virtual void TearDown();
--    int m_deviceFd;
--    void readDMA(int fd, void *buf, size_t size);
--    void writeDMA(int fd, void *buf, size_t size);
--    void readKernel(int fd, void *buf, size_t size);
--    void writeKernel(int fd, void *buf, size_t size);
--    void blowCache();
--    void dirtyCache(void *ptr, size_t size);
--};
--
--void Device::SetUp()
--{
--    IonAllHeapsTest::SetUp();
--    m_deviceFd = open("/dev/ion-test", O_RDWR);
--    ASSERT_GE(m_deviceFd, 0);
--}
--
--void Device::TearDown()
--{
--    ASSERT_EQ(0, close(m_deviceFd));
--    IonAllHeapsTest::TearDown();
--}
--
--void Device::readDMA(int fd, void *buf, size_t size)
--{
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_SET_FD, fd));
--    struct ion_test_rw_data ion_test_rw_data = {
--            .ptr = (uint64_t)buf,
--            .offset = 0,
--            .size = size,
--            .write = 0,
--    };
--
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_DMA_MAPPING, &ion_test_rw_data));
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_SET_FD, -1));
--}
--
--void Device::writeDMA(int fd, void *buf, size_t size)
--{
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_SET_FD, fd));
--    struct ion_test_rw_data ion_test_rw_data = {
--            .ptr = (uint64_t)buf,
--            .offset = 0,
--            .size = size,
--            .write = 1,
--    };
--
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_DMA_MAPPING, &ion_test_rw_data));
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_SET_FD, -1));
--}
--
--void Device::readKernel(int fd, void *buf, size_t size)
--{
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_SET_FD, fd));
--    struct ion_test_rw_data ion_test_rw_data = {
--            .ptr = (uint64_t)buf,
--            .offset = 0,
--            .size = size,
--            .write = 0,
--    };
--
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_KERNEL_MAPPING, &ion_test_rw_data));
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_SET_FD, -1));
--}
--
--void Device::writeKernel(int fd, void *buf, size_t size)
--{
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_SET_FD, fd));
--    struct ion_test_rw_data ion_test_rw_data = {
--            .ptr = (uint64_t)buf,
--            .offset = 0,
--            .size = size,
--            .write = 1,
--    };
--
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_KERNEL_MAPPING, &ion_test_rw_data));
--    ASSERT_EQ(0, ioctl(m_deviceFd, ION_IOC_TEST_SET_FD, -1));
--}
--
--void Device::blowCache()
--{
--    const size_t bigger_than_cache = 8*1024*1024;
--    void *buf1 = malloc(bigger_than_cache);
--    void *buf2 = malloc(bigger_than_cache);
--    memset(buf1, 0xaa, bigger_than_cache);
--    memcpy(buf2, buf1, bigger_than_cache);
--    free(buf1);
--    free(buf2);
--}
--
--void Device::dirtyCache(void *ptr, size_t size)
--{
--    /* try to dirty cache lines */
--    for (size_t i = size-1; i > 0; i--) {
--        ((volatile char *)ptr)[i];
--        ((char *)ptr)[i] = i;
--    }
--}
--
--TEST_F(Device, KernelReadCached)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = ION_FLAG_CACHED;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        for (int i = 0; i < 4096; i++)
--            ((char *)ptr)[i] = i;
--
--        ((char*)buf)[4096] = 0x12;
--        readKernel(map_fd, buf, 4096);
--        ASSERT_EQ(((char*)buf)[4096], 0x12);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)buf)[i]);
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, KernelWriteCached)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (int i = 0; i < 4096; i++)
--        ((char *)buf)[i] = i;
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = ION_FLAG_CACHED;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        dirtyCache(ptr, 4096);
--
--        writeKernel(map_fd, buf, 4096);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)ptr)[i]) << i;
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, DMAReadCached)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = ION_FLAG_CACHED;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        for (int i = 0; i < 4096; i++)
--            ((char *)ptr)[i] = i;
--
--        readDMA(map_fd, buf, 4096);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)buf)[i]);
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, DMAWriteCached)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (int i = 0; i < 4096; i++)
--        ((char *)buf)[i] = i;
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = ION_FLAG_CACHED;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        dirtyCache(ptr, 4096);
--
--        writeDMA(map_fd, buf, 4096);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)ptr)[i]) << i;
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, KernelReadCachedNeedsSync)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = ION_FLAG_CACHED | ION_FLAG_CACHED_NEEDS_SYNC;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        for (int i = 0; i < 4096; i++)
--            ((char *)ptr)[i] = i;
--
--        ((char*)buf)[4096] = 0x12;
--        readKernel(map_fd, buf, 4096);
--        ASSERT_EQ(((char*)buf)[4096], 0x12);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)buf)[i]);
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, KernelWriteCachedNeedsSync)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (int i = 0; i < 4096; i++)
--        ((char *)buf)[i] = i;
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = ION_FLAG_CACHED | ION_FLAG_CACHED_NEEDS_SYNC;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        dirtyCache(ptr, 4096);
--
--        writeKernel(map_fd, buf, 4096);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)ptr)[i]) << i;
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, DMAReadCachedNeedsSync)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = ION_FLAG_CACHED | ION_FLAG_CACHED_NEEDS_SYNC;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        for (int i = 0; i < 4096; i++)
--            ((char *)ptr)[i] = i;
--
--        ion_sync_fd(m_ionFd, map_fd);
--
--        readDMA(map_fd, buf, 4096);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)buf)[i]);
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, DMAWriteCachedNeedsSync)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (int i = 0; i < 4096; i++)
--        ((char *)buf)[i] = i;
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = ION_FLAG_CACHED | ION_FLAG_CACHED_NEEDS_SYNC;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        dirtyCache(ptr, 4096);
--
--        writeDMA(map_fd, buf, 4096);
--
--        ion_sync_fd(m_ionFd, map_fd);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)ptr)[i]) << i;
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--TEST_F(Device, KernelRead)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = 0;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        for (int i = 0; i < 4096; i++)
--            ((char *)ptr)[i] = i;
--
--        ((char*)buf)[4096] = 0x12;
--        readKernel(map_fd, buf, 4096);
--        ASSERT_EQ(((char*)buf)[4096], 0x12);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)buf)[i]);
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, KernelWrite)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (int i = 0; i < 4096; i++)
--        ((char *)buf)[i] = i;
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = 0;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        dirtyCache(ptr, 4096);
--
--        writeKernel(map_fd, buf, 4096);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)ptr)[i]) << i;
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, DMARead)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = 0;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        for (int i = 0; i < 4096; i++)
--            ((char *)ptr)[i] = i;
--
--        readDMA(map_fd, buf, 4096);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)buf)[i]);
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, DMAWrite)
--{
--    void *alloc = malloc(8192 + 1024);
--    void *buf = (void *)(ALIGN((unsigned long)alloc, 4096) + 1024);
--
--    for (int i = 0; i < 4096; i++)
--        ((char *)buf)[i] = i;
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = 0;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        dirtyCache(ptr, 4096);
--
--        writeDMA(map_fd, buf, 4096);
--
--        for (int i = 0; i < 4096; i++)
--            ASSERT_EQ((char)i, ((char *)ptr)[i]) << i;
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--
--    free(alloc);
--}
--
--TEST_F(Device, IsCached)
--{
--    void *buf = malloc(4096);
--
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--        unsigned int flags = ION_FLAG_CACHED | ION_FLAG_CACHED_NEEDS_SYNC;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, flags, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        void *ptr;
--        ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        dirtyCache(ptr, 4096);
--
--        readDMA(map_fd, buf, 4096);
--
--        bool same = true;
--        for (int i = 4096-16; i >= 0; i -= 16)
--            if (((char *)buf)[i] != i)
--                same = false;
--        ASSERT_FALSE(same);
--
--        ASSERT_EQ(0, munmap(ptr, 4096));
--        ASSERT_EQ(0, close(map_fd));
--    }
--}
-diff --git a/libion/tests/exit_test.cpp b/libion/tests/exit_test.cpp
-deleted file mode 100644
-index cdd3e27..0000000
---- a/libion/tests/exit_test.cpp
-+++ /dev/null
-@@ -1,227 +0,0 @@
--/*
-- * Copyright (C) 2013 The Android Open Source Project
-- *
-- * Licensed under the Apache License, Version 2.0 (the "License");
-- * you may not use this file except in compliance with the License.
-- * You may obtain a copy of the License at
-- *
-- *      http://www.apache.org/licenses/LICENSE-2.0
-- *
-- * Unless required by applicable law or agreed to in writing, software
-- * distributed under the License is distributed on an "AS IS" BASIS,
-- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-- * See the License for the specific language governing permissions and
-- * limitations under the License.
-- */
--
--#include <sys/mman.h>
--
--#include <gtest/gtest.h>
--
--#include <ion/ion.h>
--
--#include "ion_test_fixture.h"
--
--class Exit : public IonAllHeapsTest {
--};
--
--TEST_F(Exit, WithAlloc)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            EXPECT_EXIT({
--                ion_user_handle_t handle = 0;
--
--                ASSERT_EQ(0, ion_alloc(m_ionFd, size, 0, heapMask, 0, &handle));
--                ASSERT_TRUE(handle != 0);
--                exit(0);
--            }, ::testing::ExitedWithCode(0), "");
--        }
--    }
--}
--
--TEST_F(Exit, WithAllocFd)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            EXPECT_EXIT({
--                int handle_fd = -1;
--
--                ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, 0, &handle_fd));
--                ASSERT_NE(-1, handle_fd);
--                exit(0);
--            }, ::testing::ExitedWithCode(0), "");
--        }
--    }
--}
--
--TEST_F(Exit, WithRepeatedAllocFd)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            for (unsigned int i = 0; i < 1024; i++) {
--                SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--                SCOPED_TRACE(::testing::Message() << "size " << size);
--                ASSERT_EXIT({
--                    int handle_fd = -1;
--
--                    ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, 0, &handle_fd));
--                    ASSERT_NE(-1, handle_fd);
--                    exit(0);
--                }, ::testing::ExitedWithCode(0), "")
--                        << "failed on heap " << heapMask
--                        << " and size " << size
--                        << " on iteration " << i;
--            }
--        }
--    }
--}
--
--
--TEST_F(Exit, WithMapping)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            EXPECT_EXIT({
--                int map_fd = -1;
--
--                ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, 0, &map_fd));
--                ASSERT_GE(map_fd, 0);
--
--                void *ptr;
--                ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--                ASSERT_TRUE(ptr != NULL);
--                exit(0);
--            }, ::testing::ExitedWithCode(0), "");
--        }
--    }
--
--}
--
--TEST_F(Exit, WithPartialMapping)
--{
--    static const size_t allocationSizes[] = {64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            EXPECT_EXIT({
--                int map_fd = -1;
--
--                ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, 0, &map_fd));
--                ASSERT_GE(map_fd, 0);
--
--                void *ptr;
--                ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--                ASSERT_TRUE(ptr != NULL);
--
--                ASSERT_EQ(0, munmap(ptr, size / 2));
--                exit(0);
--            }, ::testing::ExitedWithCode(0), "");
--        }
--    }
--}
--
--TEST_F(Exit, WithMappingCached)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            EXPECT_EXIT({
--                int map_fd = -1;
--
--                ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, ION_FLAG_CACHED, &map_fd));
--                ASSERT_GE(map_fd, 0);
--
--                void *ptr;
--                ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--                ASSERT_TRUE(ptr != NULL);
--                exit(0);
--            }, ::testing::ExitedWithCode(0), "");
--        }
--    }
--
--}
--
--TEST_F(Exit, WithPartialMappingCached)
--{
--    static const size_t allocationSizes[] = {64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            EXPECT_EXIT({
--                int map_fd = -1;
--
--                ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, ION_FLAG_CACHED, &map_fd));
--                ASSERT_GE(map_fd, 0);
--
--                void *ptr;
--                ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--                ASSERT_TRUE(ptr != NULL);
--
--                ASSERT_EQ(0, munmap(ptr, size / 2));
--                exit(0);
--            }, ::testing::ExitedWithCode(0), "");
--        }
--    }
--}
--
--TEST_F(Exit, WithMappingNeedsSync)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            EXPECT_EXIT({
--                int map_fd = -1;
--
--                ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, ION_FLAG_CACHED | ION_FLAG_CACHED_NEEDS_SYNC, &map_fd));
--                ASSERT_GE(map_fd, 0);
--
--                void *ptr;
--                ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--                ASSERT_TRUE(ptr != NULL);
--                exit(0);
--            }, ::testing::ExitedWithCode(0), "");
--        }
--    }
--
--}
--
--TEST_F(Exit, WithPartialMappingNeedsSync)
--{
--    static const size_t allocationSizes[] = {64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            EXPECT_EXIT({
--                int map_fd = -1;
--
--                ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, ION_FLAG_CACHED | ION_FLAG_CACHED_NEEDS_SYNC, &map_fd));
--                ASSERT_GE(map_fd, 0);
--
--                void *ptr;
--                ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--                ASSERT_TRUE(ptr != NULL);
--
--                ASSERT_EQ(0, munmap(ptr, size / 2));
--                exit(0);
--            }, ::testing::ExitedWithCode(0), "");
--        }
--    }
--}
-diff --git a/libion/tests/formerly_valid_handle_test.cpp b/libion/tests/formerly_valid_handle_test.cpp
-deleted file mode 100644
-index 01ab8f3..0000000
---- a/libion/tests/formerly_valid_handle_test.cpp
-+++ /dev/null
-@@ -1,63 +0,0 @@
--/*
-- * Copyright (C) 2013 The Android Open Source Project
-- *
-- * Licensed under the Apache License, Version 2.0 (the "License");
-- * you may not use this file except in compliance with the License.
-- * You may obtain a copy of the License at
-- *
-- *      http://www.apache.org/licenses/LICENSE-2.0
-- *
-- * Unless required by applicable law or agreed to in writing, software
-- * distributed under the License is distributed on an "AS IS" BASIS,
-- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-- * See the License for the specific language governing permissions and
-- * limitations under the License.
-- */
--
--#include <sys/mman.h>
--
--#include <gtest/gtest.h>
--
--#include <ion/ion.h>
--
--#include "ion_test_fixture.h"
--
--class FormerlyValidHandle : public IonTest {
-- public:
--    virtual void SetUp();
--    virtual void TearDown();
--    ion_user_handle_t m_handle;
--};
--
--void FormerlyValidHandle::SetUp()
--{
--    IonTest::SetUp();
--    ASSERT_EQ(0, ion_alloc(m_ionFd, 4096, 0, 1/* ion_env->m_firstHeap */, 0, &m_handle));
--    ASSERT_TRUE(m_handle != 0);
--    ASSERT_EQ(0, ion_free(m_ionFd, m_handle));
--}
--
--void FormerlyValidHandle::TearDown()
--{
--    m_handle = 0;
--}
--
--TEST_F(FormerlyValidHandle, free)
--{
--	ASSERT_EQ(-EINVAL, ion_free(m_ionFd, m_handle));
--}
--
--TEST_F(FormerlyValidHandle, map)
--{
--    int map_fd;
--    unsigned char *ptr;
--
--    ASSERT_EQ(-EINVAL, ion_map(m_ionFd, m_handle, 4096, PROT_READ, 0, 0, &ptr, &map_fd));
--}
--
--TEST_F(FormerlyValidHandle, share)
--{
--    int share_fd;
--
--    ASSERT_EQ(-EINVAL, ion_share(m_ionFd, m_handle, &share_fd));
--}
-diff --git a/libion/tests/invalid_values_test.cpp b/libion/tests/invalid_values_test.cpp
-deleted file mode 100644
-index 77fea17..0000000
---- a/libion/tests/invalid_values_test.cpp
-+++ /dev/null
-@@ -1,186 +0,0 @@
--/*
-- * Copyright (C) 2013 The Android Open Source Project
-- *
-- * Licensed under the Apache License, Version 2.0 (the "License");
-- * you may not use this file except in compliance with the License.
-- * You may obtain a copy of the License at
-- *
-- *      http://www.apache.org/licenses/LICENSE-2.0
-- *
-- * Unless required by applicable law or agreed to in writing, software
-- * distributed under the License is distributed on an "AS IS" BASIS,
-- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-- * See the License for the specific language governing permissions and
-- * limitations under the License.
-- */
--
--#include <sys/mman.h>
--
--#include <gtest/gtest.h>
--
--#include <ion/ion.h>
--
--#include "ion_test_fixture.h"
--
--class InvalidValues : public IonAllHeapsTest {
-- public:
--    virtual void SetUp();
--    virtual void TearDown();
--    ion_user_handle_t m_validHandle;
--    int m_validShareFd;
--    ion_user_handle_t const m_badHandle = -1;
--};
--
--void InvalidValues::SetUp()
--{
--    IonAllHeapsTest::SetUp();
--    ASSERT_EQ(0, ion_alloc(m_ionFd, 4096, 0, m_firstHeap, 0, &m_validHandle))
--      << m_ionFd << " " << m_firstHeap;
--    ASSERT_TRUE(m_validHandle != 0);
--    ASSERT_EQ(0, ion_share(m_ionFd, m_validHandle, &m_validShareFd));
--}
--
--void InvalidValues::TearDown()
--{
--    ASSERT_EQ(0, ion_free(m_ionFd, m_validHandle));
--    ASSERT_EQ(0, close(m_validShareFd));
--    m_validHandle = 0;
--    IonAllHeapsTest::TearDown();
--}
--
--TEST_F(InvalidValues, ion_close)
--{
--    EXPECT_EQ(-EBADF, ion_close(-1));
--}
--
--TEST_F(InvalidValues, ion_alloc)
--{
--    ion_user_handle_t handle;
--    /* invalid ion_fd */
--    int ret = ion_alloc(0, 4096, 0, m_firstHeap, 0, &handle);
--    EXPECT_TRUE(ret == -EINVAL || ret == -ENOTTY);
--    /* invalid ion_fd */
--    EXPECT_EQ(-EBADF, ion_alloc(-1, 4096, 0, m_firstHeap, 0, &handle));
--    /* no heaps */
--    EXPECT_EQ(-ENODEV, ion_alloc(m_ionFd, 4096, 0, 0, 0, &handle));
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        /* zero size */
--        EXPECT_EQ(-EINVAL, ion_alloc(m_ionFd, 0, 0, heapMask, 0, &handle));
--        /* too large size */
--        EXPECT_EQ(-EINVAL, ion_alloc(m_ionFd, -1, 0, heapMask, 0, &handle));
--        /* bad alignment */
--        EXPECT_EQ(-EINVAL, ion_alloc(m_ionFd, 4096, -1, heapMask, 0, &handle));
--        /* NULL handle */
--        EXPECT_EQ(-EINVAL, ion_alloc(m_ionFd, 4096, 0, heapMask, 0, NULL));
--    }
--}
--
--TEST_F(InvalidValues, ion_alloc_fd)
--{
--    int fd;
--    /* invalid ion_fd */
--    int ret = ion_alloc_fd(0, 4096, 0, m_firstHeap, 0, &fd);
--    EXPECT_TRUE(ret == -EINVAL || ret == -ENOTTY);
--    /* invalid ion_fd */
--    EXPECT_EQ(-EBADF, ion_alloc_fd(-1, 4096, 0, m_firstHeap, 0, &fd));
--    /* no heaps */
--    EXPECT_EQ(-ENODEV, ion_alloc_fd(m_ionFd, 4096, 0, 0, 0, &fd));
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        /* zero size */
--        EXPECT_EQ(-EINVAL, ion_alloc_fd(m_ionFd, 0, 0, heapMask, 0, &fd));
--        /* too large size */
--        EXPECT_EQ(-EINVAL, ion_alloc_fd(m_ionFd, -1, 0, heapMask, 0, &fd));
--        /* bad alignment */
--        EXPECT_EQ(-EINVAL, ion_alloc_fd(m_ionFd, 4096, -1, heapMask, 0, &fd));
--        /* NULL handle */
--        EXPECT_EQ(-EINVAL, ion_alloc_fd(m_ionFd, 4096, 0, heapMask, 0, NULL));
--    }
--}
--
--TEST_F(InvalidValues, ion_free)
--{
--    /* invalid ion fd */
--    int ret = ion_free(0, m_validHandle);
--    EXPECT_TRUE(ret == -EINVAL || ret == -ENOTTY);
--    /* invalid ion fd */
--    EXPECT_EQ(-EBADF, ion_free(-1, m_validHandle));
--    /* zero handle */
--    EXPECT_EQ(-EINVAL, ion_free(m_ionFd, 0));
--    /* bad handle */
--    EXPECT_EQ(-EINVAL, ion_free(m_ionFd, m_badHandle));
--}
--
--TEST_F(InvalidValues, ion_map)
--{
--    int map_fd;
--    unsigned char *ptr;
--
--    /* invalid ion fd */
--    int ret = ion_map(0, m_validHandle, 4096, PROT_READ, 0, 0, &ptr, &map_fd);
--    EXPECT_TRUE(ret == -EINVAL || ret == -ENOTTY);
--    /* invalid ion fd */
--    EXPECT_EQ(-EBADF, ion_map(-1, m_validHandle, 4096, PROT_READ, 0, 0, &ptr, &map_fd));
--    /* zero handle */
--    EXPECT_EQ(-EINVAL, ion_map(m_ionFd, 0, 4096, PROT_READ, 0, 0, &ptr, &map_fd));
--    /* bad handle */
--    EXPECT_EQ(-EINVAL, ion_map(m_ionFd, m_badHandle, 4096, PROT_READ, 0, 0, &ptr, &map_fd));
--    /* zero length */
--    EXPECT_EQ(-EINVAL, ion_map(m_ionFd, m_validHandle, 0, PROT_READ, 0, 0, &ptr, &map_fd));
--    /* bad prot */
--    EXPECT_EQ(-EINVAL, ion_map(m_ionFd, m_validHandle, 4096, -1, 0, 0, &ptr, &map_fd));
--    /* bad offset */
--    EXPECT_EQ(-EINVAL, ion_map(m_ionFd, m_validHandle, 4096, PROT_READ, 0, -1, &ptr, &map_fd));
--    /* NULL ptr */
--    EXPECT_EQ(-EINVAL, ion_map(m_ionFd, m_validHandle, 4096, PROT_READ, 0, 0, NULL, &map_fd));
--    /* NULL map_fd */
--    EXPECT_EQ(-EINVAL, ion_map(m_ionFd, m_validHandle, 4096, PROT_READ, 0, 0, &ptr, NULL));
--}
--
--TEST_F(InvalidValues, ion_share)
--{
--    int share_fd;
--
--    /* invalid ion fd */
--    int ret = ion_share(0, m_validHandle, &share_fd);
--    EXPECT_TRUE(ret == -EINVAL || ret == -ENOTTY);
--    /* invalid ion fd */
--    EXPECT_EQ(-EBADF, ion_share(-1, m_validHandle, &share_fd));
--    /* zero handle */
--    EXPECT_EQ(-EINVAL, ion_share(m_ionFd, 0, &share_fd));
--    /* bad handle */
--    EXPECT_EQ(-EINVAL, ion_share(m_ionFd, m_badHandle, &share_fd));
--    /* NULL share_fd */
--    EXPECT_EQ(-EINVAL, ion_share(m_ionFd, m_validHandle, NULL));
--}
--
--TEST_F(InvalidValues, ion_import)
--{
--    ion_user_handle_t handle;
--
--    /* invalid ion fd */
--    int ret = ion_import(0, m_validShareFd, &handle);
--    EXPECT_TRUE(ret == -EINVAL || ret == -ENOTTY);
--    /* invalid ion fd */
--    EXPECT_EQ(-EBADF, ion_import(-1, m_validShareFd, &handle));
--    /* bad share_fd */
--    EXPECT_EQ(-EINVAL, ion_import(m_ionFd, 0, &handle));
--    /* invalid share_fd */
--    EXPECT_EQ(-EBADF, ion_import(m_ionFd, -1, &handle));
--    /* NULL handle */
--    EXPECT_EQ(-EINVAL, ion_import(m_ionFd, m_validShareFd, NULL));
--}
--
--TEST_F(InvalidValues, ion_sync_fd)
--{
--    /* invalid ion fd */
--    int ret = ion_sync_fd(0, m_validShareFd);
--    EXPECT_TRUE(ret == -EINVAL || ret == -ENOTTY);
--    /* invalid ion fd */
--    EXPECT_EQ(-EBADF, ion_sync_fd(-1, m_validShareFd));
--    /* bad share_fd */
--    EXPECT_EQ(-EINVAL, ion_sync_fd(m_ionFd, 0));
--    /* invalid share_fd */
--    EXPECT_EQ(-EBADF, ion_sync_fd(m_ionFd, -1));
--}
-diff --git a/libion/tests/ion_test_fixture.cpp b/libion/tests/ion_test_fixture.cpp
-deleted file mode 100644
-index e20c730..0000000
---- a/libion/tests/ion_test_fixture.cpp
-+++ /dev/null
-@@ -1,73 +0,0 @@
--/*
-- * Copyright (C) 2013 The Android Open Source Project
-- *
-- * Licensed under the Apache License, Version 2.0 (the "License");
-- * you may not use this file except in compliance with the License.
-- * You may obtain a copy of the License at
-- *
-- *      http://www.apache.org/licenses/LICENSE-2.0
-- *
-- * Unless required by applicable law or agreed to in writing, software
-- * distributed under the License is distributed on an "AS IS" BASIS,
-- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-- * See the License for the specific language governing permissions and
-- * limitations under the License.
-- */
--
--#include <gtest/gtest.h>
--
--#include <ion/ion.h>
--
--#include "ion_test_fixture.h"
--
--IonTest::IonTest() : m_ionFd(-1)
--{
--}
--
--void IonTest::SetUp() {
--    m_ionFd = ion_open();
--    ASSERT_GE(m_ionFd, 0);
--}
--
--void IonTest::TearDown() {
--    ion_close(m_ionFd);
--}
--
--IonAllHeapsTest::IonAllHeapsTest() :
--        m_firstHeap(0),
--        m_lastHeap(0),
--        m_allHeaps()
--{
--}
--
--void IonAllHeapsTest::SetUp() {
--    int fd = ion_open();
--    ASSERT_GE(fd, 0);
--
--    for (int i = 1; i != 0; i <<= 1) {
--        ion_user_handle_t handle = 0;
--        int ret;
--        ret = ion_alloc(fd, 4096, 0, i, 0, &handle);
--        if (ret == 0 && handle != 0) {
--            ion_free(fd, handle);
--            if (!m_firstHeap) {
--                m_firstHeap = i;
--            }
--            m_lastHeap = i;
--            m_allHeaps.push_back(i);
--        } else {
--            ASSERT_EQ(-ENODEV, ret);
--        }
--    }
--    ion_close(fd);
--
--    EXPECT_NE(0U, m_firstHeap);
--    EXPECT_NE(0U, m_lastHeap);
--
--    RecordProperty("Heaps", m_allHeaps.size());
--    IonTest::SetUp();
--}
--
--void IonAllHeapsTest::TearDown() {
--    IonTest::TearDown();
--}
-diff --git a/libion/tests/ion_test_fixture.h b/libion/tests/ion_test_fixture.h
-deleted file mode 100644
-index 4098214..0000000
---- a/libion/tests/ion_test_fixture.h
-+++ /dev/null
-@@ -1,46 +0,0 @@
--/*
-- * Copyright (C) 2013 The Android Open Source Project
-- *
-- * Licensed under the Apache License, Version 2.0 (the "License");
-- * you may not use this file except in compliance with the License.
-- * You may obtain a copy of the License at
-- *
-- *      http://www.apache.org/licenses/LICENSE-2.0
-- *
-- * Unless required by applicable law or agreed to in writing, software
-- * distributed under the License is distributed on an "AS IS" BASIS,
-- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-- * See the License for the specific language governing permissions and
-- * limitations under the License.
-- */
--
--#ifndef ION_TEST_FIXTURE_H_
--#define ION_TEST_FIXTURE_H_
--
--#include <gtest/gtest.h>
--
--using ::testing::Test;
--
--class IonTest : public virtual Test {
-- public:
--    IonTest();
--	virtual ~IonTest() {};
--	virtual void SetUp();
--	virtual void TearDown();
--	int m_ionFd;
--};
--
--class IonAllHeapsTest : public IonTest {
-- public:
--    IonAllHeapsTest();
--    virtual ~IonAllHeapsTest() {};
--    virtual void SetUp();
--    virtual void TearDown();
--
--    unsigned int m_firstHeap;
--    unsigned int m_lastHeap;
--
--    std::vector<unsigned int> m_allHeaps;
--};
--
--#endif /* ION_TEST_FIXTURE_H_ */
-diff --git a/libion/tests/map_test.cpp b/libion/tests/map_test.cpp
-deleted file mode 100644
-index c006dc8..0000000
---- a/libion/tests/map_test.cpp
-+++ /dev/null
-@@ -1,162 +0,0 @@
--/*
-- * Copyright (C) 2013 The Android Open Source Project
-- *
-- * Licensed under the Apache License, Version 2.0 (the "License");
-- * you may not use this file except in compliance with the License.
-- * You may obtain a copy of the License at
-- *
-- *      http://www.apache.org/licenses/LICENSE-2.0
-- *
-- * Unless required by applicable law or agreed to in writing, software
-- * distributed under the License is distributed on an "AS IS" BASIS,
-- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-- * See the License for the specific language governing permissions and
-- * limitations under the License.
-- */
--
--#include <sys/mman.h>
--
--#include <gtest/gtest.h>
--
--#include <ion/ion.h>
--
--#include "ion_test_fixture.h"
--
--class Map : public IonAllHeapsTest {
--};
--
--TEST_F(Map, MapHandle)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            ion_user_handle_t handle = 0;
--
--            ASSERT_EQ(0, ion_alloc(m_ionFd, size, 0, heapMask, 0, &handle));
--            ASSERT_TRUE(handle != 0);
--
--            int map_fd = -1;
--            unsigned char *ptr = NULL;
--            ASSERT_EQ(0, ion_map(m_ionFd, handle, size, PROT_READ | PROT_WRITE, MAP_SHARED, 0, &ptr, &map_fd));
--            ASSERT_TRUE(ptr != NULL);
--            ASSERT_GE(map_fd, 0);
--
--            ASSERT_EQ(0, close(map_fd));
--
--            ASSERT_EQ(0, ion_free(m_ionFd, handle));
--
--            memset(ptr, 0xaa, size);
--
--            ASSERT_EQ(0, munmap(ptr, size));
--        }
--    }
--}
--
--TEST_F(Map, MapFd)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            int map_fd = -1;
--
--            ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, 0, &map_fd));
--            ASSERT_GE(map_fd, 0);
--
--            void *ptr;
--            ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--            ASSERT_TRUE(ptr != NULL);
--
--            ASSERT_EQ(0, close(map_fd));
--
--            memset(ptr, 0xaa, size);
--
--            ASSERT_EQ(0, munmap(ptr, size));
--        }
--    }
--}
--
--TEST_F(Map, MapOffset)
--{
--    for (unsigned int heapMask : m_allHeaps) {
--        SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--        int map_fd = -1;
--
--        ASSERT_EQ(0, ion_alloc_fd(m_ionFd, PAGE_SIZE * 2, 0, heapMask, 0, &map_fd));
--        ASSERT_GE(map_fd, 0);
--
--        unsigned char *ptr;
--        ptr = (unsigned char *)mmap(NULL, PAGE_SIZE * 2, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--        ASSERT_TRUE(ptr != NULL);
--
--        memset(ptr, 0, PAGE_SIZE);
--        memset(ptr + PAGE_SIZE, 0xaa, PAGE_SIZE);
--
--        ASSERT_EQ(0, munmap(ptr, PAGE_SIZE * 2));
--
--        ptr = (unsigned char *)mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, PAGE_SIZE);
--        ASSERT_TRUE(ptr != NULL);
--
--        ASSERT_EQ(ptr[0], 0xaa);
--        ASSERT_EQ(ptr[PAGE_SIZE - 1], 0xaa);
--
--        ASSERT_EQ(0, munmap(ptr, PAGE_SIZE));
--
--        ASSERT_EQ(0, close(map_fd));
--    }
--}
--
--TEST_F(Map, MapCached)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            int map_fd = -1;
--            unsigned int flags = ION_FLAG_CACHED;
--
--            ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, flags, &map_fd));
--            ASSERT_GE(map_fd, 0);
--
--            void *ptr;
--            ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--            ASSERT_TRUE(ptr != NULL);
--
--            ASSERT_EQ(0, close(map_fd));
--
--            memset(ptr, 0xaa, size);
--
--            ASSERT_EQ(0, munmap(ptr, size));
--        }
--    }
--}
--
--TEST_F(Map, MapCachedNeedsSync)
--{
--    static const size_t allocationSizes[] = {4*1024, 64*1024, 1024*1024, 2*1024*1024};
--    for (unsigned int heapMask : m_allHeaps) {
--        for (size_t size : allocationSizes) {
--            SCOPED_TRACE(::testing::Message() << "heap " << heapMask);
--            SCOPED_TRACE(::testing::Message() << "size " << size);
--            int map_fd = -1;
--            unsigned int flags = ION_FLAG_CACHED | ION_FLAG_CACHED_NEEDS_SYNC;
--
--            ASSERT_EQ(0, ion_alloc_fd(m_ionFd, size, 0, heapMask, flags, &map_fd));
--            ASSERT_GE(map_fd, 0);
--
--            void *ptr;
--            ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, 0);
--            ASSERT_TRUE(ptr != NULL);
--
--            ASSERT_EQ(0, close(map_fd));
--
--            memset(ptr, 0xaa, size);
--
--            ASSERT_EQ(0, munmap(ptr, size));
--        }
--    }
--}
+1.9.1
+
