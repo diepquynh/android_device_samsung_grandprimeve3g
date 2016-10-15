@@ -33,29 +33,5 @@ healthd_board_init(struct healthd_config *config)
 int
 healthd_board_battery_update(struct android::BatteryProperties *props)
 {
-    // Return non-zero to prevent logging battery status heartbeat message to the kernel log
-    return 1;
-}
-
-void
-healthd_board_mode_charger_draw_battery(struct android::BatteryProperties* batProps)
-{
-
-}
-
-void
-healthd_board_mode_charger_battery_update(struct android::BatteryProperties* batProps)
-{
-
-}
-
-void
-healthd_board_mode_charger_set_backlight(bool on)
-{
-
-}
-
-void healthd_board_mode_charger_init()
-{
-
+    return 0;
 }
