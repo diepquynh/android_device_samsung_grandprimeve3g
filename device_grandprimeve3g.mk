@@ -16,6 +16,20 @@ LOCAL_PATH := device/samsung/grandprimeve3g
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 $(call inherit-product, $(LOCAL_PATH)/device.mk)
+$(call inherit-product, device/common/gps/gps_us_supl.mk)
+
+$(call inherit-product-if-exists, vendor/samsung/grandprimeve3g/grandprimeve3g-vendor.mk)
+
+# Overlay
+DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
+
+# This device is hdpi
+PRODUCT_AAPT_CONFIG := normal
+PRODUCT_AAPT_PREF_CONFIG := hdpi
+
+# Boot animation
+TARGET_SCREEN_HEIGHT := 960
+TARGET_SCREEN_WIDTH := 540
 
 # Bluetooth config
 BLUETOOTH_CONFIGS := \
@@ -110,6 +124,23 @@ PRODUCT_PACKAGES += \
 	charger \
 	charger_res_images
 
+# Rootdir files
+ROOTDIR_FILES := \
+	$(LOCAL_PATH)/ramdisk/init.rc \
+	$(LOCAL_PATH)/ramdisk/init.board.rc \
+	$(LOCAL_PATH)/ramdisk/init.recovery.board.rc \
+	$(LOCAL_PATH)/ramdisk/init.sc8830.rc \
+	$(LOCAL_PATH)/ramdisk/init.sc8830.usb.rc \
+	$(LOCAL_PATH)/ramdisk/init.sc8830_ss.rc \
+	$(LOCAL_PATH)/ramdisk/init.grandprimeve3g.rc \
+	$(LOCAL_PATH)/ramdisk/init.grandprimeve3g_base.rc \
+	$(LOCAL_PATH)/ramdisk/init.wifi.rc \
+	$(LOCAL_PATH)/ramdisk/ueventd.sc8830.rc \
+	$(LOCAL_PATH)/ramdisk/fstab.sc8830
+
+PRODUCT_COPY_FILES += \
+	$(foreach f,$(ROOTDIR_FILES),$(f):root/$(notdir $(f)))
+
 # Permissions
 PERMISSION_XML_FILES := \
 	$(LOCAL_PATH)/permissions/platform.xml \
@@ -156,6 +187,21 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	dalvik.vm.image-dex2oat-filter=everything \
 	ro.sys.fw.dex2oat_thread_count=4
 
+# Languages
+PRODUCT_PROPERTY_OVERRIDES += \
+	ro.product.locale.language=en \
+	ro.product.locale.region=GB
+
+# enable Google-specific location features,
+# like NetworkLocationProvider and LocationCollector
+PRODUCT_PROPERTY_OVERRIDES += \
+	ro.com.google.locationfeatures=1 \
+	ro.com.google.networklocation=1
+
+# Dalvik heap config
+$(call inherit-product, frameworks/native/build/phone-hdpi-2048-dalvik-heap.mk)
+$(call inherit-product, frameworks/native/build/phone-xxhdpi-2048-hwui-memory.mk)
+
 # Support for Browser's saved page feature. This allows
 # for pages saved on previous versions of the OS to be
 # viewed on the current OS.
@@ -165,6 +211,7 @@ PRODUCT_PACKAGES += \
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
 # Set those variables here to overwrite the inherited values.
+PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
 PRODUCT_NAME := full_grandprimeve3g
 PRODUCT_DEVICE := grandprimeve3g
 PRODUCT_BRAND := samsung
