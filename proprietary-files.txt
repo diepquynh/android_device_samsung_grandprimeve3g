@@ -10,6 +10,7 @@ etc/gps.conf
 etc/gps.xml
 bin/gpsd
 bin/gps.cer
+lib/liblcsagent.so
 lib/hw/gps.default.so
 
 # Graphics rendering
