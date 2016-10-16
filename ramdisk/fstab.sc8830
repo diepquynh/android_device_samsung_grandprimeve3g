@@ -16,4 +16,4 @@
 
 # USB OTG
 /devices/sdio_sd/mmc_host/mmc1*          auto                    auto    defaults    voldmanaged=extSdCard:auto,noemulatedsd
-/devices/20200000.usb/usb*               auto                    auto    defaults    voldmanaged=UsbDriveA:auto,noemulatedsd
+/devices/20200000.usb/usb*               auto                    auto    defaults    voldmanaged=usbdisk:auto,noemulatedsd
