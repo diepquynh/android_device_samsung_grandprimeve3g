@@ -1,8 +1,0 @@
-/boot		emmc		/dev/block/mmcblk0p20
-/recovery	emmc		/dev/block/mmcblk0p21				flags=backup=1
-/data		f2fs		/dev/block/mmcblk0p25		length=-16384
-/system		ext4		/dev/block/mmcblk0p23
-/cache		f2fs		/dev/block/mmcblk0p22				flags=backup=1;display=cache
-/efs		ext4		/dev/block/mmcblk0p17				flags=backup=1;display=EFS
-/modem		emmc		/dev/block/mmcblk0p8				flags=backup=1;display="Modem"
-/external_sd	vfat		/dev/block/mmcblk1p1	/dev/block/mmcblk1	flags=display="Micro SD";storage;wipeingui;removable

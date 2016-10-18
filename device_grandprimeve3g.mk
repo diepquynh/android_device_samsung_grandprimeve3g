@@ -15,15 +15,17 @@
 LOCAL_PATH := device/samsung/grandprimeve3g
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
-$(call inherit-product, $(LOCAL_PATH)/device.mk)
 
-# Keylayouts
-KEYLAYOUT_FILES := \
-	$(LOCAL_PATH)/keylayouts/sci-keypad.kl \
-	$(LOCAL_PATH)/keylayouts/samsung-keypad.kl
+# The gps config appropriate for this device
+$(call inherit-product, device/common/gps/gps_us_supl.mk)
 
-PRODUCT_COPY_FILES += \
-	$(foreach f,$(KEYLAYOUT_FILES),$(f):system/usr/keylayout/$(notdir $(f)))
+$(call inherit-product-if-exists, vendor/samsung/grandprimeve3g/grandprimeve3g-vendor.mk)
+
+DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
+
+# Boot animation
+TARGET_SCREEN_HEIGHT := 960
+TARGET_SCREEN_WIDTH := 540
 
 # Bluetooth config
 BLUETOOTH_CONFIGS := \
@@ -50,19 +52,16 @@ PRODUCT_PACKAGES += \
 
 # HWC
 PRODUCT_PACKAGES += \
-	gralloc.sc8830 \
-	hwcomposer.sc8830 \
-	sprd_gsp.sc8830 \
 	libion_sprd
 
 # Codecs
-PRODUCT_PACKAGES += \
-	libstagefrighthw \
-	libstagefright_sprd_mpeg4dec \
-	libstagefright_sprd_mpeg4enc \
-	libstagefright_sprd_h264dec \
-	libstagefright_sprd_h264enc \
-	libstagefright_sprd_vpxdec
+#PRODUCT_PACKAGES += \
+#	libstagefrighthw \
+#	libstagefright_sprd_mpeg4dec \
+#	libstagefright_sprd_mpeg4enc \
+#	libstagefright_sprd_h264dec \
+#	libstagefright_sprd_h264enc \
+#	libstagefright_sprd_vpxdec
 
 # Lights
 PRODUCT_PACKAGES += \
@@ -110,10 +109,13 @@ PRODUCT_PACKAGES += \
 	libnetcmdiface \
 	dhcpcd.conf \
 	wpa_supplicant \
-	hostapd
+	hostapd \
+	macloader
 
 WIFI_CONFIGS := \
 	$(LOCAL_PATH)/configs/wifi/wpa_supplicant.conf \
+	$(LOCAL_PATH)/configs/wifi/wpa_supplicant_overlay.conf \
+	$(LOCAL_PATH)/configs/wifi/p2p_supplicant_overlay.conf \
 	$(LOCAL_PATH)/configs/wifi/nvram_net.txt
 
 PRODUCT_COPY_FILES += \
@@ -123,6 +125,23 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
 	charger \
 	charger_res_images
+
+# Rootdir files
+ROOTDIR_FILES := \
+	$(LOCAL_PATH)/rootdir/init.rc \
+	$(LOCAL_PATH)/rootdir/init.board.rc \
+	$(LOCAL_PATH)/rootdir/init.recovery.board.rc \
+	$(LOCAL_PATH)/rootdir/init.sc8830.rc \
+	$(LOCAL_PATH)/rootdir/init.sc8830.usb.rc \
+	$(LOCAL_PATH)/rootdir/init.sc8830_ss.rc \
+	$(LOCAL_PATH)/rootdir/init.grandprimeve3g.rc \
+	$(LOCAL_PATH)/rootdir/init.grandprimeve3g_base.rc \
+	$(LOCAL_PATH)/rootdir/init.wifi.rc \
+	$(LOCAL_PATH)/rootdir/ueventd.sc8830.rc \
+	$(LOCAL_PATH)/rootdir/fstab.sc8830
+
+PRODUCT_COPY_FILES += \
+	$(foreach f,$(ROOTDIR_FILES),$(f):root/$(notdir $(f)))
 
 # Permissions
 PERMISSION_XML_FILES := \
@@ -147,14 +166,10 @@ PRODUCT_COPY_FILES += \
 
 # Scripts
 SCRIPTS_FILES := \
-	$(LOCAL_PATH)/scripts/set_freq.sh \
 	$(LOCAL_PATH)/scripts/zram.sh
 
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(SCRIPTS_FILES),$(f):system/bin/$(notdir $(f)))
-
-PRODUCT_COPY_FILES += \
-	$(LOCAL_PATH)/scripts/40mali:system/etc/init.d/40mali
 
 # Set default USB interface
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
@@ -183,6 +198,28 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # viewed on the current OS.
 PRODUCT_PACKAGES += \
 	libskia_legacy
+
+# Languages
+PRODUCT_PROPERTY_OVERRIDES += \
+	ro.product.locale.language=en \
+	ro.product.locale.region=GB
+
+# enable Google-specific location features,
+# like NetworkLocationProvider and LocationCollector
+PRODUCT_PROPERTY_OVERRIDES += \
+	ro.com.google.locationfeatures=1 \
+	ro.com.google.networklocation=1
+
+# Dalvik heap config
+$(call inherit-product, frameworks/native/build/phone-hdpi-2048-dalvik-heap.mk)
+$(call inherit-product, frameworks/native/build/phone-xxhdpi-2048-hwui-memory.mk)
+
+# For userdebug builds
+ADDITIONAL_DEFAULT_PROPERTIES += \
+	ro.secure=0 \
+	ro.adb.secure=0 \
+	ro.debuggable=1 \
+	persist.service.adb.enable=1
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 

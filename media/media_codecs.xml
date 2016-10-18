@@ -122,6 +122,17 @@ Only the three quirks included above are recognized at this point:
         </MediaCodec>
     </Decoders>
 
+        <!-- C&M Supported decoder BEGIN-->
+        <MediaCodec name="OMX.vpu.video_decoder.avc" type="video/avc">
+            <Quirk name="requires-allocate-on-output-ports" />
+            <Limit name="size" min="64x64" max="1920x1088" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="block-size" value="16x16" />
+            <Limit name="blocks-per-second" range="1-245760" />
+            <Limit name="bitrate" range="1-50000000" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+
     <Encoders>
         <MediaCodec name="OMX.sprd.mpeg4.encoder" type="video/mp4v-es">
             <!-- profiles and levels:  Simple Profile : Level5 -->
@@ -148,10 +159,9 @@ Only the three quirks included above are recognized at this point:
             <Limit name="bitrate" range="1-40000000" />
         </MediaCodec>
     </Encoders>
-    <Include href="media_codecs_ffmpeg.xml" />
-    <Include href="media_codecs_google_video_le.xml" />
     <Include href="media_codecs_google_audio.xml" />
     <Include href="media_codecs_google_video.xml" />
     <Include href="media_codecs_google_telephony.xml" />
+    <Include href="media_codecs_ffmpeg.xml" />
 
 </MediaCodecs>

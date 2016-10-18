@@ -9,6 +9,7 @@ lib/libatparser.so
 etc/gps.conf
 bin/gpsd
 bin/gps.cer
+lib/liblcsagent.so
 lib/hw/gps.default.so
 
 # Graphics rendering
@@ -29,7 +30,6 @@ etc/wifi/bcmdhd_apsta.bin
 etc/wifi/bcmdhd_mfg.bin
 etc/wifi/bcmdhd_sta.bin
 etc/wifi/nvram_mfg.txt
-bin/macloader
 
 # Bluetooth
 vendor/firmware/BCM43430A1_V0025.0070.hcd
@@ -76,4 +76,10 @@ lib/libomx_m4vh263enc_hw_sprd.so
 
 # HAL
 lib/hw/camera.sc8830.so
+lib/hw/gralloc.sc8830.so
+lib/hw/hwcomposer.sc8830.so
 lib/hw/sensors.sc8830.so
+lib/hw/sprd_gsp.sc8830.so
+
+# Magnetic sensor
+lib/libyasalgo.so

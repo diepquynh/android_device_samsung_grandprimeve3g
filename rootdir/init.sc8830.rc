@@ -10,6 +10,7 @@ on early-init
 
     # coredump file will not be generated in release version
     write /proc/sys/kernel/core_pattern /dev/null
+
 # radio pipe
     mkdir /dev/rpipe 0550 radio radio
     pipe 666 /dev/rpipe/ril.vt.0
@@ -18,7 +19,7 @@ on early-init
 
 on init
     mkdir /productinfo 0771 system system
-    export LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so:/system/bin/gpsd|libgps_shim.so:/system/lib/libmemoryheapion.so|libmemoryheapion_sammy.so
+    export LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so:/system/bin/gpsd|libgps_shim.so
 
     symlink /dev/block/platform/sdio_emmc/by-name/PERSISTENT /dev/block/persistent
 
@@ -33,8 +34,8 @@ on init
 on fs
     mount_all /fstab.sc8830
     mount pstore pstore /sys/fs/pstore
-	symlink /system/res /res
-	symlink /system/bin /bin
+    symlink /system/res /res
+    symlink /system/bin /bin
 
 #permissions for debug
     chown system system /sys/power/restart_cpc
@@ -180,7 +181,7 @@ on property:ro.config.zram.support=true
     write /proc/sys/vm/page-cluster  0
     start zram
 
-service zram /system/xbin/zram.sh
+service zram /system/bin/zram.sh
         disabled
         oneshot
 

@@ -49,7 +49,6 @@ ro.config.ksm.support=true
 
 #zram config
 ro.config.zram.support=true
-ro.board_ram_size=high
 
 # SPRD: add low cost low memory @{
 # ro.config.low_ram=true
@@ -86,8 +85,8 @@ persist.sys.modem.diag=,gser
 sys.usb.gser.count=4
 ro.ril.hsxpa=1
 ro.ril.gprsclass=10
-#persist.radio.multisim.config=dsds
-ro.telephony.ril_class=grandprimeve3gRIL
+persist.radio.multisim.config=dsds
+ro.telephony.ril_class=SamsungSPRDRIL
 ro.telephony.ril.config=setPrefNwTypeOnUnsolConnected,simactivation,sim2gsmonly
 ro.ril.telephony.mqanelements=6
 persist.sys.sprd.modemreset=1

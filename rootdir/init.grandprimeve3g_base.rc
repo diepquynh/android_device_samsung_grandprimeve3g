@@ -20,23 +20,8 @@ on init
     symlink /sdcard /storage/sdcard0
 
     # map "real" external storages paths also in same way. backwards compatibility.
-    symlink /storage/sdcard1 /mnt/extSdCard
+    symlink /storage/extSdCard /mnt/extSdCard
     symlink /storage/usbdisk /mnt/usbdisk
-
-    mkdir /mnt/media_rw/extSdCard 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveA 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveB 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveC 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveD 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveE 0700 media_rw media_rw
-    mkdir /mnt/media_rw/UsbDriveF 0700 media_rw media_rw
-
-    symlink /mnt/media_rw/UsbDriveA /storage/UsbDriveA
-    symlink /mnt/media_rw/UsbDriveB /storage/UsbDriveB
-    symlink /mnt/media_rw/UsbDriveC /storage/UsbDriveC
-    symlink /mnt/media_rw/UsbDriveD /storage/UsbDriveD
-    symlink /mnt/media_rw/UsbDriveE /storage/UsbDriveE
-    symlink /mnt/media_rw/UsbDriveF /storage/UsbDriveF
 
     #thermistor
     chown radio system /sys/class/sec/sec-thermistor/temp_adc

@@ -44,6 +44,8 @@ BOARD_FLASH_BLOCK_SIZE := 131072
 TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_HAS_LARGE_FILESYSTEM := true
 
+BLOCK_BASED_OTA := false
+
 # Kernel
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_PAGESIZE := 2048
@@ -100,6 +102,7 @@ TARGET_SCREEN_HEIGHT := 800
 TARGET_SCREEN_WIDTH := 480
 
 # Audio
+BOARD_USES_TINYALSA_AUDIO := true
 BOARD_USE_LIBATCHANNEL_WRAPPER := true
 #USE_LEGACY_AUDIO_POLICY := 1
 
@@ -117,16 +120,15 @@ BOARD_HAL_STATIC_LIBRARIES := libhealthd.sc8830
 # Init
 TARGET_NR_SVC_SUPP_GIDS := 36
 TARGET_PROVIDES_INIT_RC := true
-TARGET_NEEDS_PROP_INIT_HACK := true
 
 # Recovery
 BOARD_HAS_DOWNLOAD_MODE := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 BOARD_SUPPRESS_EMMC_WIPE := true
-TARGET_RECOVERY_FSTAB := device/samsung/grandprimeve3g/rootdir/recovery.fstab
+TARGET_RECOVERY_FSTAB := device/samsung/grandprimeve3g/rootdir/fstab.sc8830
 
 # Assert
-TARGET_OTA_ASSERT_DEVICE := SM-G531H,grandprimeve3g,grandprimeve3gxx,grandprimeve3gub
+TARGET_OTA_ASSERT_DEVICE := SM-G531H,SM-G531BT,grandprimeve3g,grandprimeve3gdtv,grandprimeve3gub,grandprimeve3gxx,grandprimeve3gdtvvj
 
 # SELinux
 BOARD_SEPOLICY_DIRS += device/samsung/grandprimeve3g/sepolicy
