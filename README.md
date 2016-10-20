@@ -60,9 +60,7 @@ the 2nd for to revert the patches which applied earlier
 
 * [external/tinyalsa](https://github.com/CyanogenMod/android_external_tinyalsa/compare/cm-13.0...ngoquang2708:cm-13.0.patch)
 * [frameworks/av](https://github.com/CyanogenMod/android_frameworks_av/compare/cm-13.0...ngoquang2708:cm-13.0.patch)
-* [frameworks/base](https://github.com/CyanogenMod/android_frameworks_base/compare/cm-13.0...ngoquang2708:cm-13.0.patch)
-* [frameworks/native](https://github.com/CyanogenMod/android_frameworks_native/compare/cm-13.0...ngoquang2708:cm-13.0.patch)
-* [frameworks/opt/telephony](https://github.com/CyanogenMod/android_frameworks_opt_telephony/compare/cm-13.0...ngoquang2708:cm-13.0.patch)
+* [frameworks/base](https://github.com/CyanogenMod/android_frameworks_base/compare/cm-13.0...koquantam:cm-13.0.patch)
 * [hardware/libhardware](https://github.com/CyanogenMod/android_hardware_libhardware/compare/cm-13.0...ngoquang2708:cm-13.0.patch)
 * [system/core](https://github.com/CyanogenMod/android_system_core/compare/cm-13.0...ngoquang2708:cm-13.0.patch)
 * [system/media](https://github.com/CyanogenMod/android_system_media/compare/cm-13.0...ngoquang2708:cm-13.0.patch)
