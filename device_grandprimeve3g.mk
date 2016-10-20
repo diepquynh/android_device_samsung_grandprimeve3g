@@ -34,6 +34,10 @@ BLUETOOTH_CONFIGS := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(BLUETOOTH_CONFIGS),$(f):system/etc/bluetooth/$(notdir $(f)))
 
+# Keylayouts
+PRODUCT_COPY_FILES += \
+	$(LOCAL_PATH)/keylayouts/Generic.kl:system/usr/keylayout/Generic.kl
+
 # Media config
 MEDIA_CONFIGS := \
 	$(LOCAL_PATH)/media/media_codecs.xml \
