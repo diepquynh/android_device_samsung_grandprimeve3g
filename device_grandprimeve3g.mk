@@ -55,13 +55,13 @@ PRODUCT_PACKAGES += \
 	libion_sprd
 
 # Codecs
-#PRODUCT_PACKAGES += \
-#	libstagefrighthw \
-#	libstagefright_sprd_mpeg4dec \
-#	libstagefright_sprd_mpeg4enc \
-#	libstagefright_sprd_h264dec \
-#	libstagefright_sprd_h264enc \
-#	libstagefright_sprd_vpxdec
+PRODUCT_PACKAGES += \
+	libstagefrighthw \
+	libstagefright_sprd_mpeg4dec \
+	libstagefright_sprd_mpeg4enc \
+	libstagefright_sprd_h264dec \
+	libstagefright_sprd_h264enc \
+	libstagefright_sprd_vpxdec
 
 # Lights
 PRODUCT_PACKAGES += \
@@ -95,7 +95,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
 	libstlport \
 	libril_shim \
-	libgps_shim
+	libgps_shim \
+	libstagefright_shim
 
 # GPS
 GPS_CONFIGS := \
