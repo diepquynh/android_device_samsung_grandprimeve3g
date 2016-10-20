@@ -176,11 +176,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 	persist.sys.usb.config=mtp
 
-# FM radio
-PRODUCT_PACKAGES += \
-	FMRadio \
-	fm.sc8830
-
 # Device props
 PRODUCT_PROPERTY_OVERRIDES += \
 	keyguard.no_require_sim=true \
