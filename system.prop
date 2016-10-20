@@ -14,11 +14,6 @@ persist.ttydev=ttyVUART0
 # delay for ConnectivityChange broadcast (ms)
 conn.connectivity_change_delay = 0
 
-ro.product.partitionpath=/dev/block/platform/sdio_emmc/by-name/
-
-# Default ecclist
-ro.ril.ecclist=112,911,#911,*911
-
 persist.modem.w.enable=1
 persist.modem.w.nvp=w
 ro.modem.w.dev=/proc/cpw/
@@ -50,10 +45,6 @@ ro.config.ksm.support=true
 #zram config
 ro.config.zram.support=true
 
-# SPRD: add low cost low memory @{
-# ro.config.low_ram=true
-# @}
-
 #if our product not support drm,set as false
 drm.service.enabled=true
 
@@ -67,12 +58,6 @@ ro.sf.hwrotation=0
 
 # System property for storage_preload
 persist.sys.storage_preload=1
-
-# SAMP_SPCM
-sys.config.samp_spcm_enable=true
-sys.config.spcm_db_enable=true
-sys.config.spcm_db_launcher=true
-sys.config.spcm_preload_enable=true
 
 # RIL
 ro.com.android.dataroaming=false
