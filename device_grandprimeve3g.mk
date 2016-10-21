@@ -190,8 +190,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.sys.fw.dex2oat_thread_count=4 \
 	dalvik.vm.dex2oat-flags=--no-watch-dog \
-	dalvik.vm.dex2oat-filter=interpret-only \
-	dalvik.vm.image-dex2oat-filter=speed
+	dalvik.vm.dex2oat-filter=everything \
+	dalvik.vm.image-dex2oat-filter=everything
 
 # Support for Browser's saved page feature. This allows
 # for pages saved on previous versions of the OS to be
