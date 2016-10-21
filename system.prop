@@ -6,14 +6,17 @@ ro.product.hardware=TSHARK2TABE_V1.0.0
 
 debug.hwui.render_dirty_regions=false
 
-# Bluetooth OPP low speed for save power
-debug.bt.lowspeed=true
+persist.sys.engpc.disable=0
 
-persist.ttydev=ttyVUART0
+ro.config.ksm.support=true
 
-# delay for ConnectivityChange broadcast (ms)
-conn.connectivity_change_delay = 0
+#zram config
+ro.config.zram.support=true
 
+# System property for storage_preload
+persist.sys.storage_preload=1
+
+# RIL
 persist.modem.w.enable=1
 persist.modem.w.nvp=w
 ro.modem.w.dev=/proc/cpw/
@@ -36,30 +39,7 @@ ro.modem.wcn.diag=/dev/slog_wcn
 ro.modem.wcn.assert=/dev/spipe_wcn2
 ro.modem.wcn.id=1
 ro.modem.wcn.count=1
-ro.digital.fm.support=1
 
-persist.sys.engpc.disable=0
-
-ro.config.ksm.support=true
-
-#zram config
-ro.config.zram.support=true
-
-#if our product not support drm,set as false
-drm.service.enabled=true
-
-# hotspot development
-ro.hotspot.enabled=1
-
-# this product does not support bt and softap coexist
-ro.btwifisoftap.coexist=false
-# SPRD: add support hwrotation
-ro.sf.hwrotation=0
-
-# System property for storage_preload
-persist.sys.storage_preload=1
-
-# RIL
 ro.com.android.dataroaming=false
 ro.msms.phone_count=2
 persist.msms.phone_count=2
