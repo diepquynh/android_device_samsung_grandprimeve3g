@@ -10,9 +10,6 @@ persist.sys.engpc.disable=0
 
 ro.config.ksm.support=true
 
-#zram config
-ro.config.zram.support=true
-
 # System property for storage_preload
 persist.sys.storage_preload=1
 

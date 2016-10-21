@@ -155,14 +155,6 @@ on alarm
     start slog
     start poweroffalarm
 
-on property:ro.config.zram.support=true
-    write /proc/sys/vm/page-cluster  0
-    start zram
-
-service zram /system/bin/zram.sh
-    disabled
-    oneshot
-
 on property:ro.modem.t.count=1
     write /proc/sim/0 t
 
