@@ -15,5 +15,11 @@
 /dev/block/platform/sdio_emmc/by-name/RECOVERY /recovery    emmc defaults									 recoveryonly
 
 # VOLD : fstab_dt_otg.sc8830
-/devices/sdio_sd/mmc_host/mmc1*           auto                    auto    defaults     voldmanaged=extSdCard:auto,encryptable=userdata
-/devices/20200000.usb/usb*                auto                    auto    defaults     voldmanaged=usb:auto
+/devices/sdio_sd/mmc_host/mmc1*		       auto         auto defaults									 voldmanaged=extSdCard:auto,encryptable=userdata
+/devices/20200000.usb/usb*                     auto         auto defaults									 voldmanaged=usb:auto
+
+# zRAM
+/dev/block/zram0			       auto	    swap defaults									 zramsize=25%,swapprio=5,notrim
+/dev/block/zram1			       auto	    swap defaults									 zramsize=25%,swapprio=5,notrim
+/dev/block/zram2			       auto	    swap defaults									 zramsize=25%,swapprio=5,notrim
+/dev/block/zram3			       auto	    swap defaults									 zramsize=25%,swapprio=5,notrim
