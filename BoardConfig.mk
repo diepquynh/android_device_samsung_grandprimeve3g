@@ -130,6 +130,9 @@ TARGET_RECOVERY_FSTAB := device/samsung/grandprimeve3g/rootdir/fstab.sc8830
 # Assert
 TARGET_OTA_ASSERT_DEVICE := SM-G531H,SM-G531BT,grandprimeve3g,grandprimeve3gdtv,grandprimeve3gub,grandprimeve3gxx,grandprimeve3gdtvvj
 
+# Use dmalloc() for such low memory devices like us
+MALLOC_IMPL := dlmalloc
+
 # SELinux
 BOARD_SEPOLICY_DIRS += device/samsung/grandprimeve3g/sepolicy
 
