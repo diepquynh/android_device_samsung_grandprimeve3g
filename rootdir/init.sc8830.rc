@@ -20,7 +20,6 @@ on early-init
 
 on init
     mkdir /productinfo 0771 system system
-    export LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so:/system/bin/gpsd|libgps_shim.so:/system/lib/libstagefright_sprd_h264dec.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_h264enc.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_mpeg4dec.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_mpeg4enc.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_vpxdec.so|libstagefright_shim.so:/system/lib/hw/hwcomposer.sc8830.so|libstagefright_shim.so
 
     symlink /dev/block/platform/sdio_emmc/by-name/PERSISTENT /dev/block/persistent
 
@@ -239,6 +238,7 @@ service ril-daemon /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -
     disabled
     user root
     group radio cache inet misc audio sdcard_rw log shell
+    setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
 
 service ril-daemon2 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 1
     class core
@@ -247,6 +247,7 @@ service ril-daemon2 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w 
     disabled
     user root
     group radio cache inet misc audio sdcard_rw log shell
+    setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
 
 service ril-daemon3 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 2
     class core
@@ -255,6 +256,7 @@ service ril-daemon3 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w 
     disabled
     user root
     group radio cache inet misc audio sdcard_rw log shell
+    setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
 
 #nvitemd
 service nvitemd_td /system/bin/nvitemd t 0
