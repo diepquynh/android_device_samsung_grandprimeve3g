@@ -18,9 +18,9 @@ on boot
     chown system system /sys/class/switch/sprd_simdet/state
 
 #To allow interfaces to get v6 address when tethering is enabled
-     write /proc/sys/net/ipv6/conf/rmnet0/accept_ra 2
-     write /proc/sys/net/ipv6/conf/rmnet1/accept_ra 2
-     write /proc/sys/net/ipv6/conf/rmnet2/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet0/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet1/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet2/accept_ra 2
 
 # bluetooth
     # UART0 device
@@ -72,8 +72,8 @@ service iprenew_bnep0 /system/bin/dhcpcd -n
     oneshot
 
 service dhcpcd_bt-pan /system/bin/dhcpcd -BKLG
-   disabled
-   oneshot
+    disabled
+    oneshot
 
 
 service iprenew_bt-pan /system/bin/dhcpcd -n
@@ -88,7 +88,7 @@ service engpcclientw /system/bin/engpc -p w -a /dev/ttyGS0 -d /dev/ttyGS1
     oneshot
 
 # set LMK watermark as {14M,20M,24M,32M,38M,48M}
-on property:lmk.autocalc=false
+on property:dev.bootcomplete=1
     write /sys/module/lowmemorykiller/parameters/adj 0,1,3,5,9,15
     write /sys/module/lowmemorykiller/parameters/minfree 3584,5120,6144,8192,9728,12288
     

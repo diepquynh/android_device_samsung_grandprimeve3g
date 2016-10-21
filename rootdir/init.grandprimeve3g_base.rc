@@ -1,6 +1,3 @@
-#init.grandprimeve3g_base.rc
-
-import init.fac.rc
 
 on early-init
     chown system system /sys/devices/platform/panel/backlight/panel/brightness
@@ -128,57 +125,36 @@ on boot
     chmod 0664 proc/pin_switch/iis1_sys_sel/cp0_iis1
     chmod 0664 proc/pin_switch/iis1_sys_sel/cp1_iis1
 
-# required so RIL can open kernel RPC drivers
-    chmod 0660 /dev/bcm_rpc
-    chmod 0660 /dev/bcm_irpc
-    chown radio radio /dev/bcm_rpc
-    chown radio radio /dev/bcm_irpc
-
-    setprop ro.build.product hawaii
-    setprop ro.product.device hawaii
-    setprop ro.radio.noril no
-
-    chmod 0660 /dev/bcm_atc
-    chown shell system /dev/bcm_atc
-    mkdir /data/atx
-    chown system system /data/atx
-    chmod 0771 /data/atx
-    chown system system /dev/bcm_log
-    chmod 0660 /dev/bcm_log
-    chown system system /dev/bcm_audio_log
-    chmod 0660 /dev/bcm_audio_log
     chown system system /dev/ttyGS0
     chmod 0770 /dev/snd/controlC0
 
-    chown system system /proc/bcm_fuse_net_config
     chown system system /dev/block/mmcblk0
     chmod 0660 /dev/block/mmcblk0
-    #chown system system /dev/mem
 
     # change owner of sysrpc/mtest to allow atx/atxd access
     chown system system /sys/kernel/sysrpc/mtest
 
 # Battery
-   chown system radio /sys/class/power_supply/battery/batt_reset_soc
-   chown system radio /sys/class/power_supply/battery/batt_slate_mode
-   chown system radio /sys/class/power_supply/battery/factory_mode
-   chown system radio /sys/class/power_supply/battery/siop_level
-   chown system radio /sys/class/power_supply/battery/wc_enable
-   chown system radio /sys/class/power_supply/battery/update
-   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/call
-   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/video
-   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/music
-   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/browser
-   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/hotspot
-   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/camera
-   chown system radio /sys/class/power_supply/battery/talk_wcdma
-   chown system radio /sys/class/power_supply/battery/talk_gsm
-   chown system radio /sys/class/power_supply/battery/call
-   chown system radio /sys/class/power_supply/battery/data_call
-   chown system radio /sys/class/power_supply/battery/gps
-   chown system radio /sys/class/power_supply/battery/wifi
-   chown system radio /sys/class/power_supply/battery/lte
-   chown system radio /sys/class/power_supply/battery/lcd
+    chown system radio /sys/class/power_supply/battery/batt_reset_soc
+    chown system radio /sys/class/power_supply/battery/batt_slate_mode
+    chown system radio /sys/class/power_supply/battery/factory_mode
+    chown system radio /sys/class/power_supply/battery/siop_level
+    chown system radio /sys/class/power_supply/battery/wc_enable
+    chown system radio /sys/class/power_supply/battery/update
+    chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/call
+    chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/video
+    chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/music
+    chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/browser
+    chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/hotspot
+    chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/camera
+    chown system radio /sys/class/power_supply/battery/talk_wcdma
+    chown system radio /sys/class/power_supply/battery/talk_gsm
+    chown system radio /sys/class/power_supply/battery/call
+    chown system radio /sys/class/power_supply/battery/data_call
+    chown system radio /sys/class/power_supply/battery/gps
+    chown system radio /sys/class/power_supply/battery/wifi
+    chown system radio /sys/class/power_supply/battery/lte
+    chown system radio /sys/class/power_supply/battery/lcd
 
 # fake some battery state
     setprop status.battery.state Slow
@@ -205,10 +181,6 @@ on boot
     chown radio system /sys/class/secgpio_check/secgpio_check_all/gpioinfo_check
     chown radio system /sys/class/secgpio_check/secgpio_check_all/gpioinit_check
     chown radio system /sys/class/secgpio_check/secgpio_check_all/gpiosleep_check
-
-    # For WV DRM
-    chown drm drm /dev/bcm_kbox
-    chmod 0660 /dev/bcm_kbox
 
     # create directory for DRM plug-ins
     mkdir /data/drm 0770 drm drm
@@ -261,25 +233,16 @@ on boot
     chown system system /sys/module/pm_dbg/parameters/debug
     chmod 0660 /sys/module/pm_dbg/parameters/debug
 
-# BEGIN BCM QUICK BOOT FEATURE
-    chown root system /sys/ponkey/ponkey_mode
-    chmod 0664 /sys/ponkey/ponkey_mode
-# END BCM QUICK BOOT FEATURE
-
 # SEC_PRODUCT_FEATURE_COMMON_USE_MULTISIM
     setprop ro.multisim.simslotcount 2
 
 # OTG Test
-   chown system radio /sys/class/host_notify/usb_otg/booster
-   chmod 0664 /sys/class/host_notify/usb_otg/booster
-
-on fs
-# Temporary hack for root access
-	chmod 6755 /system/xbin/su
+    chown system radio /sys/class/host_notify/usb_otg/booster
+    chmod 0664 /sys/class/host_notify/usb_otg/booster
 
 #for efs
-     chown radio system /efs
-     chmod 0771 /efs
+    chown radio system /efs
+    chmod 0771 /efs
 
 #For Absolute Persistence Partition 
 
@@ -327,19 +290,6 @@ on fs
    chmod 0660 proc/bluetooth/sleep/btwrite
    chown bluetooth system proc/bluetooth/sleep/btwrite
 
-# permissions for NFC
-#    setprop ro.nfc.port "I2C"
-#    mkdir /data/bcmnfc
-#    mkdir /data/bcmnfc/param
-#    chmod 0755 /data/bcmnfc
-#    chmod 0777 /data/bcmnfc/param
-#    chown nfc nfc /data/bcmnfc
-#    chown nfc nfc /data/bcmnfc/param
-#    chown nfc nfc /data/bcmnfc/libnfc-brcm-20791b04.conf
-#    chown nfc nfc /data/bcmnfc/libnfc-brcm-20791b03.conf
-#    chmod 666 /data/bcmnfc/libnfc-brcm-20791b04.conf
-#    chmod 666 /data/bcmnfc/libnfc-brcm-20791b03.conf
-
 #LCD
     chown system system /sys/class/backlight/panel/brightness
     chmod 0664 /sys/class/backlight/panel/brightness
@@ -351,12 +301,10 @@ on fs
     chmod 0664 /sys/class/sec/sec_key/reset_enabled
 
 #Enable PMTUD tcp_mtu_probing
- write /proc/sys/net/ipv4/tcp_mtu_probing 1
+    write /proc/sys/net/ipv4/tcp_mtu_probing 1
 
 # needed to avoid the 7-minute-halt issue in (DOS) passive mode ftp on vodafone networ
- write /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_be_liberal 1
-
-
+    write /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_be_liberal 1
 
 # Permissions for System Server and daemons.
     chown system system /sys/devices/platform/panel/backlight/panel/brightness
@@ -365,17 +313,7 @@ on fs
 service drm /system/bin/drmserver
     class main
     user drm
-
-# [ SEC_MM_DRM
-# fix
     group system drm inet drmrpc sdcard_r sdcard_rw media_rw radio shell
-# org
-#    group drm system inet drmrpc
-# ]
-
-# for Napa TS
-#   insmod Napa Touchscreen module
-chmod 0755 /system/etc/init_touch
 
 on post-fs-data
     setprop vold.post_fs_data_done 1
@@ -390,15 +328,9 @@ on property:ro.debug_level=0x494d
     write /sys/kernel/debug/tracing/events/irq/irq_handler_exit/enable 1
     write /sys/kernel/debug/tracing/events/workqueue/enable 1
     write /sys/kernel/debug/tracing/events/sched/sched_switch/enable 1
-	write /sys/kernel/debug/tracing/events/power/enable 1
-	write /sys/kernel/debug/tracing/events/timer/enable 1
-	write /sys/kernel/debug/tracing/events/cpufreq_interactive/cpufreq_interactive_setspeed/enable 1
-
-service napa_ts /system/bin/sh /system/etc/init_touch
-    class main
-    user root
-    group root
-    oneshot
+    write /sys/kernel/debug/tracing/events/power/enable 1
+    write /sys/kernel/debug/tracing/events/timer/enable 1
+    write /sys/kernel/debug/tracing/events/cpufreq_interactive/cpufreq_interactive_setspeed/enable 1
 
 # GPS
 service gpsd /system/bin/gpsd -c /system/etc/gps.xml
