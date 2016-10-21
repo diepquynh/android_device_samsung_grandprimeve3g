@@ -35,7 +35,7 @@ on post-fs-data
     chmod 0660 /efs/wifi/.mac.info
 
 on boot
-	setprop wifi.interface wlan0
+    setprop wifi.interface wlan0
 
 service p2p_supplicant /system/bin/wpa_supplicant \
     -iwlan0 -Dnl80211 -c/data/misc/wifi/p2p_supplicant.conf \
@@ -80,19 +80,6 @@ service iprenew_p2p /system/bin/dhcpcd -n
     disabled
     oneshot
 
-# start for WiFi MFG (TestMode)
-service mfgloader /system/bin/mfgloader
-    class main
-    disabled
-    oneshot
-
-service wlandutservice /system/bin/wlandutservice
-    class main
-    user system
-    group wifi net_raw net_admin system inet
-    disabled
-    oneshot
-
 service macloader /system/bin/macloader
     class main
     oneshot
@@ -103,14 +90,6 @@ on property:init.svc.macloader=stopped
     chown system root /data/.rev
     chmod 0664 /data/.rev
 # end of WiFi MFG (TestMode)
-
-service olsrd /system/bin/olsrd -f /etc/wifi/olsrd.conf
-    class main
-    disabled
-    oneshot
-
-on property:init.svc.dhcpcd_ibss=running
-    start olsrd
 
 service hostapd /system/bin/hostapd -dddd /data/hostapd/hostapd.conf
     class late_start

@@ -59,44 +59,7 @@ on boot
     chmod 660 /dev/ttyV0
     chmod 777 /system/etc/HiMap.db
 
-	write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 100000
-
-service hfag /system/bin/sdptool add --channel=10 HFAG
-    user bluetooth
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
-
-service hsag /system/bin/sdptool add --channel=11 HSAG
-    user bluetooth
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
-
-service opush /system/bin/sdptool add --channel=12 OPUSH
-    user bluetooth
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
-
-service pbap /system/bin/sdptool add --channel=19 PBAP
-    user bluetooth
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
-
-#service hciattach /system/bin/hciattach -n /dev/sttybt0 sprd_shark
-#    socket bluetooth stream 660 bluetooth bluetooth
-#    user bluetooth
-#    group wifi bluetooth net_bt_admin net_bt inet net_raw net_admin system
-#    disabled
-#    oneshot
-
-service btld  /system/bin/btld -lpm 0 -hb 3000000
-    user root
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 100000
 
 service dhcpcd_bnep0 /system/bin/dhcpcd -ABKL
     class main
@@ -133,18 +96,5 @@ service engpcclientwcn /system/bin/engpc -p wcn -a /dev/ttyGS2 -d /dev/ttyGS3
     class core
     user system
     group system radio shell
-    disabled
-    oneshot
-
-service wcnd /system/bin/wcnd
-    class core
-    #   we will start as root and wcnd will switch to user system
-    #   user system
-    group system shell wifi inet net_bt_stack
-    oneshot
-
-service wcnd_eng /system/bin/wcnd -G
-    class core
-    group system shell wifi inet net_bt_stack
     disabled
     oneshot

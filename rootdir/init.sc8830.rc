@@ -1,6 +1,7 @@
 import /init.board.rc
 import /init.sc8830.usb.rc
-import /init.sc8830_ss.rc
+import /init.grandprimeve3g_base.rc
+import /init.wifi.rc
 
 on early-init
     mount debugfs debugfs /sys/kernel/debug
@@ -26,10 +27,6 @@ on init
 # @}
     chown system system /sys/class/power_supply/battery/hw_switch_point
     chown system system /sys/class/power_supply/battery/save_capacity
-
-    #SPRD: Add support for install apk to internal sdcard @{
-    mkdir /mnt/secure/internal-asec 0700 root root
-    # @}
 
 on fs
     mount_all /fstab.sc8830
@@ -58,8 +55,6 @@ on post-fs-data
     mkdir /data/local/media 0770 media system
     mkdir /data/anr 0771 system system
     mkdir /data/tombstones 0771 system system
-#    mkdir /data/corefile
-#    chmod 777 /data/corefile
 
     # Set indication (checked by vold) that we have finished this action
     setprop vold.post_fs_data_done 1
@@ -160,30 +155,13 @@ on alarm
     start slog
     start poweroffalarm
 
-on property:ro.board_ram_size=min
-    setprop zram.disksize 64
-
-on property:ro.board_ram_size=low
-    setprop zram.disksize 200
-    write /proc/sys/vm/extra_free_kbytes 1024
-    write /sys/module/zram/parameters/total_mem_usage_percent  35
-
-on property:ro.board_ram_size=mid
-    setprop zram.disksize 400
-    write /proc/sys/vm/extra_free_kbytes 2048
-
-on property:ro.board_ram_size=high
-    setprop zram.disksize 600
-    write /proc/sys/vm/extra_free_kbytes 4096
-
 on property:ro.config.zram.support=true
-#    setprop sys.vm.swappiness 100
     write /proc/sys/vm/page-cluster  0
     start zram
 
 service zram /system/bin/zram.sh
-        disabled
-        oneshot
+    disabled
+    oneshot
 
 on property:ro.modem.t.count=1
     write /proc/sim/0 t
@@ -261,11 +239,6 @@ service batterysrv /bin/batterysrv
     group system
     oneshot
 
-#service charge /bin/charge
-#    class charger
-#    user root
-#   oneshot
-
 #wcdma rild service
 service ril-daemon /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 0
     class core
@@ -318,12 +291,6 @@ service slog /system/bin/slog -t
     user system
     group system shell radio log sdcard_r sdcard_rw
 
-service apr /system/bin/collect_apr
-    class core
-    user system
-    disabled
-    oneshot
-
 service refnotify_td /system/bin/refnotify -t 0
     class core
     disabled
@@ -344,31 +311,6 @@ service refnotify_l /system/bin/refnotify -t 2
     user system
     group system radio shell
     oneshot
-
-# For CTS of slog ->
-# This action is to make sure that the shell user
-# can also enable the slog daemon
-
-# convert the debug to system
-on property:debug.slog.enabled=1
-    setprop persist.sys.slog.enabled 1
-
-# convert the debug to system
-on property:debug.slog.enabled=0
-    setprop persist.sys.slog.enabled 0
-
-# Start the daemon
-on property:persist.sys.slog.enabled=1
-    start slog
-    start sprd_res_monitor
-
-# Stop the daemon
-on property:persist.sys.slog.enabled=0
-    stop slog
-    stop sprd_res_monitor
-    rm /data/local/tmp/sprd_monitor.conf
-
-# For CTS of slog <-
 
 on property:persist.modem.w.enable=1
     symlink /dev/spipe_w1 /dev/vbpipe1
@@ -445,16 +387,6 @@ service set_mac /system/bin/ext_chown.sh  -e
     disabled
     oneshot
 
-service  inputfreq  /system/bin/inputfreq.sh
-    user root
-    disabled
-    oneshot
-
-service  recoveryfreq  /system/bin/recoveryfreq.sh
-    user root
-    disabled
-    oneshot
-
     chmod 0666 /proc/pin_switch/iis0_sys_sel/cp0_iis0
     chmod 0666 /proc/pin_switch/iis0_sys_sel/cp1_iis0
     chmod 0666 /proc/pin_switch/iis0_sys_sel/cp2_iis0
@@ -464,19 +396,13 @@ service  recoveryfreq  /system/bin/recoveryfreq.sh
     chmod 0666 /proc/pin_switch/bt_iis_sys_sel/cp2_iis0
     chmod 0666 /proc/pin_switch/bt_iis_sys_sel/ap_iis0
 
-service autotest /system/bin/autotest
-    class main
-    disabled
-    user root
-    oneshot
-
 service bugreport /system/bin/dumpstate -d -p -B \
-        -o /data/data/com.android.shell/files/bugreports/bugreport
+    -o /data/data/com.android.shell/files/bugreports/bugreport
     class late_start
     disabled
     oneshot
 
 service smd_symlink /system/bin/ext_symlink.sh -u
-	user root
-	disabled
-	oneshot
+    user root
+    disabled
+    oneshot
