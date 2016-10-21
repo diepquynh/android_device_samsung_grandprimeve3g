@@ -19,10 +19,6 @@ on init
     symlink /sdcard /mnt/sdcard
     symlink /sdcard /storage/sdcard0
 
-    # map "real" external storages paths also in same way. backwards compatibility.
-    symlink /storage/extSdCard /mnt/extSdCard
-    symlink /storage/usbdisk /mnt/usbdisk
-
     #thermistor
     chown radio system /sys/class/sec/sec-thermistor/temp_adc
     chown radio system /sys/class/sec/sec-thermistor/temperature

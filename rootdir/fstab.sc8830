@@ -15,5 +15,5 @@
 /dev/block/platform/sdio_emmc/by-name/RECOVERY /recovery    emmc defaults									 recoveryonly
 
 # VOLD : fstab_dt_otg.sc8830
-/devices/sdio_sd/mmc_host/mmc1*           auto                    auto    defaults     voldmanaged=extSdCard:auto,noemulatedsd,encryptable=userdata
-/devices/20200000.usb/usb*                auto                    auto    defaults     voldmanaged=usbdisk:auto
+/devices/sdio_sd/mmc_host/mmc1*           auto                    auto    defaults     voldmanaged=extSdCard:auto,encryptable=userdata
+/devices/20200000.usb/usb*                auto                    auto    defaults     voldmanaged=usb:auto
