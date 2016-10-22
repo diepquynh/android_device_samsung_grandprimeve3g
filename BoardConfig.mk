@@ -136,9 +136,6 @@ TARGET_INIT_VENDOR_LIB := libinit_sec
 # Use dmalloc() for such low memory devices like us
 MALLOC_IMPL := dlmalloc
 
-# SELinux
-BOARD_SEPOLICY_DIRS += device/samsung/grandprimeve3g/sepolicy
-
 # Enable dex-preoptimization to speed up the first boot sequence
 WITH_DEXPREOPT := true
 WITH_DEXPREOPT_PIC := true

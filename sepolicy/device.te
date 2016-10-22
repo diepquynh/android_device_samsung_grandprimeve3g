@@ -1,8 +1,0 @@
-type efs_block_device, dev_type;
-type prod_block_device, dev_type;
-type radio_block_device, dev_type;
-type param_block_device, dev_type;
-type rfkill_device, dev_type;
-type media_device, dev_type;
-type bluetooth_serial_device, dev_type;
-type gadget_serial_device, dev_type;

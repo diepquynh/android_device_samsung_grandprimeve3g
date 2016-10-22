@@ -1,4 +1,0 @@
-allow bluetooth bluetooth_data_file:dir search;
-allow bluetooth bluetooth_data_file:file { read open };
-allow bluetooth bluetooth_serial_device:chr_file { read write ioctl open };
-allow bluetooth sysfs:file write;

@@ -1,5 +1,0 @@
-allow gpsd radio_device:chr_file { read write ioctl open };
-allow gpsd sysfs_wake_lock:file { read write open };
-allow gpsd gps_data_file:fifo_file { read write open setattr };
-allow gpsd gps_data_file:file { write lock open };
-allow gpsd gpsd_exec:file entrypoint;

@@ -1,3 +1,0 @@
-genfscon proc /pin_switch u:object_r:proc_pin_switch:s0
-genfscon proc /cpw u:object_r:proc_cpw:s0
-genfscon proc /cpt u:object_r:proc_cpt:s0

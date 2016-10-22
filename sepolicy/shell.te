@@ -1,3 +1,0 @@
-allow shell kernel:system module_request;
-allow shell unlabeled:filesystem {getattr mount};
-allow shell unlabeled:file { read getattr open execute execute_no_trans };
