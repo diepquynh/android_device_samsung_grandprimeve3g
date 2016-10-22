@@ -29,6 +29,7 @@ on init
 
 on fs
     mount_all /fstab.sc8830
+    swapon_all /fstab.sc8830
     mount pstore pstore /sys/fs/pstore
     symlink /system/res /res
     symlink /system/bin /bin
