@@ -19,4 +19,4 @@
 /devices/20200000.usb/usb*                     auto         auto defaults									 voldmanaged=usb:auto
 
 # zRAM
-/dev/block/zram0			       auto	    swap defaults									 zramsize=100%,swapprio=5,notrim
+/dev/block/zram0			       auto	    swap defaults									 zramsize=100%,zramstreams=4,swapprio=5,notrim
