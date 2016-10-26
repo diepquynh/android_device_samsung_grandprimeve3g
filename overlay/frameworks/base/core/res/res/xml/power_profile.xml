@@ -18,8 +18,13 @@
         <value>2.4</value>
     </array>
     <array name="cpu.speeds">
+	<value>200000</value>
+	<value>300000</value>
+	<value>400000</value>
 	<value>500000</value>
-        <value>700000</value>
+	<value>600000</value>	
+	<value>700000</value>
+        <value>800000</value>
         <value>900000</value>
         <value>1150000</value>
         <value>1300000</value>
@@ -28,10 +33,15 @@
     <item name="cpu.awake">25</item>
     <item name="wakeup.power">0.15</item>
     <array name="cpu.active">
-	<value>56</value>
-        <value>79</value>
-        <value>85</value>
-        <value>109</value>
+	<value>19</value>
+	<value>29</value>
+	<value>39</value>
+	<value>48</value>
+	<value>58</value>
+	<value>68</value>
+        <value>78</value>
+        <value>87</value>
+        <value>112</value>
         <value>127</value>
     </array>
     <item name="battery.capacity">2600</item>
