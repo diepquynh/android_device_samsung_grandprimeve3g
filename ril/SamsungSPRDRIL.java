@@ -285,6 +285,11 @@ public class SamsungSPRDRIL extends RIL {
         send(rr);
     }
 
+     @Override
+    public void getHardwareConfig(Message response) {
+        unsupportedRequest("getHardwareConfig", response);
+    }
+
     @Override
     protected RILRequest
     processSolicited (Parcel p) {
