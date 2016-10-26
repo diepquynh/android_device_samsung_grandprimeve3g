@@ -36,10 +36,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Custom RIL class for Samsung SPRD BASED (3G) devices
- * {@hide}
+ * Custom RIL class for Grand Prime VE 3G
  */
-public class SamsungSPRDRIL extends RIL {
+
+public class grandprimeve3gRIL extends SamsungSPRDRIL {
 
     public static class TelephonyPropertyProvider implements TelephonyManager.TelephonyPropertyProvider {
 
@@ -102,72 +102,13 @@ public class SamsungSPRDRIL extends RIL {
         }
     }
 
-    private static final int RIL_REQUEST_DIAL_EMERGENCY = 10001;
-    private static final int RIL_UNSOL_ON_SS_LL = 11055;
-
-    public SamsungSPRDRIL(Context context, int preferredNetworkType, int cdmaSubscription) {
+    public grandprimeve3gRIL(Context context, int preferredNetworkType, int cdmaSubscription) {
         this(context, preferredNetworkType, cdmaSubscription, null);
     }
 
-    public SamsungSPRDRIL(Context context, int preferredNetworkType,
+    public grandprimeve3gRIL(Context context, int preferredNetworkType,
             int cdmaSubscription, Integer instanceId) {
         super(context, preferredNetworkType, cdmaSubscription, instanceId);
-    }
-
-    @Override
-    public void
-    dial(String address, int clirMode, UUSInfo uusInfo, Message result) {
-        if (PhoneNumberUtils.isEmergencyNumber(address)) {
-            dialEmergencyCall(address, clirMode, result);
-            return;
-        }
-
-        RILRequest rr = RILRequest.obtain(RIL_REQUEST_DIAL, result);
-
-        rr.mParcel.writeString(address);
-        rr.mParcel.writeInt(clirMode);
-        rr.mParcel.writeInt(0);     // CallDetails.call_type -__________-
-        rr.mParcel.writeInt(1);     // CallDetails.call_domain
-        rr.mParcel.writeString(""); // CallDetails.getCsvFromExtras
-
-        if (uusInfo == null) {
-            rr.mParcel.writeInt(0); // UUS information is absent
-        } else {
-            rr.mParcel.writeInt(1); // UUS information is present
-            rr.mParcel.writeInt(uusInfo.getType());
-            rr.mParcel.writeInt(uusInfo.getDcs());
-            rr.mParcel.writeByteArray(uusInfo.getUserData());
-        }
-
-        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
-
-        send(rr);
-    }
-
-    @Override
-    public void setDataAllowed(boolean allowed, Message result) {
-        if (RILJ_LOGD) riljLog("setDataAllowed: allowed:" + allowed + " msg:" + result);
-        if (allowed) {
-            invokeOemRilRequestRaw(new byte[] {0x09, 0x04}, result);
-        } else {
-            if (result != null) {
-                // Fake the response since we are doing nothing to disallow mobile data
-                AsyncResult.forMessage(result, 0, null);
-                result.sendToTarget();
-            }
-        }
-    }
-
-    @Override
-    public void getRadioCapability(Message response) {
-        String rafString = mContext.getResources().getString(
-            com.android.internal.R.string.config_radio_access_family);
-        if (RILJ_LOGD) riljLog("getRadioCapability: returning static radio capability [" + rafString + "]");
-        if (response != null) {
-            Object ret = makeStaticRadioCapability();
-            AsyncResult.forMessage(response, ret, null);
-            response.sendToTarget();
-        }
     }
 
     @Override
@@ -260,27 +201,6 @@ public class SamsungSPRDRIL extends RIL {
         }
 
         return response;
-    }
-
-    @Override
-    protected void
-    processUnsolicited (Parcel p) {
-        Object ret;
-        int dataPosition = p.dataPosition();
-        int response = p.readInt();
-        int newResponse = response;
-
-        switch(response) {
-            case RIL_UNSOL_ON_SS_LL:
-                newResponse = RIL_UNSOL_ON_SS;
-                break;
-        }
-        if (newResponse != response) {
-            p.setDataPosition(dataPosition);
-            p.writeInt(newResponse);
-        }
-        p.setDataPosition(dataPosition);
-        super.processUnsolicited(p);
     }
 
     @Override
