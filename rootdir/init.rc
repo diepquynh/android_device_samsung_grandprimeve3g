@@ -683,7 +683,6 @@ service media /system/bin/mediaserver
     user media
     group system audio camera inet net_bt net_bt_admin net_bw_acct drmrpc qcom_diag mediadrm radio sdcard_rw sdcard_r media_rw shell
     ioprio rt 4
-    setenv LD_SHIM_LIBS /system/lib/libstagefright_sprd_h264dec.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_h264enc.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_mpeg4dec.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_mpeg4enc.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_vpxdec.so|libstagefright_shim.so:/system/lib/hw/hwcomposer.sc8830.so|libstagefright_shim.so
 
 # One shot invocation to deal with encrypted volume.
 service defaultcrypto /system/bin/vdc --wait cryptfs mountdefaultencrypted
