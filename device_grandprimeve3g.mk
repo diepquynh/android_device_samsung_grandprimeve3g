@@ -71,23 +71,15 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
 	lights.sc8830
 
-# Device-specific packages
-PRODUCT_PACKAGES += \
-	SamsungServiceMode
-
 # Bluetooth
 PRODUCT_PACKAGES += \
-	bluetooth.default \
-	audio.a2dp.default
+	bluetooth.default
 
 # Audio
 PRODUCT_PACKAGES += \
 	audio.primary.sc8830 \
-	audio.r_submix.default \
-	audio.usb.default \
 	libaudio-resampler \
-	libatchannel_wrapper \
-	libtinyalsa
+	libatchannel_wrapper
 
 AUDIO_CONFIGS := \
 	$(LOCAL_PATH)/configs/audio/audio_policy.conf \
@@ -112,9 +104,6 @@ PRODUCT_COPY_FILES += \
 # Wifi
 PRODUCT_PACKAGES += \
 	libnetcmdiface \
-	dhcpcd.conf \
-	wpa_supplicant \
-	hostapd \
 	macloader
 
 WIFI_CONFIGS := \
@@ -125,11 +114,6 @@ WIFI_CONFIGS := \
 
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(WIFI_CONFIGS),$(f):system/etc/wifi/$(notdir $(f)))
-
-# Charger
-PRODUCT_PACKAGES += \
-	charger \
-	charger_res_images
 
 # Rootdir files
 ROOTDIR_FILES := \
@@ -146,29 +130,13 @@ PRODUCT_COPY_FILES += \
 	$(foreach f,$(ROOTDIR_FILES),$(f):root/$(notdir $(f)))
 
 # Permissions
-PERMISSION_XML_FILES := \
-	frameworks/native/data/etc/handheld_core_hardware.xml \
+PERMISSIONS_XML_FILES := \
 	frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml \
 	frameworks/native/data/etc/android.hardware.camera.front.xml \
-	frameworks/native/data/etc/android.hardware.camera.xml \
-	frameworks/native/data/etc/android.hardware.bluetooth_le.xml \
-	frameworks/native/data/etc/android.hardware.location.gps.xml \
-	frameworks/native/data/etc/android.hardware.sensor.accelerometer.xml \
-	frameworks/native/data/etc/android.hardware.touchscreen.multitouch.xml \
-	frameworks/native/data/etc/android.hardware.touchscreen.xml \
-	frameworks/native/data/etc/android.hardware.telephony.gsm.xml \
-	frameworks/native/data/etc/android.hardware.usb.accessory.xml \
-	frameworks/native/data/etc/android.software.sip.voip.xml \
-	frameworks/native/data/etc/android.software.sip.xml \
-	frameworks/native/data/etc/android.hardware.wifi.xml \
-	frameworks/native/data/etc/android.hardware.wifi.direct.xml
+	frameworks/native/data/etc/android.hardware.camera.xml
 
 PRODUCT_COPY_FILES += \
-	$(foreach f,$(PERMISSION_XML_FILES),$(f):system/etc/permissions/$(notdir $(f)))
-
-# Set default USB interface
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-	persist.sys.usb.config=mtp
+	$(foreach f,$(PERMISSIONS_XML_FILES),$(f):system/etc/permissions/$(notdir $(f)))
 
 # Device props
 PRODUCT_PROPERTY_OVERRIDES += \
