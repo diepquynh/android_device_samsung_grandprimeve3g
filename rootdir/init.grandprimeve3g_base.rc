@@ -28,10 +28,6 @@ on init
     setprop ro.SecEDS.enable false
 
 on boot
-
-# SSWAP
-    write /proc/sys/vm/swappiness 130
-
     chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO0
     chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO1
     chown shell shell /sys/devices/platform/bcm_hsotgctrl_phy_mdio/USB_MDIO2
