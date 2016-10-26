@@ -82,21 +82,6 @@ public class SamsungSPRDRIL extends RIL {
     }
 
     @Override
-    public void setUiccSubscription(int appIndex, boolean activate, Message result) {
-        riljLog("setUiccSubscription " + appIndex + " " + activate);
-
-        // Fake response (note: should be sent before mSubscriptionStatusRegistrants or
-        // SubscriptionManager might not set the readiness correctly)
-        AsyncResult.forMessage(result, 0, null);
-        result.sendToTarget();
-
-        // TODO: Actually turn off/on the radio (and don't fight with the ServiceStateTracker)
-        if (mSubscriptionStatusRegistrants != null)
-            mSubscriptionStatusRegistrants.notifyRegistrants(
-                    new AsyncResult (null, new int[] { activate ? 1 : 0 }, null));
-    }
-
-    @Override
     public void setDataAllowed(boolean allowed, Message result) {
         if (RILJ_LOGD) riljLog("setDataAllowed: allowed:" + allowed + " msg:" + result);
         if (allowed) {
