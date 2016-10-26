@@ -1,7 +1,4 @@
 # Un-categorized
-bin/at_distributor
-bin/npsmobex
-bin/refnotify
 bin/engpc
 lib/libatparser.so
 
