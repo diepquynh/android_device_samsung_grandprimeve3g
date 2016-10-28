@@ -14,12 +14,17 @@
 
 LOCAL_PATH := device/samsung/grandprimeve3g
 
+# Inherit from AOSP product configuration
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
 # The gps config appropriate for this device
 $(call inherit-product, device/common/gps/gps_us_supl.mk)
 
+# Inherit from vendor tree
 $(call inherit-product-if-exists, vendor/samsung/grandprimeve3g/grandprimeve3g-vendor.mk)
+
+# Inherit from sprd-common device configuration
+$(call inherit-product, device/samsung/sprd-common/common.mk)
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
