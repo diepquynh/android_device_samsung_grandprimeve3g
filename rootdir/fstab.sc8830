@@ -3,20 +3,20 @@
 # specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
 # <src>                                         <mnt_point>  <type>  <mnt_flags and options>             <fs_mgr_flags>
 
-/dev/block/platform/sdio_emmc/by-name/SYSTEM   /system      ext4 ro,errors=panic                                                                 wait
-/dev/block/platform/sdio_emmc/by-name/userdata /data        ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check,encryptable=footer
-/dev/block/platform/sdio_emmc/by-name/CACHE    /cache       ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
-/dev/block/platform/sdio_emmc/by-name/efs      /efs         ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
-/dev/block/platform/sdio_emmc/by-name/prodnv   /productinfo ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
+/dev/block/bootdevice/by-name/SYSTEM   /system      ext4 ro,errors=panic                                                                 wait
+/dev/block/bootdevice/by-name/userdata /data        ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check,encryptable=footer
+/dev/block/bootdevice/by-name/CACHE    /cache       ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
+/dev/block/bootdevice/by-name/efs      /efs         ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
+/dev/block/bootdevice/by-name/prodnv   /productinfo ext4 nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
 
 # Boot partitions
-/dev/block/platform/sdio_emmc/by-name/KERNEL   /boot        emmc defaults									 recoveryonly
-/dev/block/platform/sdio_emmc/by-name/HIDDEN   /preload     ext4 defaults									 recoveryonly
-/dev/block/platform/sdio_emmc/by-name/RECOVERY /recovery    emmc defaults									 recoveryonly
+/dev/block/bootdevice/by-name/KERNEL   /boot        emmc defaults									 recoveryonly
+/dev/block/bootdevice/by-name/HIDDEN   /preload     ext4 defaults									 recoveryonly
+/dev/block/bootdevice/by-name/RECOVERY /recovery    emmc defaults									 recoveryonly
 
 # VOLD : fstab_dt_otg.sc8830
-/devices/sdio_sd/mmc_host/mmc1*		       auto         auto defaults									 voldmanaged=extSdCard:auto,encryptable=userdata
-/devices/20200000.usb/usb*                     auto         auto defaults									 voldmanaged=usb:auto
+/devices/sdio_sd/mmc_host/mmc1*	       auto         auto defaults									 voldmanaged=extSdCard:auto,encryptable=userdata
+/devices/20200000.usb/usb*             auto         auto defaults									 voldmanaged=usb:auto
 
 # zRAM
-/dev/block/zram0			       auto	    swap defaults									 zramsize=100%,zramstreams=4,swapprio=5,notrim
+/dev/block/zram0		       auto	    swap defaults									 zramsize=100%,zramstreams=4,swapprio=5,notrim
