@@ -144,9 +144,9 @@ MALLOC_IMPL := dlmalloc
 BOARD_USES_LEGACY_MMAP := true
 
 # Enable dex-preoptimization to speed up the first boot sequence
-WITH_DEXPREOPT := true
-WITH_DEXPREOPT_PIC := true
-WITH_DEXPREOPT_COMP := false
+#WITH_DEXPREOPT := true
+#WITH_DEXPREOPT_PIC := true
+#WITH_DEXPREOPT_COMP := false
 
 # Charger
 BOARD_CHARGER_ENABLE_SUSPEND := true
