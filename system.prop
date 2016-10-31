@@ -48,7 +48,6 @@ ro.ril.hsxpa=1
 ro.ril.gprsclass=10
 persist.radio.multisim.config=dsds
 ro.telephony.ril_class=grandprimeve3gRIL
-ro.telephony.old_data_method=false
 ro.telephony.prop_class=grandprimeve3gRIL$TelephonyPropertyProvider
 ro.telephony.ril.config=setPrefNwTypeOnUnsolConnected,simactivation,sim2gsmonly
 ro.ril.telephony.mqanelements=6
