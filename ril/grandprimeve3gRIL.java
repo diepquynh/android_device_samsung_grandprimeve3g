@@ -122,6 +122,19 @@ public class grandprimeve3gRIL extends SamsungSPRDRIL {
     }
 
     @Override
+    public void setDataAllowed(boolean allowed, Message result) {
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ALLOW_DATA, result);
+        if (RILJ_LOGD) {
+            riljLog(rr.serialString() + "> " + requestToString(rr.mRequest) +
+                    " allowed: " + allowed);
+        }
+
+        rr.mParcel.writeInt(1);
+        rr.mParcel.writeInt(allowed ? 1 : 0);
+        send(rr);
+    }
+
+    @Override
     protected Object
     responseCallList(Parcel p) {
         int num;
