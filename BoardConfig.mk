@@ -49,6 +49,7 @@ TARGET_PLATFORM_DEVICE_BASE := /devices/sdio_emmc/
 # Kernel
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_PAGESIZE := 2048
+BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive androidboot.hardware=sc8830 androidboot.bootdevice=sdio_emmc
 TARGET_KERNEL_CONFIG := cyanogen_grandprimeve3g_defconfig
 TARGET_KERNEL_SOURCE := kernel/samsung/grandprimeve3g
 BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100 --dt device/samsung/grandprimeve3g/dt.img
@@ -130,6 +131,7 @@ TARGET_INIT_VENDOR_LIB := libinit_sec
 
 # Use dmalloc() for such low memory devices like us
 MALLOC_IMPL := dlmalloc
+BOARD_USES_LEGACY_MMAP := true
 
 # Enable dex-preoptimization to speed up the first boot sequence
 WITH_DEXPREOPT := true
