@@ -97,6 +97,7 @@ PRODUCT_PACKAGES += \
 	libstlport \
 	libril_shim \
 	libgps_shim \
+	libhwc_shim \
 	libstagefright_shim
 
 # Doze
