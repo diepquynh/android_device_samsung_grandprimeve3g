@@ -49,13 +49,17 @@ TARGET_PLATFORM_DEVICE_BASE := /devices/sdio_emmc/
 # Kernel
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_PAGESIZE := 2048
-BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive androidboot.hardware=sc8830 androidboot.bootdevice=sdio_emmc
 TARGET_KERNEL_CONFIG := cyanogen_grandprimeve3g_defconfig
 TARGET_KERNEL_SOURCE := kernel/samsung/grandprimeve3g
 BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100 --dt device/samsung/grandprimeve3g/dt.img
 
 # RIL
+#BOARD_USES_SPRD_RIL := true
+ifeq ($(BOARD_USES_SPRD_RIL),true)
 BOARD_RIL_CLASS += ../../../device/samsung/grandprimeve3g/ril
+else
+BOARD_RIL_CLASS := ../../../device/samsung/grandprimeve3g/ril
+endif
 COMMON_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
 
 # FM radio

@@ -39,68 +39,7 @@ import java.util.Collections;
  * Custom RIL class for Grand Prime VE 3G
  */
 
-public class grandprimeve3gRIL extends SamsungSPRDRIL {
-
-    public static class TelephonyPropertyProvider implements TelephonyManager.TelephonyPropertyProvider {
-
-        public TelephonyPropertyProvider() { }
-
-        @Override
-        public void setTelephonyProperty(int phoneId, String property, String value) {
-            if (SubscriptionManager.isValidPhoneId(phoneId)) {
-                String actualProp = getActualProp(phoneId, property);
-                String propVal = value == null ? "" : value;
-                if (actualProp.length() > SystemProperties.PROP_NAME_MAX
-                        || propVal.length() > SystemProperties.PROP_VALUE_MAX) {
-                    Rlog.d(RILJ_LOG_TAG, "setTelephonyProperty: property to long" +
-                            " phoneId=" + phoneId +
-                            " property=" + property +
-                            " value=" + value +
-                            " actualProp=" + actualProp +
-                            " propVal" + propVal);
-                } else {
-                    Rlog.d(RILJ_LOG_TAG, "setTelephonyProperty: success" +
-                            " phoneId=" + phoneId +
-                            " property=" + property +
-                            " value: " + value +
-                            " actualProp=" + actualProp +
-                            " propVal=" + propVal);
-                    SystemProperties.set(actualProp, propVal);
-                }
-            } else {
-                Rlog.d(RILJ_LOG_TAG, "setTelephonyProperty: invalid phoneId=" + phoneId +
-                        " property=" + property +
-                        " value=" + value);
-            }
-        }
-
-        @Override
-        public String getTelephonyProperty(int phoneId, String property, String defaultVal) {
-            String result = defaultVal;
-            if (SubscriptionManager.isValidPhoneId(phoneId)) {
-                String actualProp = getActualProp(phoneId, property);
-                String propVal = SystemProperties.get(actualProp);
-                if (!propVal.isEmpty()) {
-                    result = propVal;
-                    Rlog.d(RILJ_LOG_TAG, "getTelephonyProperty: return result=" + result +
-                            " phoneId=" + phoneId +
-                            " property=" + property +
-                            " defaultVal=" + defaultVal +
-                            " actualProp=" + actualProp +
-                            " propVal=" + propVal);
-                }
-            } else {
-                Rlog.e(RILJ_LOG_TAG, "getTelephonyProperty: invalid phoneId=" + phoneId +
-                        " property=" + property +
-                        " defaultVal=" + defaultVal);
-            }
-            return result;
-        }
-
-        private String getActualProp(int phoneId, String prop) {
-            return phoneId <= 0 ? prop : prop + (phoneId + 1);
-        }
-    }
+public class grandprimeve3gRIL extends RIL {
 
     public grandprimeve3gRIL(Context context, int preferredNetworkType, int cdmaSubscription) {
         this(context, preferredNetworkType, cdmaSubscription, null);
@@ -109,29 +48,6 @@ public class grandprimeve3gRIL extends SamsungSPRDRIL {
     public grandprimeve3gRIL(Context context, int preferredNetworkType,
             int cdmaSubscription, Integer instanceId) {
         super(context, preferredNetworkType, cdmaSubscription, instanceId);
-    }
-
-    @Override
-    public void startLceService(int reportIntervalMs, boolean pullMode, Message response) {
-        riljLog("Link Capacity Estimate (LCE) service is not supported!");
-        if (response != null) {
-            AsyncResult.forMessage(response, null, new CommandException(
-                    CommandException.Error.REQUEST_NOT_SUPPORTED));
-            response.sendToTarget();
-        }
-    }
-
-    @Override
-    public void setDataAllowed(boolean allowed, Message result) {
-        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ALLOW_DATA, result);
-        if (RILJ_LOGD) {
-            riljLog(rr.serialString() + "> " + requestToString(rr.mRequest) +
-                    " allowed: " + allowed);
-        }
-
-        rr.mParcel.writeInt(1);
-        rr.mParcel.writeInt(allowed ? 1 : 0);
-        send(rr);
     }
 
     @Override
@@ -173,6 +89,31 @@ public class grandprimeve3gRIL extends SamsungSPRDRIL {
             cardStatus.mApplications[i] = appStatus;
         }
         return cardStatus;
+    }
+
+    @Override
+    public void
+    dial(String address, int clirMode, UUSInfo uusInfo, Message result) {
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_DIAL, result);
+
+        rr.mParcel.writeString(address);
+        rr.mParcel.writeInt(clirMode);
+        rr.mParcel.writeInt(0);     // CallDetails.call_type
+        rr.mParcel.writeInt(1);     // CallDetails.call_domain
+        rr.mParcel.writeString(""); // CallDetails.getCsvFromExtras
+
+        if (uusInfo == null) {
+            rr.mParcel.writeInt(0); // UUS information is absent
+        } else {
+            rr.mParcel.writeInt(1); // UUS information is present
+            rr.mParcel.writeInt(uusInfo.getType());
+            rr.mParcel.writeInt(uusInfo.getDcs());
+            rr.mParcel.writeByteArray(uusInfo.getUserData());
+        }
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        send(rr);
     }
 
     @Override
@@ -269,19 +210,5 @@ public class grandprimeve3gRIL extends SamsungSPRDRIL {
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
 
         send(rr);
-    }
-
-     @Override
-    public void getHardwareConfig(Message response) {
-        unsupportedRequest("getHardwareConfig", response);
-    }
-
-    private void unsupportedRequest(String methodName, Message response) {
-        riljLog("[" + getClass().getSimpleName() + "] Ignore call to: " + methodName);
-        if (response != null) {
-            AsyncResult.forMessage(response, null, new CommandException(
-                    CommandException.Error.REQUEST_NOT_SUPPORTED));
-            response.sendToTarget();
-        }
     }
 }
