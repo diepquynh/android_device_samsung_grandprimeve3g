@@ -139,6 +139,12 @@ ROOTDIR_FILES := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(ROOTDIR_FILES),$(f):root/$(notdir $(f)))
 
+SBIN_BINARY := \
+	$(LOCAL_PATH)/rootdir/sbin/sswap
+
+PRODUCT_COPY_FILES += \
+	$(foreach f,$(SBIN_BINARY),$(f):root/sbin/$(notdir $(f)))
+
 # Permissions
 PERMISSIONS_XML_FILES := \
 	frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml \

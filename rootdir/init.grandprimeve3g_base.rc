@@ -403,10 +403,3 @@ on property:persist.sys.storage_preload=0
 
 on charger
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "powersave"
-
-# SSWAP
-service swapon /system/bin/sswap -s
-    class core
-    user root
-    group root
-    oneshot
