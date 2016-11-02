@@ -43,6 +43,11 @@ on fs
     chmod 660 /dev/graphics/fb0
     chmod 660 /dev/fb0
 
+on charger
+    mount ext4 /dev/block/mmcblk0p25 /system ro wait
+    exec sfsck /dev/block/mmcblk0p27 ext4
+    mount ext4 /dev/block/mmcblk0p27 /data nosuid,nodev,noatime wait,encryptable=footer,check
+
 on post-fs
     chown system system /productinfo
     chmod 0771 /productinfo
