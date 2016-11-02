@@ -406,7 +406,7 @@ service smd_symlink /system/bin/ext_symlink.sh -u
     oneshot
 
 # SSWAP
-service swapon /sbin/sswap -s
+service vnswap /sbin/sswap -s
     class core
     user root
     group root
