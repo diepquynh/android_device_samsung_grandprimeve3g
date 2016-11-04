@@ -39,7 +39,7 @@ import java.util.Collections;
  * Custom RIL class for Grand Prime VE 3G
  */
 
-public class grandprimeve3gRIL extends RIL {
+public class grandprimeve3gRIL extends SamsungSPRDRIL implements CommandsInterface {
 
     public grandprimeve3gRIL(Context context, int preferredNetworkType, int cdmaSubscription) {
         this(context, preferredNetworkType, cdmaSubscription, null);
@@ -91,29 +91,27 @@ public class grandprimeve3gRIL extends RIL {
         return cardStatus;
     }
 
+    // This thing... it causes lots of headaches due to RIL crashes
     @Override
     public void
-    dial(String address, int clirMode, UUSInfo uusInfo, Message result) {
-        RILRequest rr = RILRequest.obtain(RIL_REQUEST_DIAL, result);
-
-        rr.mParcel.writeString(address);
-        rr.mParcel.writeInt(clirMode);
-        rr.mParcel.writeInt(0);     // CallDetails.call_type
-        rr.mParcel.writeInt(1);     // CallDetails.call_domain
-        rr.mParcel.writeString(""); // CallDetails.getCsvFromExtras
-
-        if (uusInfo == null) {
-            rr.mParcel.writeInt(0); // UUS information is absent
-        } else {
-            rr.mParcel.writeInt(1); // UUS information is present
-            rr.mParcel.writeInt(uusInfo.getType());
-            rr.mParcel.writeInt(uusInfo.getDcs());
-            rr.mParcel.writeByteArray(uusInfo.getUserData());
+    getHardwareConfig (Message result) {
+        riljLog("Ignoring call to 'getHardwareConfig'");
+        if (result != null) {
+            CommandException ex = new CommandException(
+                CommandException.Error.REQUEST_NOT_SUPPORTED);
+            AsyncResult.forMessage(result, null, ex);
+            result.sendToTarget();
         }
+    }
 
-        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
-
-        send(rr);
+    @Override
+    public void startLceService(int reportIntervalMs, boolean pullMode, Message response) {
+        riljLog("Link Capacity Estimate (LCE) service is not supported!");
+        if (response != null) {
+            AsyncResult.forMessage(response, null, new CommandException(
+                    CommandException.Error.REQUEST_NOT_SUPPORTED));
+            response.sendToTarget();
+        }
     }
 
     @Override
