@@ -47,6 +47,12 @@ on charger
     exec sfsck /dev/block/mmcblk0p27 ext4
     mount ext4 /dev/block/mmcblk0p27 /data nosuid,nodev,noatime wait,encryptable=footer,check
 
+service charger /charger
+    class charger
+    group log
+    critical
+    seclabel u:r:healthd:s0
+
 on post-fs
     chown system system /productinfo
     chmod 0771 /productinfo
