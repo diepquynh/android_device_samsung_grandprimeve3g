@@ -171,6 +171,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	dalvik.vm.dex2oat-filter=everything \
 	dalvik.vm.image-dex2oat-filter=everything
 
+# Support FRP lock (unlock bootloader, etc...)
+PRODUCT_PROPERTY_OVERRIDES += \
+	ro.frp.pst=/dev/block/persistent
+
 # Support for Browser's saved page feature. This allows
 # for pages saved on previous versions of the OS to be
 # viewed on the current OS.
