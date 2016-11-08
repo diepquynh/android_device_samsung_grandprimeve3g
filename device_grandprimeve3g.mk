@@ -176,7 +176,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Support FRP lock (unlock bootloader, etc...)
 PRODUCT_PROPERTY_OVERRIDES += \
-	ro.frp.pst=/dev/block/persistent
+	ro.frp.pst=/dev/block/platform/sdio_emmc/by-name/PERSISTENT
 
 # Support for Browser's saved page feature. This allows
 # for pages saved on previous versions of the OS to be
