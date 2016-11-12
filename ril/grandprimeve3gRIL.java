@@ -42,67 +42,6 @@ import java.util.Collections;
 
 public class grandprimeve3gRIL extends SamsungSPRDRIL implements CommandsInterface {
 
-    public static class TelephonyPropertyProvider implements TelephonyManager.TelephonyPropertyProvider {
-
-        public TelephonyPropertyProvider() { }
-
-        @Override
-        public void setTelephonyProperty(int phoneId, String property, String value) {
-            if (SubscriptionManager.isValidPhoneId(phoneId)) {
-                String actualProp = getActualProp(phoneId, property);
-                String propVal = value == null ? "" : value;
-                if (actualProp.length() > SystemProperties.PROP_NAME_MAX
-                        || propVal.length() > SystemProperties.PROP_VALUE_MAX) {
-                    Rlog.d(RILJ_LOG_TAG, "setTelephonyProperty: property to long" +
-                            " phoneId=" + phoneId +
-                            " property=" + property +
-                            " value=" + value +
-                            " actualProp=" + actualProp +
-                            " propVal" + propVal);
-                } else {
-                    Rlog.d(RILJ_LOG_TAG, "setTelephonyProperty: success" +
-                            " phoneId=" + phoneId +
-                            " property=" + property +
-                            " value: " + value +
-                            " actualProp=" + actualProp +
-                            " propVal=" + propVal);
-                    SystemProperties.set(actualProp, propVal);
-                }
-            } else {
-                Rlog.d(RILJ_LOG_TAG, "setTelephonyProperty: invalid phoneId=" + phoneId +
-                        " property=" + property +
-                        " value=" + value);
-            }
-        }
-
-        @Override
-        public String getTelephonyProperty(int phoneId, String property, String defaultVal) {
-            String result = defaultVal;
-            if (SubscriptionManager.isValidPhoneId(phoneId)) {
-                String actualProp = getActualProp(phoneId, property);
-                String propVal = SystemProperties.get(actualProp);
-                if (!propVal.isEmpty()) {
-                    result = propVal;
-                    Rlog.d(RILJ_LOG_TAG, "getTelephonyProperty: return result=" + result +
-                            " phoneId=" + phoneId +
-                            " property=" + property +
-                            " defaultVal=" + defaultVal +
-                            " actualProp=" + actualProp +
-                            " propVal=" + propVal);
-                }
-            } else {
-                Rlog.e(RILJ_LOG_TAG, "getTelephonyProperty: invalid phoneId=" + phoneId +
-                        " property=" + property +
-                        " defaultVal=" + defaultVal);
-            }
-            return result;
-        }
-
-        private String getActualProp(int phoneId, String prop) {
-            return phoneId <= 0 ? prop : prop + (phoneId + 1);
-        }
-    }
-
     public grandprimeve3gRIL(Context context, int preferredNetworkType, int cdmaSubscription) {
         this(context, preferredNetworkType, cdmaSubscription, null);
     }
