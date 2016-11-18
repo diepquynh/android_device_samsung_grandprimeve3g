@@ -134,6 +134,9 @@ TARGET_OTA_ASSERT_DEVICE := SM-G531H,SM-G531BT,grandprimeve3g,grandprimeve3gdtv,
 # Init
 TARGET_INIT_VENDOR_LIB := libinit_sec
 
+# PowerHAL
+TARGET_POWERHAL_VARIANT := samsung
+
 # Use dmalloc() for such low memory devices like us
 MALLOC_IMPL := dlmalloc
 BOARD_USES_LEGACY_MMAP := true
