@@ -133,7 +133,6 @@ PRODUCT_COPY_FILES += \
 
 # Rootdir files
 ROOTDIR_FILES := \
-	$(LOCAL_PATH)/rootdir/init.rc \
 	$(LOCAL_PATH)/rootdir/init.board.rc \
 	$(LOCAL_PATH)/rootdir/init.sc8830.rc \
 	$(LOCAL_PATH)/rootdir/init.sc8830.usb.rc \
