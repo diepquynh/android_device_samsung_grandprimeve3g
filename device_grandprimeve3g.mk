@@ -107,7 +107,6 @@ PRODUCT_PACKAGES += \
 # Common packages
 PRODUCT_PACKAGES += \
 	SamsungDoze \
-	Snap \
 	Gello
 
 # GPS
