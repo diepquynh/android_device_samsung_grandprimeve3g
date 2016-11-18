@@ -19,6 +19,8 @@ on early-init
     pipe 666 /dev/rpipe/ril.vt.2
 
 on init
+    stop ril-daemon
+
     mkdir /productinfo 0771 system system
     export LD_SHIM_LIBS /system/lib/libstagefright_sprd_h264dec.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_h264enc.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_mpeg4dec.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_mpeg4enc.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_vpxdec.so|libstagefright_shim.so:/system/lib/hw/hwcomposer.sc8830.so|libhwc_shim.so
 
@@ -241,29 +243,26 @@ service batterysrv /bin/batterysrv
     oneshot
 
 #wcdma rild service
-service ril-daemon /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 0
+service sprd-ril-daemon /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 0
     class core
     socket rild stream 660 root radio
     socket rild-debug stream 660 radio system
-    disabled
     user root
     group radio cache inet misc audio sdcard_rw log shell
     setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
 
-service ril-daemon2 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 1
+service sprd-ril-daemon2 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 1
     class core
     socket rild2 stream 660 root radio
     socket rild-debug2 stream 660 radio system
-    disabled
     user root
     group radio cache inet misc audio sdcard_rw log shell
     setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
 
-service ril-daemon3 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 2
+service sprd-ril-daemon3 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 2
     class core
     socket rild3 stream 660 root radio
     socket rild-debug3 stream 660 radio system
-    disabled
     user root
     group radio cache inet misc audio sdcard_rw log shell
     setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
