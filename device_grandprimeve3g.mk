@@ -104,11 +104,6 @@ PRODUCT_PACKAGES += \
 	libhwc_shim \
 	libstagefright_shim
 
-# Common packages
-PRODUCT_PACKAGES += \
-	SamsungDoze \
-	Gello
-
 # GPS
 GPS_CONFIGS := \
 	$(LOCAL_PATH)/configs/gps/gps.xml \
