@@ -161,6 +161,7 @@ SYSTEM_INIT_RC_FILES := \
 	device/samsung/grandprimeve3g/system/etc/init/kill_phone.rc \
 	device/samsung/grandprimeve3g/system/etc/init/macloader.rc \
 	device/samsung/grandprimeve3g/system/etc/init/mediacodec.rc \
+	device/samsung/grandprimeve3g/system/etc/init/mediaserver.rc \
 	device/samsung/grandprimeve3g/system/etc/init/modem_control.rc \
 	device/samsung/grandprimeve3g/system/etc/init/modemd.rc \
 	device/samsung/grandprimeve3g/system/etc/init/nvitemd.rc \

@@ -1,0 +1,7 @@
+service media /system/bin/mediaserver
+    class main
+    user media
+    group audio camera inet net_bt net_bt_admin net_bw_acct drmrpc mediadrm
+    ioprio rt 4
+    writepid /dev/cpuset/foreground/tasks /dev/stune/foreground/tasks
+    setenv LD_SHIM_LIBS /system/lib/libstagefright_sprd_h264dec.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_h264enc.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_mpeg4dec.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_mpeg4enc.so|libstagefright_shim.so:/system/lib/libstagefright_sprd_vpxdec.so|libstagefright_shim.so:/system/lib/hw/hwcomposer.sc8830.so|libhwc_shim.so
