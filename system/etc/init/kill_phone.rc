@@ -1,0 +1,17 @@
+#kill td app
+service kill_td_phone /system/bin/ext_kill.sh  -t
+    user root
+    disabled
+    oneshot
+
+#kill w app
+service kill_w_phone /system/bin/ext_kill.sh  -w
+    user root
+    disabled
+    oneshot
+
+#kill lte app
+service kill_l_phone /system/bin/ext_kill.sh  -l
+    user root
+    disabled
+    oneshot

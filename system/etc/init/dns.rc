@@ -1,0 +1,12 @@
+#enable_dns
+service enable_dns /system/bin/ext_data.sh -e
+    user root
+    disabled
+    oneshot
+
+#disable_dns
+service disable_dns /system/bin/ext_data.sh -c
+    user root
+    disabled
+    oneshot
+

@@ -1,0 +1,4 @@
+service at_distributor /system/bin/at_distributor
+    class late_start
+    user root
+    group radio misc log

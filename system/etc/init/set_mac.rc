@@ -1,0 +1,5 @@
+#set mac addr
+service set_mac /system/bin/ext_chown.sh  -e
+    user root
+    disabled
+    oneshot

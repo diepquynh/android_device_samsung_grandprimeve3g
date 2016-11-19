@@ -149,6 +149,32 @@ SBIN_BINARY := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(SBIN_BINARY),$(f):root/sbin/$(notdir $(f)))
 
+# System init .rc files
+SYSTEM_INIT_RC_FILES := \
+	device/samsung/grandprimeve3g/system/etc/init/at_distributor.rc \
+	device/samsung/grandprimeve3g/system/etc/init/chown_service.rc \
+	device/samsung/grandprimeve3g/system/etc/init/data.rc \
+	device/samsung/grandprimeve3g/system/etc/init/dns.rc \
+	device/samsung/grandprimeve3g/system/etc/init/engpc.rc \
+	device/samsung/grandprimeve3g/system/etc/init/gpsd.rc \
+	device/samsung/grandprimeve3g/system/etc/init/hostapd.rc \
+	device/samsung/grandprimeve3g/system/etc/init/kill_phone.rc \
+	device/samsung/grandprimeve3g/system/etc/init/macloader.rc \
+	device/samsung/grandprimeve3g/system/etc/init/modem_control.rc \
+	device/samsung/grandprimeve3g/system/etc/init/modemd.rc \
+	device/samsung/grandprimeve3g/system/etc/init/nvitemd.rc \
+	device/samsung/grandprimeve3g/system/etc/init/p2p_supplicant.rc \
+	device/samsung/grandprimeve3g/system/etc/init/phoneserver.rc \
+	device/samsung/grandprimeve3g/system/etc/init/refnotify.rc \
+	device/samsung/grandprimeve3g/system/etc/init/rild.rc \
+	device/samsung/grandprimeve3g/system/etc/init/set_mac.rc \
+	device/samsung/grandprimeve3g/system/etc/init/smd_symlink.rc \
+	device/samsung/grandprimeve3g/system/etc/init/swap.rc \
+	device/samsung/grandprimeve3g/system/etc/init/wpa_supplicant.rc \
+
+PRODUCT_COPY_FILES += \
+	$(foreach f,$(SYSTEM_INIT_RC_FILES),$(f):system/etc/init/$(notdir $(f)))
+
 # Permissions
 PERMISSIONS_XML_FILES := \
 	frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml \

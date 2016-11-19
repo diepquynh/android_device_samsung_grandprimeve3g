@@ -195,124 +195,10 @@ on property:ro.config.ksm.support=true
     write /sys/kernel/mm/ksm/sleep_millisecs 500
     write /sys/kernel/mm/ksm/run   1
 
-#modem_control
-service modem_control  /system/bin/modem_control
-    class core
-    user root
-    group system radio shell
-    oneshot
-
-service modemd /system/bin/modemd
-    class core
-    user system
-    group system radio shell
-    oneshot
-
-service phoneserver_t /system/bin/phoneserver -m t
-    class core
-    user root
-    group radio system shell dhcp
-    disabled
-    oneshot
-
-service phoneserver_w /system/bin/phoneserver -m w
-    class core
-    user root
-    group radio system shell dhcp
-    disabled
-    oneshot
-
-service phoneserver_l /system/bin/phoneserver -m l
-    class core
-    user root
-    group radio system shell dhcp
-    disabled
-    oneshot
-
-service phoneserver_tl /system/bin/phoneserver -m tl
-    class core
-    user root
-    group radio system shell dhcp
-    disabled
-    oneshot
-
 service batterysrv /bin/batterysrv
     class core
     user system
     group system
-    oneshot
-
-#wcdma rild service
-service sprd-ril-daemon /system/bin/rild_sprd -l /system/lib/libreference-ril_sp.so -m w -n 0
-    class core
-    socket rild stream 660 root radio
-    socket rild-debug stream 660 radio system
-    user root
-    group radio cache inet misc audio sdcard_rw log shell
-    setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
-
-service sprd-ril-daemon2 /system/bin/rild_sprd -l /system/lib/libreference-ril_sp.so -m w -n 1
-    class core
-    socket rild2 stream 660 root radio
-    socket rild-debug2 stream 660 radio system
-    user root
-    group radio cache inet misc audio sdcard_rw log shell
-    setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
-
-service sprd-ril-daemon3 /system/bin/rild_sprd -l /system/lib/libreference-ril_sp.so -m w -n 2
-    class core
-    socket rild3 stream 660 root radio
-    socket rild-debug3 stream 660 radio system
-    user root
-    group radio cache inet misc audio sdcard_rw log shell
-    setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
-
-#nvitemd
-service nvitemd_td /system/bin/nvitemd t 0
-    class core
-    user system
-    disabled
-    group system radio shell
-    oneshot
-
-service nvitemd_w /system/bin/nvitemd w 0
-    class core
-    user system
-    group system radio shell
-    disabled
-    oneshot
-
-service nvitemd_l /system/bin/nvitemd l 0
-    class core
-    user system
-    group system radio shell
-    disabled
-    oneshot
-
-service slog /system/bin/slog -t
-    class main
-    user system
-    group system shell radio log sdcard_r sdcard_rw
-
-service refnotify_td /system/bin/refnotify -t 0
-    class core
-    disabled
-    user system
-    group system radio shell
-    oneshot
-
-service refnotify_w /system/bin/refnotify -t 1
-    class core
-    disabled
-    user system
-    group system radio shell
-    oneshot
-
-service refnotify_l /system/bin/refnotify -t 2
-    class main
-    disabled
-    user system
-    group system radio shell
     oneshot
 
 on property:persist.modem.w.enable=1
@@ -331,65 +217,6 @@ on property:persist.modem.l.enable=1
     start refnotify_l
     start nvitemd_l
 
-#create symlink
-service smd_symlink /system/bin/ext_symlink.sh -u
-    user root
-    disabled
-    oneshot
-
-#data on
-service data_on /system/bin/ext_data.sh  -u
-    user root
-    disabled
-    oneshot
-
-#data off
-service data_off /system/bin/ext_data.sh  -d
-    user root
-    disabled
-    oneshot
-
-#enable_dns
-service enable_dns /system/bin/ext_data.sh -e
-    user root
-    disabled
-    oneshot
-
-#disable_dns
-service disable_dns /system/bin/ext_data.sh -c
-    user root
-    disabled
-    oneshot
-
-#kill td app
-service kill_td_phone /system/bin/ext_kill.sh  -t
-    user root
-    disabled
-    oneshot
-
-#kill w app
-service kill_w_phone /system/bin/ext_kill.sh  -w
-    user root
-    disabled
-    oneshot
-#kill lte app
-service kill_l_phone /system/bin/ext_kill.sh  -l
-    user root
-    disabled
-    oneshot
-
-#change owner
-service chown_service /system/bin/ext_chown.sh  -c
-    class main
-    user root
-    oneshot
-
-#set mac addr
-service set_mac /system/bin/ext_chown.sh  -e
-    user root
-    disabled
-    oneshot
-
     chmod 0666 /proc/pin_switch/iis0_sys_sel/cp0_iis0
     chmod 0666 /proc/pin_switch/iis0_sys_sel/cp1_iis0
     chmod 0666 /proc/pin_switch/iis0_sys_sel/cp2_iis0
@@ -404,24 +231,4 @@ service bugreport /system/bin/dumpstate -d -p -B \
     class late_start
     disabled
     oneshot
-
-service smd_symlink /system/bin/ext_symlink.sh -u
-    user root
-    disabled
-    oneshot
-
-# SSWAP
-service vnswap /sbin/sswap -s
-    class core
-    user root
-    group root
-    disabled
-    oneshot
-
-on property:vnswap.enabled=true
-   start vnswap
-
-on property:ro.config.zram.disksize=*
-    write /sys/block/zram0/disksize ${ro.config.zram.disksize}
-    swapon_all /fstab.sc8830
 

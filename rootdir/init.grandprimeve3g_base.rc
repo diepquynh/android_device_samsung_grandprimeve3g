@@ -328,19 +328,6 @@ on property:ro.debug_level=0x494d
     write /sys/kernel/debug/tracing/events/timer/enable 1
     write /sys/kernel/debug/tracing/events/cpufreq_interactive/cpufreq_interactive_setspeed/enable 1
 
-# GPS
-service gpsd /system/bin/gpsd -c /system/etc/gps.xml
-    class main
-    user gps
-    group system inet net_raw
-    ioprio be 0
-    setenv LD_SHIM_LIBS /system/bin/gpsd|libgps_shim.so
-
-service at_distributor /system/bin/at_distributor
-    class main
-    user root
-    group radio misc log
-
 #start watchdog daemon
 service watchdogd /system/bin/watchdogd
     class core

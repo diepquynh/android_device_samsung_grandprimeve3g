@@ -48,8 +48,6 @@ on boot
     chmod 660 /data/misc/wifi/fwpath
     chown wifi wifi /data/misc/wifi/fwpath
     rmdir /data/system/wpa_supplicant
-    mkdir /data/misc/dhcp 0775 dhcp dhcp
-    chown dhcp dhcp /data/misc/dhcp
     setprop wifi.interface wlan0
 
     mkdir /data/cg/ 0770 system system
@@ -60,36 +58,3 @@ on boot
     chmod 777 /system/etc/HiMap.db
 
     write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 100000
-
-service dhcpcd_bnep0 /system/bin/dhcpcd -ABKL
-    class main
-    disabled
-    oneshot
-
-service iprenew_bnep0 /system/bin/dhcpcd -n
-    class main
-    disabled
-    oneshot
-
-service dhcpcd_bt-pan /system/bin/dhcpcd -BKLG
-    disabled
-    oneshot
-
-
-service iprenew_bt-pan /system/bin/dhcpcd -n
-    disabled
-    oneshot
-
-service engpcclientw /system/bin/engpc -p w -a /dev/ttyGS0 -d /dev/ttyGS1
-    class core
-    user system
-    group system radio shell sdcard_rw
-    disabled
-    oneshot
-
-service engpcclientwcn /system/bin/engpc -p wcn -a /dev/ttyGS2 -d /dev/ttyGS3
-    class core
-    user system
-    group system radio shell
-    disabled
-    oneshot

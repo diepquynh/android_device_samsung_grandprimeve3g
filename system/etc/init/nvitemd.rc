@@ -1,0 +1,21 @@
+#nvitemd
+service nvitemd_td /system/bin/nvitemd t 0
+    class core
+    user system
+    disabled
+    group system radio shell
+    oneshot
+
+service nvitemd_w /system/bin/nvitemd w 0
+    class core
+    user system
+    group system radio shell
+    disabled
+    oneshot
+
+service nvitemd_l /system/bin/nvitemd l 0
+    class core
+    user system
+    group system radio shell
+    disabled
+    oneshot

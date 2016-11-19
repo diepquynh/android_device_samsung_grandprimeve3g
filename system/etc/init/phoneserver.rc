@@ -1,0 +1,27 @@
+service phoneserver_t /system/bin/phoneserver -m t
+    class core
+    user root
+    group radio system shell dhcp
+    disabled
+    oneshot
+
+service phoneserver_w /system/bin/phoneserver -m w
+    class core
+    user root
+    group radio system shell dhcp
+    disabled
+    oneshot
+
+service phoneserver_l /system/bin/phoneserver -m l
+    class core
+    user root
+    group radio system shell dhcp
+    disabled
+    oneshot
+
+service phoneserver_tl /system/bin/phoneserver -m tl
+    class core
+    user root
+    group radio system shell dhcp
+    disabled
+    oneshot

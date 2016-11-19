@@ -1,0 +1,13 @@
+service engpcclientw /system/bin/engpc -t 0 -a /dev/ttyGS0 -d /dev/ttyGS1
+    class late_start
+    user system
+    group media system radio shell
+    disabled
+    oneshot
+
+service engpcclientwcn /system/bin/engpc -t 2 -a /dev/ttyGS2 -d /dev/ttyGS3
+    class late_start
+    user system
+    group media system radio shell
+    disabled
+    oneshot

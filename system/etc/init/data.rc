@@ -1,0 +1,10 @@
+service data_on /system/bin/ext_data.sh  -u
+    user root
+    disabled
+    oneshot
+
+#data off
+service data_off /system/bin/ext_data.sh  -d
+    user root
+    disabled
+    oneshot

@@ -1,0 +1,5 @@
+#change owner
+service chown_service /system/bin/ext_chown.sh  -c
+    class main
+    user root
+    oneshot
