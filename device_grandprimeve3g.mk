@@ -99,6 +99,7 @@ PRODUCT_COPY_FILES += \
 # Common libs
 PRODUCT_PACKAGES += \
 	libstlport \
+	librilutils \
 	libril_shim \
 	libgps_shim \
 	libhwc_shim \
