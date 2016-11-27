@@ -58,6 +58,7 @@ persist.sys.sprd.wcnreset=1
 
 # Multitasking
 vnswap.enabled=true
+ro.config.zram.compressor=lz4
 ro.config.zram.disksize=512M
 
 # Multi-user UI
