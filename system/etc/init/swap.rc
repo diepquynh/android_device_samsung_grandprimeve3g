@@ -12,7 +12,7 @@ on property:ro.config.zram.compressor=* && property:ro.config.zram.disksize=*
     swapon_all /fstab.sc8830
 
 # SSWAP
-service vnswap /sbin/sswap -s
+service vnswap /system/bin/sswap -s
     class core
     user root
     group root
