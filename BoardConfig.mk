@@ -59,10 +59,6 @@ KERNEL_TOOLCHAIN := $(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.
 BOARD_RIL_CLASS += ../../../device/samsung/grandprimeve3g/ril
 BOARD_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
 
-# FM radio
-BOARD_HAVE_FM_BCM := true
-BOARD_HAVE_FMRADIO_BCM := true
-
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/grandprimeve3g/bluetooth
 BOARD_CUSTOM_BT_CONFIG := device/samsung/vivalto3gvn/bluetooth/libbt_vndcfg.txt
@@ -86,7 +82,6 @@ BOARD_HAVE_SAMSUNG_WIFI := true
 # Graphics
 TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
 BOARD_EGL_NEEDS_HANDLE_VALUE := true
-#HWUI_COMPILE_FOR_PERF := true
 TARGET_REQUIRES_SYNCHRONOUS_SETSURFACE := true
 TARGET_FORCE_SCREENSHOT_CPU_PATH := true
 NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
@@ -150,11 +145,6 @@ BOARD_USES_LEGACY_MMAP := true
 
 # Bionic
 TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
-
-# Enable dex-preoptimization to speed up the first boot sequence
-#WITH_DEXPREOPT := true
-#WITH_DEXPREOPT_PIC := true
-#WITH_DEXPREOPT_COMP := false
 
 # Charger
 BOARD_CHARGER_ENABLE_SUSPEND := true
