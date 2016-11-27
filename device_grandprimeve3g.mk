@@ -186,10 +186,6 @@ PERMISSIONS_XML_FILES := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(PERMISSIONS_XML_FILES),$(f):system/etc/permissions/$(notdir $(f)))
 
-# Device props
-PRODUCT_PROPERTY_OVERRIDES += \
-	keyguard.no_require_sim=true
-
 # ART device props
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.sys.fw.dex2oat_thread_count=4 \
@@ -198,12 +194,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Support FRP lock (unlock bootloader, etc...)
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.frp.pst=/dev/block/platform/sdio_emmc/by-name/PERSISTENT
-
-# Support for Browser's saved page feature. This allows
-# for pages saved on previous versions of the OS to be
-# viewed on the current OS.
-PRODUCT_PACKAGES += \
-	libskia_legacy
 
 # Languages
 PRODUCT_PROPERTY_OVERRIDES += \
