@@ -135,6 +135,12 @@ TARGET_RECOVERY_FSTAB := device/samsung/grandprimeve3g/rootdir/fstab.sc8830
 # Assert
 TARGET_OTA_ASSERT_DEVICE := SM-G531H,SM-G531BT,grandprimeve3g,grandprimeve3gdtv,grandprimeve3gub,grandprimeve3gxx,grandprimeve3gdtvvj
 
+# Build system
+USE_NINJA := false
+
+# Disable crappy JACK
+LOCAL_JACK_ENABLED := disabled
+
 # Init
 TARGET_INIT_VENDOR_LIB := libinit_sec
 
