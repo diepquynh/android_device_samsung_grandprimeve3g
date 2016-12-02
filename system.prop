@@ -69,3 +69,6 @@ fw.show_multiuserui=1
 # Media
 media.stagefright.legacyencoder=true
 media.stagefright.less-secure=true
+
+# EGL blobs crash on screen off
+ro.egl.destroy_after_detach=true
