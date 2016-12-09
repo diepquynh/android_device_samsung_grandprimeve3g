@@ -136,9 +136,6 @@ LOCAL_JACK_ENABLED := disabled
 # Init
 TARGET_INIT_VENDOR_LIB := libinit_sec
 
-# PowerHAL
-TARGET_POWERHAL_VARIANT := samsung
-
 # Use dmalloc() for such low memory devices like us
 MALLOC_SVELTE := true
 BOARD_USES_LEGACY_MMAP := true

@@ -76,10 +76,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
 	lights.sc8830
 
-# PowerHAL
-PRODUCT_PACKAGES += \
-	power.sc8830
-
 # Bluetooth
 PRODUCT_PACKAGES += \
 	bluetooth.default
