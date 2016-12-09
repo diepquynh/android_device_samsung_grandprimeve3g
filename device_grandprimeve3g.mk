@@ -87,7 +87,11 @@ PRODUCT_PACKAGES += \
 	libatchannel_wrapper
 
 AUDIO_CONFIGS := \
+	$(LOCAL_PATH)/configs/audio/audio_hw.xml \
+	$(LOCAL_PATH)/configs/audio/audio_para \
 	$(LOCAL_PATH)/configs/audio/audio_policy.conf \
+	$(LOCAL_PATH)/configs/audio/codec_pga.xml \
+	$(LOCAL_PATH)/configs/audio/tiny_hw.xml
 
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(AUDIO_CONFIGS),$(f):system/etc/$(notdir $(f))) \
