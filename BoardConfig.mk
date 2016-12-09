@@ -106,6 +106,7 @@ BOARD_CANT_REALLOCATE_OMX_BUFFERS := true
 SOC_SCX30G_V2 := true
 
 # Board specific features
+BOARD_GLOBAL_CFLAGS += -DUSES_LEGACY_BLOBS
 BOARD_USE_SAMSUNG_COLORFORMAT := true
 TARGET_HAS_LEGACY_CAMERA_HAL1 := true
 
@@ -131,8 +132,10 @@ LOCAL_JACK_ENABLED := disabled
 MALLOC_SVELTE := true
 BOARD_USES_LEGACY_MMAP := true
 
-# Bionic
-TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
+# Enable dex-preoptimization to speed up the first boot sequence
+#WITH_DEXPREOPT := true
+#WITH_DEXPREOPT_PIC := true
+#WITH_DEXPREOPT_COMP := false
 
 # Charger
 BOARD_CHARGER_ENABLE_SUSPEND := true
