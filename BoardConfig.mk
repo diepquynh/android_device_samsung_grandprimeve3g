@@ -28,8 +28,6 @@ TARGET_CPU_VARIANT := cortex-a7
 TARGET_CPU_SMP := true
 ARCH_ARM_HAVE_TLS_REGISTER := true
 TARGET_BOOTLOADER_BOARD_NAME := SC7730SE
-TARGET_GLOBAL_CFLAGS += -mtune=cortex-a7 -mfpu=neon -mfloat-abi=softfp
-TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a7 -mfpu=neon -mfloat-abi=softfp
 BOARD_VENDOR := samsung
 TARGET_UNIFIED_DEVICE := true
 
@@ -114,9 +112,6 @@ TARGET_HAS_LEGACY_CAMERA_HAL1 := true
 
 # healthd
 BOARD_HAL_STATIC_LIBRARIES := libhealthd.sc8830
-
-# Init
-TARGET_PROVIDES_INIT_RC := true
 
 # Recovery
 BOARD_HAS_DOWNLOAD_MODE := true
