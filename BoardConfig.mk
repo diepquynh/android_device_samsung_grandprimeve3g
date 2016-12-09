@@ -29,7 +29,6 @@ TARGET_CPU_SMP := true
 ARCH_ARM_HAVE_TLS_REGISTER := true
 TARGET_BOOTLOADER_BOARD_NAME := SC7730SE
 BOARD_VENDOR := samsung
-TARGET_UNIFIED_DEVICE := true
 
 # Config u-boot
 TARGET_NO_BOOTLOADER := true
@@ -127,9 +126,6 @@ USE_NINJA := false
 
 # Disable crappy JACK
 LOCAL_JACK_ENABLED := disabled
-
-# Init
-TARGET_INIT_VENDOR_LIB := libinit_sec
 
 # Use dmalloc() for such low memory devices like us
 MALLOC_SVELTE := true
