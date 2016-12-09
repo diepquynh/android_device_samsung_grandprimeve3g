@@ -41,7 +41,7 @@ PRODUCT_COPY_FILES += \
 
 # Keylayouts
 PRODUCT_COPY_FILES += \
-	$(LOCAL_PATH)/keylayouts/Generic.kl:system/usr/keylayout/Generic.kl
+	$(LOCAL_PATH)/keylayouts/sec_touchkey.kl:system/usr/keylayout/sec_touchkey.kl
 
 # Media config
 MEDIA_CONFIGS := \
