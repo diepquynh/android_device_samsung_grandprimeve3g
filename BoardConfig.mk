@@ -132,6 +132,9 @@ LOCAL_JACK_ENABLED := disabled
 MALLOC_SVELTE := true
 BOARD_USES_LEGACY_MMAP := true
 
+# Bionic
+TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
+
 # Enable dex-preoptimization to speed up the first boot sequence
 #WITH_DEXPREOPT := true
 #WITH_DEXPREOPT_PIC := true
