@@ -7,6 +7,7 @@ service ril-daemon /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -
     disabled
     user root
     group radio cache inet misc audio log readproc wakelock shell
+    setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
 
 service ril-daemon2 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 1
     class main
@@ -16,6 +17,7 @@ service ril-daemon2 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w 
     disabled
     user root
     group radio cache inet misc audio log readproc wakelock shell
+    setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
 
 service ril-daemon3 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w -n 2
     class main
@@ -25,3 +27,4 @@ service ril-daemon3 /system/bin/rild -l /system/lib/libreference-ril_sp.so -m w 
     disabled
     user root
     group radio cache inet misc audio log readproc wakelock shell
+    setenv LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
