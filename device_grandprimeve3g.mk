@@ -137,12 +137,6 @@ ROOTDIR_FILES := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(ROOTDIR_FILES),$(f):root/$(notdir $(f)))
 
-SBIN_BINARY := \
-	$(LOCAL_PATH)/rootdir/sbin/sswap
-
-PRODUCT_COPY_FILES += \
-	$(foreach f,$(SBIN_BINARY),$(f):root/sbin/$(notdir $(f)))
-
 # System init .rc files
 SYSTEM_INIT_RC_FILES := \
 	device/samsung/grandprimeve3g/system/etc/init/at_distributor.rc \
