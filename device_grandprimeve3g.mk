@@ -102,6 +102,7 @@ PRODUCT_PACKAGES += \
 	libril_shim \
 	libgps_shim \
 	libhwc_shim \
+	libmemoryheapion_shim \
 	libstagefright_shim
 
 # Common packages
@@ -158,6 +159,7 @@ PERMISSIONS_XML_FILES := \
 	frameworks/native/data/etc/android.hardware.sensor.proximity.xml \
 	frameworks/native/data/etc/android.hardware.sensor.light.xml \
 	frameworks/native/data/etc/android.software.midi.xml \
+	frameworks/native/data/etc/android.hardware.usb.host.xml \
 	packages/wallpapers/LivePicker/android.software.live_wallpaper.xml
 
 PRODUCT_COPY_FILES += \
@@ -173,7 +175,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.sys.fw.dex2oat_thread_count=4 \
 	dalvik.vm.dex2oat-flags=--no-watch-dog \
-	dalvik.vm.dex2oat-filter=everything \
+	dalvik.vm.dex2oat-filter=speed \
 	dalvik.vm.image-dex2oat-filter=everything
 
 # Support FRP lock (unlock bootloader, etc...)
