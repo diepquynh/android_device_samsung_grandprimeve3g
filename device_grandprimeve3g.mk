@@ -176,16 +176,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	ro.sys.fw.dex2oat_thread_count=4 \
 	dalvik.vm.dex2oat-flags=--no-watch-dog
 
-# Support FRP lock (unlock bootloader, etc...)
-PRODUCT_PROPERTY_OVERRIDES += \
-	ro.frp.pst=/dev/block/platform/sdio_emmc/by-name/PERSISTENT
-
-# Support for Browser's saved page feature. This allows
-# for pages saved on previous versions of the OS to be
-# viewed on the current OS.
-PRODUCT_PACKAGES += \
-	libskia_legacy
-
 # Languages
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.product.locale.language=en \
