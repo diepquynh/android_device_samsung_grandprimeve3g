@@ -184,10 +184,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	ro.sys.fw.dex2oat_thread_count=4 \
 	dalvik.vm.dex2oat-flags=--no-watch-dog
 
-# Support FRP lock (unlock bootloader, etc...)
-PRODUCT_PROPERTY_OVERRIDES += \
-	ro.frp.pst=/dev/block/platform/sdio_emmc/by-name/PERSISTENT
-
 # Languages
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.product.locale.language=en \
