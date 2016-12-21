@@ -1,0 +1,1 @@
+allow installd radio_data_file:lnk_file create;

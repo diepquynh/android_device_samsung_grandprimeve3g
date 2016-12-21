@@ -1,0 +1,1 @@
+allow radio rild_socket:sock_file write;

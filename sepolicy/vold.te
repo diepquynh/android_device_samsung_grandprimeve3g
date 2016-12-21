@@ -1,0 +1,9 @@
+allow vold sdcard_external:file {create write read open unlink getattr rename};
+allow vold proc:file write;
+allow vold kernel:system module_request;
+allow vold fuse_device:chr_file getattr;
+allow vold cache_file:dir setattr;
+allow vold system_prop:property_service set;
+allow vold unlabeled:filesystem getattr;
+allow vold efs_file:dir { open read };
+allow vold prod_file:dir { open read };

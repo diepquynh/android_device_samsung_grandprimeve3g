@@ -1,0 +1,4 @@
+set_prop(surfaceflinger, ctl_default_prop);
+set_prop(surfaceflinger, shell_prop);
+
+allow surfaceflinger kernel:system module_request;

@@ -138,6 +138,9 @@ TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
 # SELinux
 SERVICES_WITHOUT_SELINUX_DOMAIN := true
 
+# SELinux
+BOARD_SEPOLICY_DIRS += device/samsung/grandprimeve3g/sepolicy
+
 # Enable dex-preoptimization to speed up the first boot sequence
 #WITH_DEXPREOPT := true
 #WITH_DEXPREOPT_PIC := true

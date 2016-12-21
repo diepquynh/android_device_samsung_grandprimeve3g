@@ -1,0 +1,87 @@
+# Productinfo files
+/productinfo(/.*)?           u:object_r:prod_file:s0
+
+# RIL
+/dev/cp(w|td)                u:object_r:radio_device:s0
+/dev/stty_(w|td)[0-9]+       u:object_r:radio_device:s0
+/dev/slog_(w|td)             u:object_r:radio_device:s0
+/dev/spipe_(w|td)[0-9]+      u:object_r:radio_device:s0
+/dev/CHNPTY[0-9]+            u:object_r:radio_device:s0
+/dev/CHNPTYW[0-9]+           u:object_r:radio_device:s0
+/dev/CHNPTYTD[0-9]+          u:object_r:radio_device:s0
+/dev/ts0710mux               u:object_r:radio_device:s0
+/dev/rpipe(/.*)?             u:object_r:radio_device:s0
+/dev/socket/rild[1-3]?       u:object_r:rild_socket:s0
+
+/sys/power/restart_cpc       u:object_r:sysfs_restart_cpc:s0
+
+/system/bin/at_distributor   u:object_r:rild_exec:s0
+/system/bin/modemd           u:object_r:rild_exec:s0
+/system/bin/nvitemd          u:object_r:rild_exec:s0
+/system/bin/phoneserver      u:object_r:rild_exec:s0
+/system/bin/refnotify        u:object_r:rild_exec:s0
+/system/bin/ext_data.sh      u:object_r:rild_exec:s0
+/system/bin/ext_kill.sh      u:object_r:rild_exec:s0
+/system/bin/ext_symlink.sh   u:object_r:rild_exec:s0
+
+/data/misc/radio(/.*)?       u:object_r:radio_data_file:s0
+
+# Block labeling
+/dev/block/mmcblk0p1         u:object_r:radio_block_device:s0
+/dev/block/mmcblk0p2         u:object_r:radio_block_device:s0
+/dev/block/mmcblk0p3         u:object_r:radio_block_device:s0
+/dev/block/mmcblk0p4         u:object_r:radio_block_device:s0
+
+/dev/block/mmcblk0p5         u:object_r:prod_block_device:s0
+/dev/block/mmcblk0p7         u:object_r:efs_block_device:s0
+/dev/block/mmcblk0p10        u:object_r:param_block_device:s0
+/dev/block/mmcblk0p17        u:object_r:cache_block_device:s0
+/dev/block/mmcblk0p18        u:object_r:system_block_device:s0
+/dev/block/mmcblk0p20        u:object_r:userdata_block_device:s0
+
+/dev/block/zram[0-9]+        u:object_r:swap_block_device:s0
+
+# EFS
+/efs(/.*)?(/\.*.*)?          u:object_r:efs_file:s0
+
+# WiFi
+/dev/rfkill                  u:object_r:rfkill_device:s0
+
+/system/bin/macloader        u:object_r:macloader_exec:s0
+
+/data/.cid.info              u:object_r:wifi_data_file:s0
+/efs/wifi(/.*)?              u:object_r:wifi_data_file:s0
+
+# Bluetooth
+/dev/ttyS0                   u:object_r:bluetooth_serial_device:s0
+
+/efs/bluetooth(/.*)?         u:object_r:bluetooth_data_file:s0
+
+# GPS
+/data/system/gps(/\.*.*)?    u:object_r:gps_data_file:s0
+
+/system/bin/gpsd             u:object_r:gpsd_exec:s0
+
+# GFX
+/dev/mali[0-9]*              u:object_r:gpu_device:s0
+
+# Media
+/dev/pipe(/.*)?              u:object_r:media_device:s0
+
+/dev/sprd_dma_copy           u:object_r:audio_device:s0
+/dev/sprd_jpg                u:object_r:audio_device:s0
+/dev/sprd_rotation           u:object_r:audio_device:s0
+/dev/sprd_scale              u:object_r:audio_device:s0
+/dev/sprd_sensor             u:object_r:audio_device:s0
+/dev/sprd_vsp                u:object_r:audio_device:s0
+
+/data/local/media(/.*)?      u:object_r:media_data_file:s0
+
+# ENGPC
+/system/bin/engpc            u:object_r:engpc_exec:s0
+
+# Gadget Serial
+/dev/ttyGS[0-9]+             u:object_r:gadget_serial_device:s0
+
+# Sysfs
+/sys/devices/platform/sprd_fb.0/graphics/fb0/dynamic_pclk    u:object_r:sysfs_dynamic_pclk:s0

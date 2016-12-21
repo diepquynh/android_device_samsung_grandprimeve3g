@@ -1,0 +1,13 @@
+set_prop(mediaserver, media_prop);
+
+allow mediaserver audio_device:chr_file { read write ioctl open };
+allow mediaserver media_device:dir search;
+allow mediaserver media_device:fifo_file { read write open };
+allow mediaserver proc_pin_switch:dir search;
+allow mediaserver proc_pin_switch:file { read write open };
+allow mediaserver radio_device:chr_file { read write open };
+allow mediaserver sysfs_wake_lock:file { read write open };
+allow mediaserver media_data_file:fifo_file { create read open setattr };
+allow mediaserver media_data_file:file { write open };
+allow mediaserver system_file:file execmod;
+allow mediaserver graphics_device:dir search;
