@@ -32,11 +32,3 @@ LOCAL_MODULE := libhwc_shim
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_CLASS := SHARED_LIBRARIES
 include $(BUILD_SHARED_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := libmemoryheapion_shim.cpp
-LOCAL_SHARED_LIBRARIES := libbinder libmemoryheapion_sprd
-LOCAL_MODULE := libmemoryheapion_shim
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE_CLASS := SHARED_LIBRARIES
-include $(BUILD_SHARED_LIBRARY)
