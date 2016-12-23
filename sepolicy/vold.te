@@ -1,4 +1,3 @@
-allow vold sdcard_external:file {create write read open unlink getattr rename};
 allow vold proc:file write;
 allow vold kernel:system module_request;
 allow vold fuse_device:chr_file getattr;

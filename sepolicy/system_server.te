@@ -1,7 +1,7 @@
 allow system_server gpu_device:chr_file { read write getattr open ioctl };
 allow system_server efs_file:dir search;
 allow system_server efs_file:file { read open };
-allow system_server gps_data_file:dir { write read search };
+allow system_server gps_data_file:dir { search open read write add_name };
 allow system_server gps_data_file:fifo_file { write read open setattr };
 allow system_server radio_prop:property_service set;
 allow system_server shell_prop:property_service set;

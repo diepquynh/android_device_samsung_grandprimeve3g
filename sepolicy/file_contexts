@@ -58,6 +58,8 @@
 /efs/bluetooth(/.*)?         u:object_r:bluetooth_data_file:s0
 
 # GPS
+/dev/ttyS2		     u:object_r:gps_serial_device:s0
+
 /data/system/gps(/\.*.*)?    u:object_r:gps_data_file:s0
 
 /system/bin/gpsd             u:object_r:gpsd_exec:s0
