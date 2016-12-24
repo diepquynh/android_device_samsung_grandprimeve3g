@@ -139,7 +139,6 @@ TARGET_INIT_VENDOR_LIB := libinit_sec
 TARGET_POWERHAL_VARIANT := samsung
 
 # Use dmalloc() for such low memory devices like us
-MALLOC_IMPL := dlmalloc
 BOARD_USES_LEGACY_MMAP := true
 
 # Enable dex-preoptimization to speed up the first boot sequence
