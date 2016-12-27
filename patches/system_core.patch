@@ -1,0 +1,146 @@
+From 8c23efa8182b7610e3d70f9295ecc7bdbb69aadd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Mon, 23 May 2016 18:37:04 +0700
+Subject: [PATCH 1/3] gralloc: add SPRD HAL pixel formats
+
+---
+ include/system/graphics.h | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/include/system/graphics.h b/include/system/graphics.h
+index afd9f7b..3e04b41 100644
+--- a/include/system/graphics.h
++++ b/include/system/graphics.h
+@@ -439,7 +439,21 @@ enum {
+     /* Legacy formats (deprecated), used by ImageFormat.java */
+     HAL_PIXEL_FORMAT_YCbCr_422_SP       = 0x10, // NV16
+     HAL_PIXEL_FORMAT_YCrCb_420_SP       = 0x11, // NV21
++#ifdef SPRD_HARDWARE
++    HAL_PIXEL_FORMAT_YCbCr_422_P        = 0x12,
++    HAL_PIXEL_FORMAT_YCbCr_420_P        = 0x13,
++#endif
+     HAL_PIXEL_FORMAT_YCbCr_422_I        = 0x14, // YUY2
++#ifdef SPRD_HARDWARE
++    HAL_PIXEL_FORMAT_YCbCr_420_I        = 0x15,
++    HAL_PIXEL_FORMAT_CbYCrY_422_I       = 0x16,
++    HAL_PIXEL_FORMAT_CbYCrY_420_I       = 0x17,
++    HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED = 0x18,
++    HAL_PIXEL_FORMAT_YCbCr_420_SP       = 0x19,
++    HAL_PIXEL_FORMAT_YCrCb_420_SP_TILED = 0x1A,
++    HAL_PIXEL_FORMAT_YCrCb_422_SP       = 0x1B,
++    HAL_PIXEL_FORMAT_YCrCb_420_P        = 0x1C,
++#endif
+ };
+ 
+ /*
+
+From 2aa3105bc1c1691c2cadcf6d80c46f21ddc1c991 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Wed, 13 Jan 2016 20:11:53 +0700
+Subject: [PATCH 2/3] init: add pipe command support
+
+Change-Id: I11df38c5f8af43e23fe7e15900d7b9a08e513e0a
+---
+ init/builtins.cpp    | 11 +++++++++++
+ init/init_parser.cpp |  1 +
+ init/keywords.h      |  2 ++
+ 3 files changed, 14 insertions(+)
+
+diff --git a/init/builtins.cpp b/init/builtins.cpp
+index 1681d17..78d5284 100644
+--- a/init/builtins.cpp
++++ b/init/builtins.cpp
+@@ -22,6 +22,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <sys/ioctl.h>
+ #include <sys/socket.h>
+ #include <sys/mount.h>
+ #include <sys/resource.h>
+@@ -960,3 +961,13 @@ int do_setusercryptopolicies(int nargs, char **args)
+     }
+     return e4crypt_set_user_crypto_policies(args[1]);
+ }
++
++int do_pipe(int nargs, char **args)
++{
++    mode_t mode = get_mode(args[1]);
++    if (mkfifo(args[2], mode) < 0) {
++	ERROR("peter do pipe error haha\n");
++        return -errno;
++    }
++    return 0;
++}
+diff --git a/init/init_parser.cpp b/init/init_parser.cpp
+index c36d36e..a57ab27 100644
+--- a/init/init_parser.cpp
++++ b/init/init_parser.cpp
+@@ -173,6 +173,7 @@ static int lookup_keyword(const char *s)
+         break;
+     case 'p':
+         if (!strcmp(s, "owerctl")) return K_powerctl;
++        if (!strcmp(s, "ipe")) return K_pipe;
+         break;
+     case 'r':
+         if (!strcmp(s, "estart")) return K_restart;
+diff --git a/init/keywords.h b/init/keywords.h
+index 303685d..1d83c1d 100644
+--- a/init/keywords.h
++++ b/init/keywords.h
+@@ -38,6 +38,7 @@ int do_load_persist_props(int nargs, char **args);
+ int do_load_system_props(int nargs, char **args);
+ int do_verity_load_state(int nargs, char **args);
+ int do_verity_update_state(int nargs, char **args);
++int do_pipe(int nargs, char **args);
+ int do_wait(int nargs, char **args);
+ #define __MAKE_KEYWORD_ENUM__
+ #define KEYWORD(symbol, flags, nargs, func) K_##symbol,
+@@ -102,6 +103,7 @@ enum {
+     KEYWORD(wait,        COMMAND, 1, do_wait)
+     KEYWORD(write,       COMMAND, 2, do_write)
+     KEYWORD(writepid,    OPTION,  0, 0)
++    KEYWORD(pipe,        COMMAND, 2, do_pipe)
+ #ifdef __MAKE_KEYWORD_ENUM__
+     KEYWORD_COUNT,
+ };
+
+From 8846b4a7be07420a1edd7c04b5d667243abef2ec Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Sat, 11 Jun 2016 22:25:44 +0700
+Subject: [PATCH 3/3] init: add support for TARGET_NR_SVC_SUPP_GIDS flag
+
+---
+ init/Android.mk | 4 ++++
+ init/init.h     | 2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/init/Android.mk b/init/Android.mk
+index 85dfbfc..ffcdfc5 100644
+--- a/init/Android.mk
++++ b/init/Android.mk
+@@ -10,6 +10,10 @@ else
+ init_options += -DALLOW_LOCAL_PROP_OVERRIDE=0 -DALLOW_DISABLE_SELINUX=0
+ endif
+ 
++ifneq (,$(TARGET_NR_SVC_SUPP_GIDS))
++init_options += -DNR_SVC_SUPP_GIDS=$(TARGET_NR_SVC_SUPP_GIDS)
++endif
++
+ init_options += -DLOG_UEVENTS=0
+ 
+ init_cflags += \
+diff --git a/init/init.h b/init/init.h
+index c166969..2518631 100644
+--- a/init/init.h
++++ b/init/init.h
+@@ -88,7 +88,9 @@ struct svcenvinfo {
+ #define SVC_DISABLED_START 0x200  // A start was requested but it was disabled at the time.
+ #define SVC_EXEC           0x400  // This synthetic service corresponds to an 'exec'.
+ 
++#ifndef NR_SVC_SUPP_GIDS
+ #define NR_SVC_SUPP_GIDS 12    /* twelve supplementary groups */
++#endif
+ 
+ #define COMMAND_RETRY_TIMEOUT 5
+ 

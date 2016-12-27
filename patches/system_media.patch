@@ -1,0 +1,46 @@
+From 3d7df2da174fbb0156333796f039303be39ad270 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Mon, 23 May 2016 18:47:51 +0700
+Subject: [PATCH] audio: add support for SPRD FM audio devices
+
+---
+ audio/include/system/audio.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/audio/include/system/audio.h b/audio/include/system/audio.h
+index 0517b85..9a77d59 100644
+--- a/audio/include/system/audio.h
++++ b/audio/include/system/audio.h
+@@ -682,6 +682,10 @@ enum {
+     AUDIO_DEVICE_OUT_SPEAKER_SAFE              = 0x400000,
+     AUDIO_DEVICE_OUT_IP                        = 0x800000,
+     AUDIO_DEVICE_OUT_PROXY                     = 0x1000000,
++#if defined(SPRD_HARDWARE)
++    AUDIO_DEVICE_OUT_FM_HEADSET                = 0x10000000,
++    AUDIO_DEVICE_OUT_FM_SPEAKER                = 0x20000000,
++#endif
+     AUDIO_DEVICE_OUT_DEFAULT                   = AUDIO_DEVICE_BIT_DEFAULT,
+     AUDIO_DEVICE_OUT_ALL      = (AUDIO_DEVICE_OUT_EARPIECE |
+                                  AUDIO_DEVICE_OUT_SPEAKER |
+@@ -708,6 +712,10 @@ enum {
+                                  AUDIO_DEVICE_OUT_SPEAKER_SAFE |
+                                  AUDIO_DEVICE_OUT_IP |
+                                  AUDIO_DEVICE_OUT_PROXY |
++#if defined(SPRD_HARDWARE)
++                                 AUDIO_DEVICE_OUT_FM_HEADSET |
++                                 AUDIO_DEVICE_OUT_FM_SPEAKER |
++#endif
+                                  AUDIO_DEVICE_OUT_DEFAULT),
+     AUDIO_DEVICE_OUT_ALL_A2DP = (AUDIO_DEVICE_OUT_BLUETOOTH_A2DP |
+                                  AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES |
+@@ -717,6 +725,10 @@ enum {
+                                  AUDIO_DEVICE_OUT_BLUETOOTH_SCO_CARKIT),
+     AUDIO_DEVICE_OUT_ALL_USB  = (AUDIO_DEVICE_OUT_USB_ACCESSORY |
+                                  AUDIO_DEVICE_OUT_USB_DEVICE),
++#if defined(SPRD_HARDWARE)
++    AUDIO_DEVICE_OUT_ALL_FM   = (AUDIO_DEVICE_OUT_FM_HEADSET |
++                                 AUDIO_DEVICE_OUT_FM_SPEAKER),
++#endif
+     /* input devices */
+     AUDIO_DEVICE_IN_COMMUNICATION         = AUDIO_DEVICE_BIT_IN | 0x1,
+     AUDIO_DEVICE_IN_AMBIENT               = AUDIO_DEVICE_BIT_IN | 0x2,

@@ -1,0 +1,150 @@
+From f3ee0168dfaff4838f0120d6eab09308d96bbe88 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Mon, 23 May 2016 18:33:17 +0700
+Subject: [PATCH 1/2] libstagefright: add support for SPRD codecs
+
+---
+ media/libstagefright/ACodec.cpp       |  6 ++++++
+ media/libstagefright/CameraSource.cpp |  2 +-
+ media/libstagefright/OMXCodec.cpp     | 27 +++++++++++++++++++++++++++
+ 3 files changed, 34 insertions(+), 1 deletion(-)
+
+diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
+index d2389f6..a223877 100644
+--- a/media/libstagefright/ACodec.cpp
++++ b/media/libstagefright/ACodec.cpp
+@@ -56,8 +56,10 @@
+ #include <OMX_AsString.h>
+ 
+ #ifdef USE_SAMSUNG_COLORFORMAT
++#ifndef SPRD_HARDWARE
+ #include <sec_format.h>
+ #endif
++#endif
+ 
+ #include "include/avc_utils.h"
+ 
+@@ -1315,6 +1317,10 @@ void ACodec::setNativeWindowColorFormat(OMX_COLOR_FORMATTYPE &eNativeColorFormat
+     if (!strcasecmp(mComponentName.c_str(), "OMX.SEC.AVC.Decoder")
+         || !strcasecmp(mComponentName.c_str(), "OMX.SEC.FP.AVC.Decoder")
+         || !strcasecmp(mComponentName.c_str(), "OMX.SEC.MPEG4.Decoder")
++        || !strcasecmp(mComponentName.c_str(), "OMX.sprd.mpeg4.decoder")
++        || !strcasecmp(mComponentName.c_str(), "OMX.sprd.h263.decoder")
++        || !strcasecmp(mComponentName.c_str(), "OMX.sprd.h264.decoder")
++        || !strcasecmp(mComponentName.c_str(), "OMX.sprd.vpx.decoder")
+         || !strcasecmp(mComponentName.c_str(), "OMX.Exynos.AVC.Decoder")) {
+         switch (eNativeColorFormat) {
+             case OMX_COLOR_FormatYUV420SemiPlanar:
+diff --git a/media/libstagefright/CameraSource.cpp b/media/libstagefright/CameraSource.cpp
+index f6b4741..2bd34ea 100644
+--- a/media/libstagefright/CameraSource.cpp
++++ b/media/libstagefright/CameraSource.cpp
+@@ -116,7 +116,7 @@ static int32_t getColorFormat(const char* colorFormat) {
+     }
+ 
+     if (!strcmp(colorFormat, CameraParameters::PIXEL_FORMAT_YUV420SP)) {
+-#ifdef USE_SAMSUNG_COLORFORMAT
++#if defined(USE_SAMSUNG_COLORFORMAT) && !defined(SPRD_HARDWARE)
+         static const int OMX_SEC_COLOR_FormatNV12LPhysicalAddress = 0x7F000002;
+         return OMX_SEC_COLOR_FormatNV12LPhysicalAddress;
+ #else
+diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
+index de00ff2..527f9d3 100644
+--- a/media/libstagefright/OMXCodec.cpp
++++ b/media/libstagefright/OMXCodec.cpp
+@@ -270,6 +270,11 @@ uint32_t OMXCodec::getComponentQuirks(
+     if (info->hasQuirk("output-buffers-are-unreadable")) {
+         quirks |= kOutputBuffersAreUnreadable;
+     }
++#ifdef SPRD_HARDWARE
++    if (info->hasQuirk("needs-flush-before-disable")) {
++        quirks |= kNeedsFlushBeforeDisable;
++    }
++#endif
+ 
+     return quirks;
+ }
+@@ -1799,6 +1804,27 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
+ #endif
+     }
+ 
++#ifdef USE_SAMSUNG_COLORFORMAT
++    OMX_COLOR_FORMATTYPE eNativeColorFormat = def.format.video.eColorFormat;
++    // Convert OpenMAX color format to native color format
++    switch (eNativeColorFormat) {
++    case OMX_COLOR_FormatYUV420SemiPlanar:
++        eNativeColorFormat = (OMX_COLOR_FORMATTYPE)HAL_PIXEL_FORMAT_YCbCr_420_SP;
++        break;
++    case OMX_COLOR_FormatYUV420Planar:
++        // Fallthrough
++    default:
++        eNativeColorFormat = (OMX_COLOR_FORMATTYPE)HAL_PIXEL_FORMAT_YCbCr_420_P;
++        break;
++    }
++    err = setNativeWindowSizeFormatAndUsage(
++            mNativeWindow.get(),
++            def.format.video.nFrameWidth,
++            def.format.video.nFrameHeight,
++            eNativeColorFormat,
++            rotationDegrees,
++            usage | GRALLOC_USAGE_HW_TEXTURE | GRALLOC_USAGE_EXTERNAL_DISP);
++#else
+     err = setNativeWindowSizeFormatAndUsage(
+             mNativeWindow.get(),
+             def.format.video.nFrameWidth,
+@@ -1806,6 +1832,7 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
+             def.format.video.eColorFormat,
+             rotationDegrees,
+             usage | GRALLOC_USAGE_HW_TEXTURE | GRALLOC_USAGE_EXTERNAL_DISP);
++#endif
+     if (err != 0) {
+         return err;
+     }
+
+From c25d64082547bd113398358782df29ed89faa94c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Mon, 18 Jul 2016 16:48:13 +0700
+Subject: [PATCH 2/2] Add SPRD FM devices to audio policy config parsing utils
+
+---
+ .../common/managerdefinitions/include/ConfigParsingUtils.h          | 6 ++++++
+ .../common/managerdefinitions/src/ConfigParsingUtils.cpp            | 2 +-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/services/audiopolicy/common/managerdefinitions/include/ConfigParsingUtils.h b/services/audiopolicy/common/managerdefinitions/include/ConfigParsingUtils.h
+index 6f80435..bf854f3 100644
+--- a/services/audiopolicy/common/managerdefinitions/include/ConfigParsingUtils.h
++++ b/services/audiopolicy/common/managerdefinitions/include/ConfigParsingUtils.h
+@@ -72,6 +72,9 @@ const StringToEnum sDeviceTypeToEnumTable[] = {
+     STRING_TO_ENUM(AUDIO_DEVICE_OUT_HDMI_ARC),
+     STRING_TO_ENUM(AUDIO_DEVICE_OUT_SPDIF),
+     STRING_TO_ENUM(AUDIO_DEVICE_OUT_FM),
++    STRING_TO_ENUM(AUDIO_DEVICE_OUT_FM_HEADSET),
++    STRING_TO_ENUM(AUDIO_DEVICE_OUT_FM_SPEAKER),
++    STRING_TO_ENUM(AUDIO_DEVICE_OUT_ALL_FM),
+     STRING_TO_ENUM(AUDIO_DEVICE_OUT_AUX_LINE),
+     STRING_TO_ENUM(AUDIO_DEVICE_OUT_IP),
+ #ifdef AUDIO_EXTN_AFE_PROXY_ENABLED
+@@ -131,6 +134,9 @@ const StringToEnum sDeviceNameToEnumTable[] = {
+     NAME_TO_ENUM("HDMI ARC Out", AUDIO_DEVICE_OUT_HDMI_ARC),
+     NAME_TO_ENUM("S/PDIF Out", AUDIO_DEVICE_OUT_SPDIF),
+     NAME_TO_ENUM("FM transceiver Out", AUDIO_DEVICE_OUT_FM),
++    NAME_TO_ENUM("FM Headset Out", AUDIO_DEVICE_OUT_FM_HEADSET),
++    NAME_TO_ENUM("FM Speaker Out", AUDIO_DEVICE_OUT_FM_SPEAKER),
++    NAME_TO_ENUM("", AUDIO_DEVICE_OUT_ALL_FM),
+     NAME_TO_ENUM("Aux Line Out", AUDIO_DEVICE_OUT_AUX_LINE),
+     NAME_TO_ENUM("IP Out", AUDIO_DEVICE_OUT_IP),
+     NAME_TO_ENUM("Ambient Mic", AUDIO_DEVICE_IN_AMBIENT),
+diff --git a/services/audiopolicy/common/managerdefinitions/src/ConfigParsingUtils.cpp b/services/audiopolicy/common/managerdefinitions/src/ConfigParsingUtils.cpp
+index 89ef045..c718d32 100644
+--- a/services/audiopolicy/common/managerdefinitions/src/ConfigParsingUtils.cpp
++++ b/services/audiopolicy/common/managerdefinitions/src/ConfigParsingUtils.cpp
+@@ -15,7 +15,7 @@
+  */
+ 
+ #define LOG_TAG "APM::ConfigParsingUtils"
+-//#define LOG_NDEBUG 0
++#define LOG_NDEBUG 0
+ 
+ #include "ConfigParsingUtils.h"
+ #include "AudioGain.h"

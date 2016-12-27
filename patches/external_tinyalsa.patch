@@ -1,0 +1,154 @@
+From 2bfd5e839b369c09c549cb92030a3bc56e40afb1 Mon Sep 17 00:00:00 2001
+From: Anish Kumar <kanish@codeaurora.org>
+Date: Wed, 9 Apr 2014 12:58:17 -0700
+Subject: [PATCH 1/2] tinyplay: Fix pop issue at the end of playback.
+
+Pop issue is observed at the end of playback for certain contents.
+Wave file format data description header contains actual size
+of sound data included in the data section. Use this data size
+information for processing actual raw bytes, which avoids reading
+extra bytes and avoids pop issue.
+
+Change-Id: I71b881ec7d7b5e1fc688d54061751e6f4527bcc5
+CRs-fixed: 613569
+---
+ tinyplay.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/tinyplay.c b/tinyplay.c
+index 7422554..9339011 100644
+--- a/tinyplay.c
++++ b/tinyplay.c
+@@ -59,6 +59,7 @@ struct chunk_fmt {
+ };
+ 
+ static int close = 0;
++static int data_sz = 0;
+ 
+ void play_sample(FILE *file, unsigned int card, unsigned int device, unsigned int channels,
+                  unsigned int rate, unsigned int bits, unsigned int period_size,
+@@ -117,6 +118,7 @@ int main(int argc, char **argv)
+             break;
+         case ID_DATA:
+             /* Stop looking for chunks */
++            data_sz = chunk_header.sz;
+             more_chunks = 0;
+             break;
+         default:
+@@ -217,6 +219,7 @@ void play_sample(FILE *file, unsigned int card, unsigned int device, unsigned in
+     char *buffer;
+     int size;
+     int num_read;
++    int remaining_data;
+ 
+     memset(&config, 0, sizeof(config));
+     config.channels = channels;
+@@ -251,6 +254,8 @@ void play_sample(FILE *file, unsigned int card, unsigned int device, unsigned in
+         return;
+     }
+ 
++    remaining_data = data_sz;
++
+     printf("Playing sample: %u ch, %u hz, %u bit\n", channels, rate, bits);
+ 
+     /* catch ctrl-c to shutdown cleanly */
+@@ -263,8 +268,13 @@ void play_sample(FILE *file, unsigned int card, unsigned int device, unsigned in
+                 fprintf(stderr, "Error playing sample\n");
+                 break;
+             }
++            if (remaining_data) {
++                remaining_data -= size;
++                if (remaining_data < size)
++                    size = remaining_data;
++            }
+         }
+-    } while (!close && num_read > 0);
++    } while (!close && num_read > 0 && !(remaining_data <= 0));
+ 
+     free(buffer);
+     pcm_close(pcm);
+
+From f821769ea28d0149260baa1299ea290d17a6c3a0 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Mon, 23 May 2016 18:23:09 +0700
+Subject: [PATCH 2/2] Add pcm_set_samplerate
+
+Change-Id: Ia97602b2b4630d43c1074d21a31d696fa4990ec6
+---
+ include/tinyalsa/asoundlib.h |  3 +++
+ pcm.c                        | 51 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 54 insertions(+)
+
+diff --git a/include/tinyalsa/asoundlib.h b/include/tinyalsa/asoundlib.h
+index b789573..1a5bf0e 100644
+--- a/include/tinyalsa/asoundlib.h
++++ b/include/tinyalsa/asoundlib.h
+@@ -257,6 +257,9 @@ int pcm_get_poll_fd(struct pcm *pcm);
+  */
+ int pcm_set_avail_min(struct pcm *pcm, int avail_min);
+ 
++/* SPRD: add this function to support changing samplerate */
++int pcm_set_samplerate(struct pcm *pcm, unsigned int flags, struct pcm_config *config, unsigned short samplerate);
++
+ /*
+  * MIXER API
+  */
+diff --git a/pcm.c b/pcm.c
+index bae38ba..49e32a2 100644
+--- a/pcm.c
++++ b/pcm.c
+@@ -1307,3 +1307,54 @@ int pcm_ioctl(struct pcm *pcm, int request, ...)
+ 
+     return ioctl(pcm->fd, request, arg);
+ }
++
++/* SPRD: add this function to support changing samplerate */
++int pcm_set_samplerate(struct pcm *pcm, unsigned int flags, struct pcm_config *config, unsigned short samplerate)
++{
++    struct snd_pcm_hw_params params;
++
++    if(pcm->fd < 0){
++        fprintf(stderr, "%s, error pcm_fd (%d) ",__func__,pcm->fd);
++        return -1;
++    }
++    if(config == NULL){
++        fprintf(stderr, "%s, error pcm config ",__func__);
++        return -1;
++    }
++
++    param_init(&params);
++    param_set_mask(&params, SNDRV_PCM_HW_PARAM_FORMAT,
++                   pcm_format_to_alsa(config->format));
++    param_set_mask(&params, SNDRV_PCM_HW_PARAM_SUBFORMAT,
++                   SNDRV_PCM_SUBFORMAT_STD);
++    param_set_min(&params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE, config->period_size);
++    param_set_int(&params, SNDRV_PCM_HW_PARAM_SAMPLE_BITS,
++                  pcm_format_to_bits(config->format));
++    param_set_int(&params, SNDRV_PCM_HW_PARAM_FRAME_BITS,
++                  pcm_format_to_bits(config->format) * config->channels);
++    param_set_int(&params, SNDRV_PCM_HW_PARAM_CHANNELS,
++                  config->channels);
++    param_set_int(&params, SNDRV_PCM_HW_PARAM_PERIODS, config->period_count);
++    param_set_int(&params, SNDRV_PCM_HW_PARAM_RATE, samplerate);
++
++    if (flags & PCM_NOIRQ) {
++        if (!(flags & PCM_MMAP)) {
++            fprintf(stderr, "%s, noirq only currently supported with mmap(). ", __func__);
++            return -1;
++        }
++        params.flags |= SNDRV_PCM_HW_PARAMS_NO_PERIOD_WAKEUP;
++    }
++    if (flags & PCM_MMAP)
++        param_set_mask(&params, SNDRV_PCM_HW_PARAM_ACCESS,
++                   SNDRV_PCM_ACCESS_MMAP_INTERLEAVED);
++    else
++        param_set_mask(&params, SNDRV_PCM_HW_PARAM_ACCESS,
++                   SNDRV_PCM_ACCESS_RW_INTERLEAVED);
++
++    if (ioctl(pcm->fd, SNDRV_PCM_IOCTL_HW_PARAMS, &params)) {
++        fprintf(stderr, "%s, SNDRV_PCM_IOCTL_HW_PARAMS failed (%s) ", __func__,strerror(errno));
++        return -1;
++    }
++//    ALOGW("%s, out,samplerate (%d) ",__func__,samplerate);
++    return 0;
++}

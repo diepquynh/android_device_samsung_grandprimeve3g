@@ -1,0 +1,399 @@
+From 393a3143f102cdf998a9159e384be8eaea5b217b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Tue, 30 Aug 2016 18:07:00 +0700
+Subject: [PATCH 1/3] Allow custom RIL to define the way it stores telephony
+ properties.
+
+In multisim configuration, some RIL implementations do not store property
+values of a property in a array. Instead, they store these values in separate
+property name that have difference suffix corresponding to each phoneId.
+
+Change-Id: I7929ecf0ab79ef6cc6294eb96f2fa16b61e8087f
+---
+ .../java/android/telephony/TelephonyManager.java   | 144 ++++++++++++++-------
+ 1 file changed, 94 insertions(+), 50 deletions(-)
+
+diff --git a/telephony/java/android/telephony/TelephonyManager.java b/telephony/java/android/telephony/TelephonyManager.java
+index 5ec6950..255f5a6 100644
+--- a/telephony/java/android/telephony/TelephonyManager.java
++++ b/telephony/java/android/telephony/TelephonyManager.java
+@@ -93,6 +93,16 @@
+         static final int NEVER_USE = 2;
+     }
+ 
++    /**
++     * Allow custom RIL to define the way it stores telephony properties.
++     **/
++    /** @hide */
++    public interface TelephonyPropertyProvider {
++        void setTelephonyProperty(int phoneId, String property, String value);
++        String getTelephonyProperty(int phoneId, String property, String defaultVal);
++    }
++    private static final TelephonyPropertyProvider sTelephonyProvider = instantiateTelephonyPropertyProvider();
++
+     private final Context mContext;
+     private SubscriptionManager mSubscriptionManager;
+ 
+@@ -3385,49 +3395,7 @@ public int getDefaultSim() {
+      * @hide
+      */
+     public static void setTelephonyProperty(int phoneId, String property, String value) {
+-        String propVal = "";
+-        String p[] = null;
+-        String prop = SystemProperties.get(property);
+-
+-        if (value == null) {
+-            value = "";
+-        }
+-
+-        if (prop != null) {
+-            p = prop.split(",");
+-        }
+-
+-        if (!SubscriptionManager.isValidPhoneId(phoneId)) {
+-            Rlog.d(TAG, "setTelephonyProperty: invalid phoneId=" + phoneId +
+-                    " property=" + property + " value: " + value + " prop=" + prop);
+-            return;
+-        }
+-
+-        for (int i = 0; i < phoneId; i++) {
+-            String str = "";
+-            if ((p != null) && (i < p.length)) {
+-                str = p[i];
+-            }
+-            propVal = propVal + str + ",";
+-        }
+-
+-        propVal = propVal + value;
+-        if (p != null) {
+-            for (int i = phoneId + 1; i < p.length; i++) {
+-                propVal = propVal + "," + p[i];
+-            }
+-        }
+-
+-        if (property.length() > SystemProperties.PROP_NAME_MAX
+-                || propVal.length() > SystemProperties.PROP_VALUE_MAX) {
+-            Rlog.d(TAG, "setTelephonyProperty: property to long phoneId=" + phoneId +
+-                    " property=" + property + " value: " + value + " propVal=" + propVal);
+-            return;
+-        }
+-
+-        Rlog.d(TAG, "setTelephonyProperty: success phoneId=" + phoneId +
+-                " property=" + property + " value: " + value + " propVal=" + propVal);
+-        SystemProperties.set(property, propVal);
++        sTelephonyProvider.setTelephonyProperty(phoneId, property, value);
+     }
+ 
+     /**
+@@ -3524,15 +3492,91 @@ public static boolean putIntAtIndex(android.content.ContentResolver cr,
+      * @hide
+      */
+     public static String getTelephonyProperty(int phoneId, String property, String defaultVal) {
+-        String propVal = null;
+-        String prop = SystemProperties.get(property);
+-        if ((prop != null) && (prop.length() > 0)) {
+-            String values[] = prop.split(",");
+-            if ((phoneId >= 0) && (phoneId < values.length) && (values[phoneId] != null)) {
+-                propVal = values[phoneId];
++        return sTelephonyProvider.getTelephonyProperty(phoneId, property, defaultVal);
++    }
++
++    private static class DefaultTelephonyPropertyProvider implements TelephonyPropertyProvider {
++
++        public DefaultTelephonyPropertyProvider() { }
++
++        @Override
++        public void setTelephonyProperty(int phoneId, String property, String value) {
++            String propVal = "";
++            String p[] = null;
++            String prop = SystemProperties.get(property);
++
++            if (value == null) {
++                value = "";
++            }
++
++            if (prop != null) {
++                p = prop.split(",");
++            }
++
++            if (!SubscriptionManager.isValidPhoneId(phoneId)) {
++                Rlog.d(TAG, "setTelephonyProperty: invalid phoneId=" + phoneId +
++                        " property=" + property + " value: " + value + " prop=" + prop);
++                return;
++            }
++
++            for (int i = 0; i < phoneId; i++) {
++                String str = "";
++                if ((p != null) && (i < p.length)) {
++                    str = p[i];
++                }
++                propVal = propVal + str + ",";
++            }
++
++            propVal = propVal + value;
++            if (p != null) {
++                for (int i = phoneId + 1; i < p.length; i++) {
++                    propVal = propVal + "," + p[i];
++                }
++            }
++
++            if (property.length() > SystemProperties.PROP_NAME_MAX
++                    || propVal.length() > SystemProperties.PROP_VALUE_MAX) {
++                Rlog.d(TAG, "setTelephonyProperty: property to long phoneId=" + phoneId +
++                        " property=" + property + " value: " + value + " propVal=" + propVal);
++                return;
++            }
++
++            Rlog.d(TAG, "setTelephonyProperty: success phoneId=" + phoneId +
++                    " property=" + property + " value: " + value + " propVal=" + propVal);
++            SystemProperties.set(property, propVal);
++        }
++
++        @Override
++        public String getTelephonyProperty(int phoneId, String property, String defaultVal) {
++            String propVal = null;
++            String prop = SystemProperties.get(property);
++            if ((prop != null) && (prop.length() > 0)) {
++                String values[] = prop.split(",");
++                if ((phoneId >= 0) && (phoneId < values.length) && (values[phoneId] != null)) {
++                    propVal = values[phoneId];
++                }
++            }
++            return propVal == null ? defaultVal : propVal;
++        }
++    }
++
++    private static TelephonyPropertyProvider instantiateTelephonyPropertyProvider() {
++        String classSimpleName = SystemProperties.get("ro.telephony.prop_class").trim();
++        TelephonyPropertyProvider result;
++        if (classSimpleName.isEmpty())
++            result = new DefaultTelephonyPropertyProvider();
++        else {
++            try {
++                result = (TelephonyPropertyProvider) Class
++                        .forName("com.android.internal.telephony." + classSimpleName)
++                        .newInstance();
++            } catch (Exception e) {
++                Rlog.e(TAG, "Unable to construct custom TelephonyPropertyProvider class", e);
++                Rlog.e(TAG, "Fallback to DefaultTelephonyPropertyProvider");
++                result = new DefaultTelephonyPropertyProvider();
+             }
+         }
+-        return propVal == null ? defaultVal : propVal;
++        return result;
+     }
+ 
+     /** @hide */
+
+From 2d49f3a6d6a4c583a4a118aa070f3157ec22bc80 Mon Sep 17 00:00:00 2001
+From: Alex Naidis <alex.naidis@linux.com>
+Date: Sat, 31 Oct 2015 20:17:39 +0100
+Subject: [PATCH 2/3] PermissionGrant: Introduce Support for flashing Gapps
+
+* this makes AOSP/CAF based ROMs compatible with 6.0 Gapps packages
+* this resolves the problem of permissions not being granted to google core apps
+* this will probably need to be updated regulary
+
+* this resolves one aspect of opengapps/opengapps#93
+
+Copyright (C) by Alex Naidis (alex.naidis@linux.com), Team Exodus, The Linux Foundation
+
+Change-Id: Iee4954d0425d8040361ff0fba653c5f1583f3bf2
+Signed-off-by: Alex Naidis <alex.naidis@linux.com>
+---
+ .../server/pm/DefaultPermissionGrantPolicy.java    | 88 ++++++++++++++++++++++
+ 1 file changed, 88 insertions(+)
+
+diff --git a/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java b/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java
+index 29e9fa6..1874752 100644
+--- a/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java
++++ b/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright (C) 2015 The Android Open Source Project
++ * Copyright (C) 2015 Alex Naidis <alex.naidis@linux.com> , Team Exodus, The Linux Foundation
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+@@ -592,6 +593,91 @@ private void grantDefaultSystemHandlerPermissions(int userId) {
+                 }
+             }
+ 
++            // Google Account
++            PackageParser.Package googleaccountPackage = getDefaultProviderAuthorityPackageLPr(
++                    "com.google.android.gsf.login", userId);
++            if (googleaccountPackage != null) {
++                grantRuntimePermissionsLPw(googleaccountPackage, CONTACTS_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(googleaccountPackage, PHONE_PERMISSIONS, userId);
++            }
++
++            // Google App
++            PackageParser.Package googleappPackage = getDefaultProviderAuthorityPackageLPr(
++                    "com.google.android.googlequicksearchbox", userId);
++            if (googleappPackage != null) {
++                grantRuntimePermissionsLPw(googleappPackage, CALENDAR_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(googleappPackage, CAMERA_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(googleappPackage, CONTACTS_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(googleappPackage, LOCATION_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(googleappPackage, MICROPHONE_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(googleappPackage, PHONE_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(googleappPackage, SMS_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(googleappPackage, STORAGE_PERMISSIONS, userId);
++            }
++
++            // Google Play Services
++            PackageParser.Package gmscorePackage = getDefaultProviderAuthorityPackageLPr(
++                    "com.google.android.gms", userId);
++            if (gmscorePackage != null) {
++                grantRuntimePermissionsLPw(gmscorePackage, SENSORS_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(gmscorePackage, CALENDAR_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(gmscorePackage, CAMERA_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(gmscorePackage, CONTACTS_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(gmscorePackage, LOCATION_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(gmscorePackage, MICROPHONE_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(gmscorePackage, PHONE_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(gmscorePackage, SMS_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(gmscorePackage, STORAGE_PERMISSIONS, userId);
++            }
++
++            // Google Connectivity Services
++            PackageParser.Package gcsPackage = getDefaultProviderAuthorityPackageLPr(
++                    "com.google.android.apps.gcs", userId);
++            if (gcsPackage != null) {
++                grantRuntimePermissionsLPw(gcsPackage, CONTACTS_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(gcsPackage, LOCATION_PERMISSIONS, userId);
++            }
++
++            // Google Contacts Sync
++            PackageParser.Package googlecontactssyncPackage = getDefaultProviderAuthorityPackageLPr(
++                    "com.google.android.syncadapters.contacts", userId);
++            if (googlecontactssyncPackage != null) {
++                grantRuntimePermissionsLPw(googlecontactssyncPackage, CONTACTS_PERMISSIONS, userId);
++            }
++
++            // Google Backup Transport
++            PackageParser.Package googlebackuptransportPackage = getDefaultProviderAuthorityPackageLPr(
++                    "com.google.android.backuptransport", userId);
++            if (googlebackuptransportPackage != null) {
++                grantRuntimePermissionsLPw(googlebackuptransportPackage, CONTACTS_PERMISSIONS, userId);
++            }
++
++            // Google Play Framework
++            PackageParser.Package gsfcorePackage = getDefaultProviderAuthorityPackageLPr(
++                    "com.google.android.gsf", userId);
++            if (gsfcorePackage != null) {
++                grantRuntimePermissionsLPw(gsfcorePackage, CONTACTS_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(gsfcorePackage, PHONE_PERMISSIONS, userId);
++            }
++
++            // Google Setup Wizard
++            PackageParser.Package setupwizardPackage = getDefaultProviderAuthorityPackageLPr(
++                    "com.google.android.setupwizard", userId);
++            if (setupwizardPackage != null) {
++                grantRuntimePermissionsLPw(setupwizardPackage, CONTACTS_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(setupwizardPackage, PHONE_PERMISSIONS, userId);
++            }
++
++            // Google Play Store
++            PackageParser.Package vendingPackage = getDefaultProviderAuthorityPackageLPr(
++                    "com.android.vending", userId);
++            if (vendingPackage != null) {
++                grantRuntimePermissionsLPw(vendingPackage, CONTACTS_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(vendingPackage, PHONE_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(vendingPackage, LOCATION_PERMISSIONS, userId);
++                grantRuntimePermissionsLPw(vendingPackage, SMS_PERMISSIONS, userId);
++            }
++
+             mService.mSettings.onDefaultRuntimePermissionsGrantedLPr(userId);
+         }
+     }
+@@ -614,7 +700,9 @@ private void grantDefaultPermissionsToDefaultSystemSmsAppLPr(
+         if (doesPackageSupportRuntimePermissions(smsPackage)) {
+             grantRuntimePermissionsLPw(smsPackage, PHONE_PERMISSIONS, userId);
+             grantRuntimePermissionsLPw(smsPackage, CONTACTS_PERMISSIONS, userId);
++            grantRuntimePermissionsLPw(smsPackage, PHONE_PERMISSIONS, userId);
+             grantRuntimePermissionsLPw(smsPackage, SMS_PERMISSIONS, userId);
++            grantRuntimePermissionsLPw(smsPackage, STORAGE_PERMISSIONS, true, userId);
+         }
+     }
+ 
+
+From 90a713322b59140fe42c33a6175b8d5355388ab6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Fri, 5 Aug 2016 23:10:23 +0700
+Subject: [PATCH 3/3] media: add support for SPRD's FM audio devices
+
+---
+ media/java/android/media/AudioSystem.java | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/media/java/android/media/AudioSystem.java b/media/java/android/media/AudioSystem.java
+index 927cd87..1d5c8de 100644
+--- a/media/java/android/media/AudioSystem.java
++++ b/media/java/android/media/AudioSystem.java
+@@ -61,6 +61,8 @@
+     public static final int STREAM_DTMF = 8;
+     /* @hide The audio stream for text to speech (TTS) */
+     public static final int STREAM_TTS = 9;
++    /* @hide The audio stream for FM */
++    public static final int STREAM_FM = 10;
+     /**
+      * @deprecated Use {@link #numStreamTypes() instead}
+      */
+@@ -80,7 +82,8 @@
+         "STREAM_BLUETOOTH_SCO",
+         "STREAM_SYSTEM_ENFORCED",
+         "STREAM_DTMF",
+-        "STREAM_TTS"
++        "STREAM_TTS",
++        "STREAM_FM"
+     };
+ 
+     /*
+@@ -316,6 +319,8 @@ private static void dynamicPolicyCallbackFromNative(int event, String regId, int
+     public static final int DEVICE_OUT_HDMI_ARC = 0x40000;
+     public static final int DEVICE_OUT_SPDIF = 0x80000;
+     public static final int DEVICE_OUT_FM = 0x100000;
++    public static final int DEVICE_OUT_FM_HEADSET = 0x10000000;
++    public static final int DEVICE_OUT_FM_SPEAKER = 0x20000000;
+     public static final int DEVICE_OUT_AUX_LINE = 0x200000;
+     public static final int DEVICE_OUT_SPEAKER_SAFE = 0x400000;
+     public static final int DEVICE_OUT_IP = 0x800000;
+@@ -343,6 +348,8 @@ private static void dynamicPolicyCallbackFromNative(int event, String regId, int
+                                               DEVICE_OUT_HDMI_ARC |
+                                               DEVICE_OUT_SPDIF |
+                                               DEVICE_OUT_FM |
++                                              DEVICE_OUT_FM_HEADSET |
++                                              DEVICE_OUT_FM_SPEAKER |
+                                               DEVICE_OUT_AUX_LINE |
+                                               DEVICE_OUT_SPEAKER_SAFE |
+                                               DEVICE_OUT_IP |
+@@ -359,6 +366,8 @@ private static void dynamicPolicyCallbackFromNative(int event, String regId, int
+     public static final int DEVICE_OUT_ALL_HDMI_SYSTEM_AUDIO = (DEVICE_OUT_AUX_LINE |
+                                                                 DEVICE_OUT_HDMI_ARC |
+                                                                 DEVICE_OUT_SPDIF);
++    public static final int DEVICE_OUT_ALL_FM = (DEVICE_OUT_FM_HEADSET |
++                                                  DEVICE_OUT_FM_SPEAKER);
+     public static final int DEVICE_ALL_HDMI_SYSTEM_AUDIO_AND_SPEAKER =
+             (DEVICE_OUT_ALL_HDMI_SYSTEM_AUDIO |
+              DEVICE_OUT_SPEAKER);
+@@ -442,6 +451,8 @@ private static void dynamicPolicyCallbackFromNative(int event, String regId, int
+     public static final String DEVICE_OUT_HDMI_ARC_NAME = "hmdi_arc";
+     public static final String DEVICE_OUT_SPDIF_NAME = "spdif";
+     public static final String DEVICE_OUT_FM_NAME = "fm_transmitter";
++    public static final String DEVICE_OUT_FM_HEADSET_NAME = "fm_headset";
++    public static final String DEVICE_OUT_FM_SPEAKER_NAME = "fm_speaker";
+     public static final String DEVICE_OUT_AUX_LINE_NAME = "aux_line";
+     public static final String DEVICE_OUT_SPEAKER_SAFE_NAME = "speaker_safe";
+     public static final String DEVICE_OUT_IP_NAME = "ip";
+@@ -513,6 +524,10 @@ public static String getOutputDeviceName(int device)
+             return DEVICE_OUT_SPDIF_NAME;
+         case DEVICE_OUT_FM:
+             return DEVICE_OUT_FM_NAME;
++        case DEVICE_OUT_FM_HEADSET:
++            return DEVICE_OUT_FM_HEADSET_NAME;
++        case DEVICE_OUT_FM_SPEAKER:
++            return DEVICE_OUT_FM_SPEAKER_NAME;
+         case DEVICE_OUT_AUX_LINE:
+             return DEVICE_OUT_AUX_LINE_NAME;
+         case DEVICE_OUT_SPEAKER_SAFE:
