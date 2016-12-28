@@ -31,7 +31,7 @@ ro.modem.w.runnv_size=0x60000
 
 ro.modem.wcn.enable=1
 ro.modem.wcn.dev=/dev/cpwcn
-ro.modem.wcn.tty=/deiv/stty_wcn
+ro.modem.wcn.tty=/dev/stty_wcn
 ro.modem.wcn.diag=/dev/slog_wcn
 ro.modem.wcn.assert=/dev/spipe_wcn2
 ro.modem.wcn.id=1
