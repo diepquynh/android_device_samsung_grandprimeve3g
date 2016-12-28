@@ -37,8 +37,9 @@
 #include <hardware/power.h>
 
 #define SCALING_GOVERNOR_PATH "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
-#define CPU_MAX_FREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq"
-#define CPU_MIN_FREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq"
+#define CPU_MAX_FREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq"
+#define SCALING_MAX_FREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq"
+#define SCALING_MIN_FREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq"
 #define PANEL_BRIGHTNESS "/sys/class/backlight/panel/brightness"
 
 struct samsung_power_module {
@@ -64,7 +65,7 @@ enum power_profile_e {
 	PROFILE_BALANCED,
 	PROFILE_HIGH_PERFORMANCE
 };
-static enum power_profile_e current_power_profile = PROFILE_HIGH_PERFORMANCE;
+static enum power_profile_e current_power_profile = PROFILE_BALANCED;
 
 /**********************************************************
  *** HELPER FUNCTIONS
@@ -223,17 +224,17 @@ static void set_power_profile(struct samsung_power_module *samsung_pwr,
 	switch (profile) {
 	case PROFILE_POWER_SAVE:
 		// Limit to min freq
-		sysfs_write(CPU_MAX_FREQ_PATH, samsung_pwr->cpu_min_freq);
+		sysfs_write(SCALING_MAX_FREQ_PATH, samsung_pwr->cpu_min_freq);
 		ALOGD("%s: set powersave mode", __func__);
 		break;
 	case PROFILE_BALANCED:
 		// Limit to hispeed freq
-		sysfs_write(CPU_MAX_FREQ_PATH, samsung_pwr->cpu_hispeed_freq);
+		sysfs_write(SCALING_MAX_FREQ_PATH, samsung_pwr->cpu_hispeed_freq);
 		ALOGD("%s: set balanced mode", __func__);
 		break;
 	case PROFILE_HIGH_PERFORMANCE:
 		// Restore normal max freq
-		sysfs_write(CPU_MAX_FREQ_PATH, samsung_pwr->cpu_max_freq);
+		sysfs_write(SCALING_MAX_FREQ_PATH, samsung_pwr->cpu_max_freq);
 		ALOGD("%s: set performance mode", __func__);
 		break;
 	}
@@ -317,14 +318,14 @@ static void init_cpufreqs(struct samsung_power_module *samsung_pwr) {
 	int rc;
 	struct stat sb;
 
+	sysfs_read(SCALING_MIN_FREQ_PATH, samsung_pwr->cpu_min_freq,
+		   sizeof(samsung_pwr->cpu_min_freq));
 	sysfs_read(CPU_HISPEED_FREQ_PATH, samsung_pwr->cpu_hispeed_freq,
 		   sizeof(samsung_pwr->cpu_hispeed_freq));
-	sysfs_read(CPU_MIN_FREQ_PATH, samsung_pwr->cpu_min_freq,
-		   sizeof(samsung_pwr->cpu_min_freq));
 	sysfs_read(CPU_MAX_FREQ_PATH, samsung_pwr->cpu_max_freq,
 		   sizeof(samsung_pwr->cpu_max_freq));
-	ALOGV("%s: CPU hispeed freq: %s\n", __func__, samsung_pwr->cpu_hispeed_freq);
 	ALOGV("%s: CPU min freq: %s\n", __func__, samsung_pwr->cpu_min_freq);
+	ALOGV("%s: CPU hispeed freq: %s\n", __func__, samsung_pwr->cpu_hispeed_freq);
 	ALOGV("%s: CPU max freq: %s\n", __func__, samsung_pwr->cpu_max_freq);
 }
 
