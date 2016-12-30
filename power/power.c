@@ -65,7 +65,7 @@ enum power_profile_e {
 	PROFILE_BALANCED,
 	PROFILE_HIGH_PERFORMANCE
 };
-static enum power_profile_e current_power_profile = PROFILE_BALANCED;
+static enum power_profile_e current_power_profile = PROFILE_HIGH_PERFORMANCE;
 
 /**********************************************************
  *** HELPER FUNCTIONS
