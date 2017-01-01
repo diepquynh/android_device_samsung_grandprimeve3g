@@ -105,9 +105,7 @@ PRODUCT_PACKAGES += \
 	libstlport \
 	librilutils \
 	libril_shim \
-	libgps_shim \
-	libhwc_shim \
-	libstagefright_shim
+	libgps_shim
 
 # GPS
 GPS_CONFIGS := \
