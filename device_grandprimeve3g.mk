@@ -120,6 +120,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
 	macloader
 
+# PowerHAL
+PRODUCT_PACKAGES += \
+	power.sc8830
+
 WIFI_CONFIGS := \
 	$(LOCAL_PATH)/configs/wifi/wpa_supplicant.conf \
 	$(LOCAL_PATH)/configs/wifi/wpa_supplicant_overlay.conf \
