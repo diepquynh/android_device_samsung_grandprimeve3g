@@ -135,6 +135,9 @@ BOARD_USES_LEGACY_MMAP := true
 # Bionic
 TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
 
+# PowerHAL
+TARGET_POWERHAL_VARIANT := samsung
+
 # SELinux
 SERVICES_WITHOUT_SELINUX_DOMAIN := true
 BOARD_SEPOLICY_DIRS += device/samsung/grandprimeve3g/sepolicy
