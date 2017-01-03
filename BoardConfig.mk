@@ -58,6 +58,7 @@ BOARD_RIL_CLASS += ../../../device/samsung/grandprimeve3g/ril
 BOARD_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
 
 # Bluetooth
+USE_BLUETOOTH_BCM4343 := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/grandprimeve3g/bluetooth
 BOARD_CUSTOM_BT_CONFIG := device/samsung/vivalto3gvn/bluetooth/libbt_vndcfg.txt
 
