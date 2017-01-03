@@ -1,0 +1,43 @@
+From 9625eb4ab93df0408271f8e85a45fb6e9d6d2ad4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Quang=20Ng=C3=B4?= <ngoquang2708@gmail.com>
+Date: Thu, 1 Sep 2016 21:39:52 +0700
+Subject: [PATCH] build: add support for SPRD target
+
+---
+ core/config.mk      |  3 +++
+ core/sprd_target.mk | 12 ++++++++++++
+ 2 files changed, 15 insertions(+)
+ create mode 100644 core/sprd_target.mk
+
+diff --git a/core/config.mk b/core/config.mk
+index 6a79d3e..8281de8 100644
+--- a/core/config.mk
++++ b/core/config.mk
+@@ -663,6 +663,9 @@ include vendor/cm/build/core/qcom_target.mk
+ # Rules for MTK targets
+ include vendor/cm/build/core/mtk_target.mk
+ 
++# Rules for SPRD targets
++include $(BUILD_SYSTEM)/sprd_target.mk
++
+ # ###############################################################
+ # Set up final options.
+ # ###############################################################
+diff --git a/core/sprd_target.mk b/core/sprd_target.mk
+new file mode 100644
+index 0000000..395eaca
+--- /dev/null
++++ b/core/sprd_target.mk
+@@ -0,0 +1,12 @@
++# Target-specific configuration
++
++ifeq ($(BOARD_USES_SPRD_HARDWARE),true)
++
++sprd_flags := -DSPRD_HARDWARE
++
++TARGET_GLOBAL_CFLAGS += $(sprd_flags)
++TARGET_GLOBAL_CPPFLAGS += $(sprd_flags)
++CLANG_TARGET_GLOBAL_CFLAGS += $(sprd_flags)
++CLANG_TARGET_GLOBAL_CPPFLAGS += $(sprd_flags)
++
++endif

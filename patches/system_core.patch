@@ -1,0 +1,32 @@
+From 4254eb218ab2b530115797c4aa84f5a3b6df0967 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Mon, 23 May 2016 18:37:04 +0700
+Subject: [PATCH] graphics: add SPRD HAL pixel formats
+
+Change-Id: Ic67f58682a82ea270d7e723df0472cb4835cf248
+---
+ include/system/graphics.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/include/system/graphics.h b/include/system/graphics.h
+index 529a562..311caa4 100644
+--- a/include/system/graphics.h
++++ b/include/system/graphics.h
+@@ -440,7 +440,17 @@ typedef enum android_pixel_format {
+     /* Legacy formats (deprecated), used by ImageFormat.java */
+     HAL_PIXEL_FORMAT_YCbCr_422_SP       = 0x10, // NV16
+     HAL_PIXEL_FORMAT_YCrCb_420_SP       = 0x11, // NV21
++    HAL_PIXEL_FORMAT_YCbCr_422_P        = 0x12,
++    HAL_PIXEL_FORMAT_YCbCr_420_P        = 0x13,
+     HAL_PIXEL_FORMAT_YCbCr_422_I        = 0x14, // YUY2
++    HAL_PIXEL_FORMAT_YCbCr_420_I        = 0x15,
++    HAL_PIXEL_FORMAT_CbYCrY_422_I       = 0x16,
++    HAL_PIXEL_FORMAT_CbYCrY_420_I       = 0x17,
++    HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED = 0x18,
++    HAL_PIXEL_FORMAT_YCbCr_420_SP       = 0x19,
++    HAL_PIXEL_FORMAT_YCrCb_420_SP_TILED = 0x1A,
++    HAL_PIXEL_FORMAT_YCrCb_422_SP       = 0x1B,
++    HAL_PIXEL_FORMAT_YCrCb_420_P        = 0x1C,
+ } android_pixel_format_t;
+ 
+ /*

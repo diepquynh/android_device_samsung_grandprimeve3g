@@ -1,0 +1,84 @@
+From c67a6635460fbd25d644b6dd284c01f803fd6232 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
+Date: Mon, 23 May 2016 18:23:09 +0700
+Subject: [PATCH] Add pcm_set_samplerate
+
+Change-Id: Ia97602b2b4630d43c1074d21a31d696fa4990ec6
+---
+ include/tinyalsa/asoundlib.h |  3 +++
+ pcm.c                        | 51 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 54 insertions(+)
+
+diff --git a/include/tinyalsa/asoundlib.h b/include/tinyalsa/asoundlib.h
+index b789573..1a5bf0e 100644
+--- a/include/tinyalsa/asoundlib.h
++++ b/include/tinyalsa/asoundlib.h
+@@ -257,6 +257,9 @@ int pcm_get_poll_fd(struct pcm *pcm);
+  */
+ int pcm_set_avail_min(struct pcm *pcm, int avail_min);
+ 
++/* SPRD: add this function to support changing samplerate */
++int pcm_set_samplerate(struct pcm *pcm, unsigned int flags, struct pcm_config *config, unsigned short samplerate);
++
+ /*
+  * MIXER API
+  */
+diff --git a/pcm.c b/pcm.c
+index 612d068..2b0dc4e 100644
+--- a/pcm.c
++++ b/pcm.c
+@@ -1312,3 +1312,54 @@ int pcm_ioctl(struct pcm *pcm, int request, ...)
+ 
+     return ioctl(pcm->fd, request, arg);
+ }
++
++/* SPRD: add this function to support changing samplerate */
++int pcm_set_samplerate(struct pcm *pcm, unsigned int flags, struct pcm_config *config, unsigned short samplerate)
++{
++    struct snd_pcm_hw_params params;
++
++    if(pcm->fd < 0){
++        fprintf(stderr, "%s, error pcm_fd (%d) ",__func__,pcm->fd);
++        return -1;
++    }
++    if(config == NULL){
++        fprintf(stderr, "%s, error pcm config ",__func__);
++        return -1;
++    }
++
++    param_init(&params);
++    param_set_mask(&params, SNDRV_PCM_HW_PARAM_FORMAT,
++                   pcm_format_to_alsa(config->format));
++    param_set_mask(&params, SNDRV_PCM_HW_PARAM_SUBFORMAT,
++                   SNDRV_PCM_SUBFORMAT_STD);
++    param_set_min(&params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE, config->period_size);
++    param_set_int(&params, SNDRV_PCM_HW_PARAM_SAMPLE_BITS,
++                  pcm_format_to_bits(config->format));
++    param_set_int(&params, SNDRV_PCM_HW_PARAM_FRAME_BITS,
++                  pcm_format_to_bits(config->format) * config->channels);
++    param_set_int(&params, SNDRV_PCM_HW_PARAM_CHANNELS,
++                  config->channels);
++    param_set_int(&params, SNDRV_PCM_HW_PARAM_PERIODS, config->period_count);
++    param_set_int(&params, SNDRV_PCM_HW_PARAM_RATE, samplerate);
++
++    if (flags & PCM_NOIRQ) {
++        if (!(flags & PCM_MMAP)) {
++            fprintf(stderr, "%s, noirq only currently supported with mmap(). ", __func__);
++            return -1;
++        }
++        params.flags |= SNDRV_PCM_HW_PARAMS_NO_PERIOD_WAKEUP;
++    }
++    if (flags & PCM_MMAP)
++        param_set_mask(&params, SNDRV_PCM_HW_PARAM_ACCESS,
++                   SNDRV_PCM_ACCESS_MMAP_INTERLEAVED);
++    else
++        param_set_mask(&params, SNDRV_PCM_HW_PARAM_ACCESS,
++                   SNDRV_PCM_ACCESS_RW_INTERLEAVED);
++
++    if (ioctl(pcm->fd, SNDRV_PCM_IOCTL_HW_PARAMS, &params)) {
++        fprintf(stderr, "%s, SNDRV_PCM_IOCTL_HW_PARAMS failed (%s) ", __func__,strerror(errno));
++        return -1;
++    }
++//    ALOGW("%s, out,samplerate (%d) ",__func__,samplerate);
++    return 0;
++}
