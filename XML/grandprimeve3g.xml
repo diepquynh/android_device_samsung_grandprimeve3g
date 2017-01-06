@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     Copyright (C) 2016 The Android Open Source Project
+     Copyright (C) 2016 The CyanogenMod Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<manifest>
+  <project path="external/stlport" name="LineageOS/android_external_stlport" revision="cm-14.1" />
+  <project path="packages/apps/SamsungServiceMode" name="LineageOS/android_packages_apps_SamsungServiceMode" revision="cm-14.1" />
+
+  <project path="device/samsung/sprd-common" name="koquantam/android_device_samsung_sprd-common" remote="private" revision="cm-14.1" />
+  <project path="device/samsung/grandprimeve3g" name="koquantam/android_device_samsung_grandprimeve3g" remote="private" revision="cm-14.1" />
+  <project path="hardware/sprd" name="koquantam/android_hardware_sprd" remote="private" revision="cm-14.1"/>
+  <project path="kernel/samsung/grandprimeve3g" name="TeamButter/android_kernel_samsung_grandprimeve3g-CORE" remote="private" revision="cm-14.1" />
+  <project path="vendor/samsung/grandprimeve3g" name="koquantam/android_vendor_samsung_grandprimeve3g" remote="private" revision="cm-14.1" />
+  <project path="prebuilts/gcc/linux-x86/arm" name="koquantam/linaro-6.2" remote="private" revision="master" />
+
+</manifest>
