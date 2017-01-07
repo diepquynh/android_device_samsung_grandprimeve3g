@@ -54,7 +54,7 @@ where 1st command is to apply patch and
 the 2nd for to revert the patches which applied earlier
 
 		patch -p1 < audio.patch
-		patch -R -p1 <audio.patch
+		patch -R -p1 < audio.patch
 
 # Patches for grandprimeve3g
 		Inside "patches" folder
