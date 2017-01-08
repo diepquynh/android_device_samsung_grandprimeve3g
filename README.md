@@ -26,7 +26,7 @@ Release Date | June 2015
 
 ### Building steps
 * 1. Sync Android source
-* 2. Copy this file ([grandprimeve3g.xml](https://github.com/koquantam/android_local_manifests/blob/cm-13.0-core33g/grandprimeve3g.xml)) to `.repo/local_manifests` (if that folder doesn't exist then "mkdir" it)
+* 2. Copy this file ([grandprimeve3g.xml](https://github.com/koquantam/android_local_manifests/blob/cm-14.1-grandprimeve3g/grandprimeve3g.xml)) to `.repo/local_manifests` (if that folder doesn't exist then "mkdir" it)
 * 3. `repo sync` again
 * 4. After syncing source and device-specific repo (from step 2), from your source root folder (where you have synced) open Terminal, `cd` to device/samsung/grandprimeve3g, type `./patches.sh` (this is the quick patching script)
 * 5. `cd` to your source root again, type `. build/envsetup.sh && brunch grandprimeve3g`
