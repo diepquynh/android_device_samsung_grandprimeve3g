@@ -1,3 +1,26 @@
+From ac431bce1e4c7bc87dfd1bbceb10e67f83840082 Mon Sep 17 00:00:00 2001
+From: Remilia Scarlet <remilia.1505@gmail.com>
+Date: Sat, 7 Jan 2017 02:16:57 -0500
+Subject: [PATCH] keyboards: Fix for multitasking key
+
+---
+ data/keyboards/Generic.kl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/data/keyboards/Generic.kl b/data/keyboards/Generic.kl
+index 2a10bdd..d429953 100644
+--- a/data/keyboards/Generic.kl
++++ b/data/keyboards/Generic.kl
+@@ -404,7 +404,7 @@ key 484   B                 FUNCTION
+ # key 503 KEY_BRL_DOT7
+ # key 504 KEY_BRL_DOT8
+ 
+-key 580   APP_SWITCH
++key 254   APP_SWITCH
+ key 582   VOICE_ASSIST
+ 
+ # Keys defined by HID usages
+
 From 393a3143f102cdf998a9159e384be8eaea5b217b Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ng=C3=B4=20Minh=20Quang?= <ngoquang2708@gmail.com>
 Date: Tue, 30 Aug 2016 18:07:00 +0700
