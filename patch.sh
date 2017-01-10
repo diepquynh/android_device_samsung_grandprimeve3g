@@ -14,4 +14,3 @@ cd build && patch -p1 < *.patch
 cd ../external/tinyalsa && patch -p1 < *.patch
 cd ../../frameworks/av && patch -p1 < *.patch
 cd ../../frameworks/base && patch -p1 < *.patch
-cd ../../system/core && patch -p1 < *.patch
