@@ -1,7 +1,0 @@
-type prod_file, file_type;
-type sock_file, file_type;
-type proc_pin_switch, fs_type;
-type proc_cpw, fs_type;
-type proc_cpt, fs_type;
-type sysfs_restart_cpc, fs_type, sysfs_type;
-type sysfs_dynamic_pclk, fs_type, sysfs_type;

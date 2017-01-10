@@ -1,5 +1,0 @@
-service modemd /system/bin/modemd
-    class core
-    user system
-    group system radio shell
-    oneshot

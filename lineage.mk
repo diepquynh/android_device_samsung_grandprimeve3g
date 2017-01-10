@@ -8,7 +8,7 @@ PRODUCT_RELEASE_NAME := grandprimeve3g
 $(call inherit-product, vendor/cm/config/common_mini_phone.mk)
 
 # Inherit device configuration
-$(call inherit-product, $(LOCAL_PATH)/device_grandprimeve3g.mk)
+$(call inherit-product, $(LOCAL_PATH)/grandprimeve3g.mk)
 
 ## Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := grandprimeve3g

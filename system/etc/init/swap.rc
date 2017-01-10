@@ -10,14 +10,3 @@ on property:ro.config.zram.compressor=* && property:ro.config.zram.disksize=*
     write /sys/block/zram0/comp_algorithm ${ro.config.zram.compressor}
     write /sys/block/zram0/disksize ${ro.config.zram.disksize}
     swapon_all /fstab.sc8830
-
-# SSWAP
-service vnswap /system/bin/sswap -s
-    class core
-    user root
-    group root
-    disabled
-    oneshot
-
-on property:vnswap.enabled=true
-   start vnswap

@@ -1,3 +1,0 @@
-service macloader /system/bin/macloader
-    class main
-    oneshot
