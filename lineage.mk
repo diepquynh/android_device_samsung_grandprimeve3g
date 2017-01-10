@@ -12,7 +12,7 @@ $(call inherit-product, $(LOCAL_PATH)/device_grandprimeve3g.mk)
 
 ## Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := grandprimeve3g
-PRODUCT_NAME := cm_grandprimeve3g
+PRODUCT_NAME := lineage_grandprimeve3g
 PRODUCT_BRAND := samsung
 PRODUCT_MODEL := SM-G531H
 PRODUCT_MANUFACTURER := samsung
