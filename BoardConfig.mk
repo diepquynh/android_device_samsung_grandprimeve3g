@@ -108,7 +108,6 @@ BOARD_CANT_REALLOCATE_OMX_BUFFERS := true
 SOC_SCX30G_V2 := true
 
 # Board specific features
-BOARD_USE_SAMSUNG_COLORFORMAT := true
 TARGET_HAS_LEGACY_CAMERA_HAL1 := true
 
 # healthd
