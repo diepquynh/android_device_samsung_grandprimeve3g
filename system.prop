@@ -1,4 +1,0 @@
-# Multitasking
-ro.config.zram.swappiness=130
-ro.config.zram.compressor=lz4
-ro.config.zram.disksize=512M
