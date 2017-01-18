@@ -111,6 +111,9 @@ TARGET_BOARD_BACK_CAMERA_CCIR_PCLK := source0
 #hdr effect enable
 TARGET_BOARD_CAMERA_HDR_CAPTURE := true
 
+# Bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/grandprimeve3g/bluetooth
+
 # Kernel
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_PAGESIZE := 2048
