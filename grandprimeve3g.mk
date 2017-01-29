@@ -14,6 +14,9 @@
 
 LOCAL_PATH := device/samsung/grandprimeve3g
 
+# Overlays
+DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
+
 # Inherit from vendor tree
 $(call inherit-product-if-exists, vendor/samsung/grandprimeve3g/grandprimeve3g-vendor.mk)
 
