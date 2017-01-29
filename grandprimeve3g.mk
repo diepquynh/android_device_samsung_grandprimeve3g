@@ -50,12 +50,6 @@ ROOTDIR_FILES := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(ROOTDIR_FILES),$(f):root/$(notdir $(f)))
 
-SYSTEM_INIT_RC_FILES := \
-	device/samsung/grandprimeve3g/system/etc/init/swap.rc
-
-PRODUCT_COPY_FILES += \
-	$(foreach f,$(SYSTEM_INIT_RC_FILES),$(f):system/etc/init/$(notdir $(f)))
-
 # Permissions
 PERMISSIONS_XML_FILES := \
 	frameworks/native/data/etc/android.hardware.sensor.compass.xml
