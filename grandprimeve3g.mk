@@ -53,10 +53,6 @@ PERMISSIONS_XML_FILES := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(PERMISSIONS_XML_FILES),$(f):system/etc/permissions/$(notdir $(f)))
 
-# OTA server
-PRODUCT_PROPERTY_OVERRIDES += \
-	cm.updater.uri=ftp://138.122.227.241/cm/UNOFFICIAL
-
 # Set those variables here to overwrite the inherited values.
 PRODUCT_NAME := full_grandprimeve3g
 PRODUCT_DEVICE := grandprimeve3g
