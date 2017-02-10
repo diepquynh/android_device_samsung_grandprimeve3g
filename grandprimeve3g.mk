@@ -36,10 +36,6 @@ MEDIA_CONFIGS := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(MEDIA_CONFIGS),$(f):system/etc/$(notdir $(f)))
 
-# Camera HAL
-PRODUCT_PACKAGES += \
-	camera.sc8830
-
 # Rootdir files
 ROOTDIR_FILES := \
 	$(LOCAL_PATH)/rootdir/init.sc8830.rc \
