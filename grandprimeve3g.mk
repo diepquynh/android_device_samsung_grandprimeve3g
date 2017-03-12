@@ -20,8 +20,8 @@ DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 # Inherit from vendor tree
 $(call inherit-product-if-exists, vendor/samsung/grandprimeve3g/grandprimeve3g-vendor.mk)
 
-# Inherit from scx30g_v2-common device configuration
-$(call inherit-product, device/samsung/scx30g_v2-common/common.mk)
+# Inherit from scx30g2-common device configuration
+$(call inherit-product, device/samsung/scx30g2-common/common.mk)
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
@@ -29,22 +29,20 @@ DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 TARGET_SCREEN_HEIGHT := 960
 TARGET_SCREEN_WIDTH := 540
 
-# Media config
-MEDIA_CONFIGS := \
-	$(LOCAL_PATH)/media/media_profiles.xml
-
+# Keylayouts
 PRODUCT_COPY_FILES += \
-	$(foreach f,$(MEDIA_CONFIGS),$(f):system/etc/$(notdir $(f)))
+	$(LOCAL_PATH)/keylayout/sec_touchscreen.kl:system/usr/keylayout/sec_touchscreen.kl
+
+# Media config
+PRODUCT_PACKAGES += \
+	media_profiles.xml
 
 # Rootdir files
-ROOTDIR_FILES := \
-	$(LOCAL_PATH)/rootdir/init.sc8830.rc \
-	$(LOCAL_PATH)/rootdir/init.sc8830.usb.rc \
-	$(LOCAL_PATH)/rootdir/init.grandprimeve3g_base.rc \
-	$(LOCAL_PATH)/rootdir/ueventd.sc8830.rc
-
-PRODUCT_COPY_FILES += \
-	$(foreach f,$(ROOTDIR_FILES),$(f):root/$(notdir $(f)))
+PRODUCT_PACKAGES += \
+	init.sc8830.rc \
+	init.sc8830.usb.rc \
+	init.grandprimeve3g_base.rc \
+	ueventd.sc8830.rc
 
 # Permissions
 PERMISSIONS_XML_FILES := \
