@@ -12,11 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Inherit from scx30g_v2 common configs
--include device/samsung/scx30g_v2-common/BoardConfigCommon.mk
+# Inherit from scx30g2 common configs
+-include device/samsung/scx30g2-common/BoardConfigCommon.mk
 
 # Inherit from the proprietary version
 -include vendor/samsung/grandprimeve3g/BoardConfigVendor.mk
+
+# Bootloader
+TARGET_BOOTLOADER_BOARD_NAME := SC7730SE
+
+# Partitions
+BOARD_BOOTIMAGE_PARTITION_SIZE := 16777216
+BOARD_RECOVERYIMAGE_PARTITION_SIZE := 16777216
+BOARD_SYSTEMIMAGE_PARTITION_SIZE := 1572864000
+BOARD_USERDATAIMAGE_PARTITION_SIZE := 5872025600
+BOARD_CACHEIMAGE_PARTITION_SIZE := 209715200
+BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_FLASH_BLOCK_SIZE := 131072
+TARGET_USERIMAGES_USE_EXT4 := true
+TARGET_USERIMAGES_USE_F2FS := true
+BOARD_HAS_LARGE_FILESYSTEM := true
 
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/grandprimeve3g/bluetooth
