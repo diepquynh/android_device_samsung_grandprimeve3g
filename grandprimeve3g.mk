@@ -20,8 +20,8 @@ DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 # Inherit from vendor tree
 $(call inherit-product-if-exists, vendor/samsung/grandprimeve3g/grandprimeve3g-vendor.mk)
 
-# Inherit from scx30g_v2-common device configuration
-$(call inherit-product, device/samsung/scx30g_v2-common/common.mk)
+# Inherit from scx30g2-common device configuration
+$(call inherit-product, device/samsung/scx30g2-common/common.mk)
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
@@ -30,25 +30,8 @@ TARGET_SCREEN_HEIGHT := 960
 TARGET_SCREEN_WIDTH := 540
 
 # Media config
-MEDIA_CONFIGS := \
-	$(LOCAL_PATH)/media/media_profiles.xml
-
-PRODUCT_COPY_FILES += \
-	$(foreach f,$(MEDIA_CONFIGS),$(f):system/etc/$(notdir $(f)))
-
-# Camera HAL
 PRODUCT_PACKAGES += \
-	camera.sc8830
-
-# Rootdir files
-ROOTDIR_FILES := \
-	$(LOCAL_PATH)/rootdir/init.sc8830.rc \
-	$(LOCAL_PATH)/rootdir/init.sc8830.usb.rc \
-	$(LOCAL_PATH)/rootdir/init.grandprimeve3g_base.rc \
-	$(LOCAL_PATH)/rootdir/ueventd.sc8830.rc
-
-PRODUCT_COPY_FILES += \
-	$(foreach f,$(ROOTDIR_FILES),$(f):root/$(notdir $(f)))
+	media_profiles.xml
 
 # Permissions
 PERMISSIONS_XML_FILES := \
@@ -63,10 +46,6 @@ PRODUCT_PACKAGES += \
 	init.sc8830.rc \
 	init.sc8830.usb.rc \
 	ueventd.sc8830.rc
-
-# OTA server
-PRODUCT_PROPERTY_OVERRIDES += \
-	cm.updater.uri=ftp://138.122.227.241/cm/UNOFFICIAL
 
 # Set those variables here to overwrite the inherited values.
 PRODUCT_NAME := full_grandprimeve3g
