@@ -29,6 +29,10 @@ DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 TARGET_SCREEN_HEIGHT := 960
 TARGET_SCREEN_WIDTH := 540
 
+# Keylayouts
+PRODUCT_COPY_FILES += \
+	$(LOCAL_PATH)/keylayout/sec_touchscreen.kl:system/usr/keylayout/sec_touchscreen.kl
+
 # Media config
 PRODUCT_PACKAGES += \
 	media_profiles.xml
