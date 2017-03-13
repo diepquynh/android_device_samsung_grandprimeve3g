@@ -57,6 +57,13 @@ PERMISSIONS_XML_FILES := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(PERMISSIONS_XML_FILES),$(f):system/etc/permissions/$(notdir $(f)))
 
+# Rootdir
+PRODUCT_PACKAGES += \
+	init.grandprimeve3g_base.rc \
+	init.sc8830.rc \
+	init.sc8830.usb.rc \
+	ueventd.sc8830.rc
+
 # OTA server
 PRODUCT_PROPERTY_OVERRIDES += \
 	cm.updater.uri=ftp://138.122.227.241/cm/UNOFFICIAL
