@@ -29,6 +29,10 @@ DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 TARGET_SCREEN_HEIGHT := 960
 TARGET_SCREEN_WIDTH := 540
 
+# Hexagon OTA
+PRODUCT_PROPERTY_OVERRIDES += \
+	hex.updater.uri=https://raw.githubusercontent.com/HexagonRom/HexUpdate_API/hex-7.1/grandprimeve3g.json
+
 # Keylayouts
 PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/keylayout/sec_touchscreen.kl:system/usr/keylayout/sec_touchscreen.kl
