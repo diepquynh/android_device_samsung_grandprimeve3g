@@ -44,6 +44,11 @@ PERMISSIONS_XML_FILES := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(PERMISSIONS_XML_FILES),$(f):system/etc/permissions/$(notdir $(f)))
 
+# Stock build fingerprint
+PRODUCT_BUILD_PROP_OVERRIDES += \
+    BUILD_FINGERPRINT=samsung/grandprimeve3gxx/grandprimeve3g:5.1.1/LMY48B/G531HDDU0APK2:user/release-keys \
+    PRIVATE_BUILD_DESC="grandprimeve3gxx-user 5.1.1 LMY48B G531HDDU0APK2 release-keys"
+
 # Set those variables here to overwrite the inherited values.
 PRODUCT_NAME := full_grandprimeve3g
 PRODUCT_DEVICE := grandprimeve3g
