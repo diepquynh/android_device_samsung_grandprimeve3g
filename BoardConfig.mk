@@ -49,6 +49,99 @@ WIFI_DRIVER_NVRAM_PATH := "/system/etc/wifi/nvram_net.txt"
 WIFI_BAND := 802_11_ABG
 BOARD_HAVE_SAMSUNG_WIFI := true
 
+# Camera
+#zsl capture
+TARGET_BOARD_CAMERA_CAPTURE_MODE := false
+
+#back camera rotation capture
+TARGET_BOARD_BACK_CAMERA_ROTATION := false
+
+#front camera rotation capture
+TARGET_BOARD_FRONT_CAMERA_ROTATION := false
+
+#rotation capture
+TARGET_BOARD_CAMERA_ROTATION_CAPTURE := false
+
+#support hal1.0,hal3.2
+TARGET_BOARD_CAMERA_HAL_VERSION := 1.0
+
+# camera sensor type
+CAMERA_SENSOR_TYPE_BACK := "s5k4h5yc_mipi"
+CAMERA_SENSOR_TYPE_FRONT := "s5k5e3yx_mipi"
+
+# select camera 2M,3M,5M,8M
+CAMERA_SUPPORT_SIZE := 8M
+FRONT_CAMERA_SUPPORT_SIZE := 5M
+TARGET_BOARD_NO_FRONT_SENSOR := false
+TARGET_BOARD_CAMERA_FLASH_CTRL := false
+
+#read sensor otp to isp
+TARGET_BOARD_CAMERA_READOTP_TO_ISP := true
+
+# use sprd auto lens
+TARGET_BOARD_CAMERA_SPRD_AUTOLENS := false
+
+#otp version, v0(OTP on Grandprime, Z3) v1(OTP on J1MINI) v2(Without OTP on TabG)
+TARGET_BOARD_CAMERA_OTP_VERSION := 0
+
+#read otp method 1:from kernel 0:from user
+TARGET_BOARD_CAMERA_READOTP_METHOD := 1
+
+#face detect
+TARGET_BOARD_CAMERA_FACE_DETECT := true
+TARGET_BOARD_CAMERA_FD_LIB := omron
+
+#sensor interface
+TARGET_BOARD_BACK_CAMERA_INTERFACE := mipi
+TARGET_BOARD_FRONT_CAMERA_INTERFACE := mipi
+
+#select camera zsl cap mode
+TARGET_BOARD_CAMERA_CAPTURE_MODE := true
+
+#select camera zsl force cap mode
+TARGET_BOARD_CAMERA_FORCE_ZSL_MODE := true
+
+#rotation capture
+TARGET_BOARD_CAMERA_ROTATION_CAPTURE := false
+
+#select camera not support autofocus
+TARGET_BOARD_CAMERA_NO_AUTOFOCUS_DEV := false
+
+#uv denoise enable
+TARGET_BOARD_CAMERA_CAPTURE_DENOISE := false
+
+#y denoise enable
+TARGET_BOARD_CAMERA_Y_DENOISE := true
+
+#select continuous auto focus
+TARGET_BOARD_CAMERA_CAF := true
+
+#select ACuteLogic awb algorithm
+TARGET_BOARD_USE_ALC_AWB := true
+
+#pre_allocate capture memory
+TARGET_BOARD_CAMERA_PRE_ALLOC_CAPTURE_MEM := true
+
+#sc8830g isp ver 0;sc9630 isp ver 1;tshark2 isp version 2
+TARGET_BOARD_CAMERA_ISP_SOFTWARE_VERSION := 2
+
+#support auto anti-flicker
+TARGET_BOARD_CAMERA_ANTI_FLICKER := true
+
+#multi cap memory mode
+TARGET_BOARD_MULTI_CAP_MEM := true
+
+#select mipi d-phy mode(none, phya, phyb, phyab)
+TARGET_BOARD_FRONT_CAMERA_MIPI := phyc
+TARGET_BOARD_BACK_CAMERA_MIPI := phyab
+
+#select ccir pclk src(source0, source1)
+TARGET_BOARD_FRONT_CAMERA_CCIR_PCLK := source0
+TARGET_BOARD_BACK_CAMERA_CCIR_PCLK := source0
+
+#hdr effect enable
+TARGET_BOARD_CAMERA_HDR_CAPTURE := true
+
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/grandprimeve3g/bluetooth
 

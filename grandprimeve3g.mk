@@ -33,6 +33,11 @@ TARGET_SCREEN_WIDTH := 540
 PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/keylayout/sec_touchscreen.kl:system/usr/keylayout/sec_touchscreen.kl
 
+# Camera HAL
+PRODUCT_PACKAGES += \
+	camera.sc8830
+
+
 # Media config
 PRODUCT_PACKAGES += \
 	media_profiles.xml
