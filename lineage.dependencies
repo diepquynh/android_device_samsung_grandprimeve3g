@@ -43,7 +43,7 @@
 	},
 	{
 		"remote": "github",
-		"repository": "remilia15/android_kernel_samsung_grandprimeve3g-RZ",
+		"repository": "remilia15/android_kernel_samsung_sprd-RZ",
 		"target_path": "kernel/samsung/grandprimeve3g",
 		"revision": "cm-14.1"
 	},
