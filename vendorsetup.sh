@@ -19,5 +19,5 @@
 # function: add_lunch_combo generic-eng
 
 for i in eng user userdebug; do
-add_lunch_combo lineage_grandprimeve3g-${i};
+add_lunch_combo aosp_grandprimeve3g-${i};
 done
