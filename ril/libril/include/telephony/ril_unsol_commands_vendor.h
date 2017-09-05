@@ -14,8 +14,8 @@
 ** See the License for the specific language governing permissions and
 ** limitations under the License.
 */
-    {RIL_UNSOL_RESPONSE_NEW_CB_MSG, responseInts /*responseCBMessage*/, WAKE_PARTIAL}, // 11000
-    {RIL_UNSOL_RELEASE_COMPLETE_MESSAGE, responseInts /*responseSSReleaseComplete*/, WAKE_PARTIAL}, // 11001
+    {RIL_UNSOL_RESPONSE_NEW_CB_MSG, responseCBMessage, WAKE_PARTIAL}, // 11000
+    {RIL_UNSOL_RELEASE_COMPLETE_MESSAGE, responseSSReleaseComplete, WAKE_PARTIAL}, // 11001
     {RIL_UNSOL_STK_SEND_SMS_RESULT, responseInts, WAKE_PARTIAL}, // 11002
     {RIL_UNSOL_STK_CALL_CONTROL_RESULT, responseString, WAKE_PARTIAL}, // 11003
     {11004, NULL, WAKE_PARTIAL},
@@ -80,4 +80,4 @@
     {RIL_UNSOL_UNSOL_UICC_APPLICATION_STATUS, NULL, WAKE_PARTIAL}, // 11063
     {11064, NULL, WAKE_PARTIAL},
     {11065, NULL, WAKE_PARTIAL},
-    {RIL_UNSOL_SIM_ICCID_NOTI, responseString /*responseSIMICCIDNoti*/, WAKE_PARTIAL}, // 11066
+    {RIL_UNSOL_SIM_ICCID_NOTI, responseSIMICCIDNoti, WAKE_PARTIAL}, // 11066

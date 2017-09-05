@@ -1060,28 +1060,13 @@ typedef struct
   int              pin1_replaced;   /* applicable to USIM, CSIM & ISIM */
   RIL_PinState     pin1;
   RIL_PinState     pin2;
-} RIL_AppStatus;
-
-typedef struct
-{
-  RIL_AppType      app_type;
-  RIL_AppState     app_state;
-  RIL_PersoSubstate perso_substate; /* applicable only if app_state ==
-                                       RIL_APPSTATE_SUBSCRIPTION_PERSO */
-  char             *aid_ptr;        /* null terminated string, e.g., from 0xA0, 0x00 -> 0x41,
-                                       0x30, 0x30, 0x30 */
-  char             *app_label_ptr;  /* null terminated string */
-  int              pin1_replaced;   /* applicable to USIM, CSIM & ISIM */
-  RIL_PinState     pin1;
-  RIL_PinState     pin2;
-
   /* Samsung */
   int              pin1_num_retries;
   int              puk1_num_retries;
   int              pin2_num_retries;
   int              puk2_num_retries;
   int              perso_unblock_retries;
-} RIL_AppStatus_samsung;
+} RIL_AppStatus;
 
 /* Deprecated, use RIL_CardStatus_v6 */
 typedef struct
@@ -1104,17 +1089,6 @@ typedef struct
   int           num_applications;                /* value <= RIL_CARD_MAX_APPS */
   RIL_AppStatus applications[RIL_CARD_MAX_APPS];
 } RIL_CardStatus_v6;
-
-typedef struct
-{
-  RIL_CardState card_state;
-  RIL_PinState  universal_pin_state;             /* applicable to USIM and CSIM: RIL_PINSTATE_xxx */
-  int           gsm_umts_subscription_app_index; /* value < RIL_CARD_MAX_APPS, -1 if none */
-  int           cdma_subscription_app_index;     /* value < RIL_CARD_MAX_APPS, -1 if none */
-  int           ims_subscription_app_index;      /* value < RIL_CARD_MAX_APPS, -1 if none */
-  int           num_applications;                /* value <= RIL_CARD_MAX_APPS */
-  RIL_AppStatus_samsung applications[RIL_CARD_MAX_APPS];
-} RIL_CardStatus_v6_samsung;
 
 /** The result of a SIM refresh, returned in data[0] of RIL_UNSOL_SIM_REFRESH
  *      or as part of RIL_SimRefreshResponse_v7
@@ -1819,6 +1793,70 @@ typedef struct {
    * the transmitter is inactive */
   uint32_t rx_mode_time_ms;
 } RIL_ActivityStatsInfo;
+
+typedef struct {
+  int v0i;
+  int v1i;
+  int v2i;
+  char * v3c;
+  int v4i;
+  int v5i;
+  char * v6s;
+  char * v7c;
+  int v8i;
+  char * v9s;
+  char * v10s;
+  char * v11s;
+  char * v12s;
+  char * v13c;
+  int v14i;
+  int v15i;
+  char * v16s;
+} RIL_Phone_Book_Entry;
+
+typedef struct {
+  int v0i;
+  int v1i;
+  int v2i;
+  int v3i;
+  char * v4c;
+} RIL_CB_Config;
+
+typedef struct {
+  int v0i;
+  int v1i;
+  int v2i;
+  int v3i;
+} RIL_Lock_Info;
+
+typedef struct {
+  char * v0c;
+  int v1i;
+  int v2i;
+} RIL_USSD_Encoded;
+
+typedef struct {
+  int v0i;
+  char * oper;
+  char * plmn;
+  int v3i;
+  int v4i;
+  int v5i;
+  int v6i;
+} RIL_PN_List;
+
+typedef struct {
+  int v0i;
+  int v1i;
+  int v2i;
+  int v3i;
+  char * v4c;
+} RIL_StkCcUnsolSsComplete;
+
+typedef struct {
+  int v1i;
+  char * iccId;
+} RIL_SIM_ICCID;
 
 /**
  * RIL_REQUEST_GET_SIM_STATUS

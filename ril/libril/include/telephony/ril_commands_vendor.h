@@ -22,18 +22,18 @@
     {RIL_REQUEST_SET_VOICE_DOMAIN_PREF, dispatchInts, responseVoid}, // 10005
     {RIL_REQUEST_SAFE_MODE, dispatchInts, responseVoid}, // 10006
     {RIL_REQUEST_SET_TRANSMIT_POWER, dispatchInts, responseVoid}, // 10007
-    {RIL_REQUEST_GET_CELL_BROADCAST_CONFIG, dispatchVoid, responseVoid /*sub_4084*/}, // 10008
+    {RIL_REQUEST_GET_CELL_BROADCAST_CONFIG, dispatchVoid, responseCBConfig}, // 10008
     {RIL_REQUEST_GET_PHONEBOOK_STORAGE_INFO, dispatchInts, responseInts}, // 10009
-    {RIL_REQUEST_GET_PHONEBOOK_ENTRY, dispatchSIM_IO, responseInts /*responsePhoneBook*/}, // 10010
-    {RIL_REQUEST_ACCESS_PHONEBOOK_ENTRY, dispatchInts /*dispatchPhoneBook*/, responseInts}, // 10011
+    {RIL_REQUEST_GET_PHONEBOOK_ENTRY, dispatchSIM_IO, responsePhoneBook}, // 10010
+    {RIL_REQUEST_ACCESS_PHONEBOOK_ENTRY, dispatchPhoneBook, responseInts}, // 10011
     {RIL_REQUEST_USIM_PB_CAPA, dispatchVoid, responseInts}, // 10012
-    {RIL_REQUEST_LOCK_INFO, dispatchInts /*dispatchLockInfo*/, responseInts /*responseLockInfo*/}, // 10013
+    {RIL_REQUEST_LOCK_INFO, dispatchLockInfo, responseLockInfo}, // 10013
     {RIL_REQUEST_STK_SIM_INIT_EVENT, dispatchVoid, responseVoid}, // 10014
-    {RIL_REQUEST_SET_PREFERRED_NETWORK_LIST, dispatchInts /*dispatchPreferredNetworkList*/, responseVoid}, // 10015
-    {RIL_REQUEST_GET_PREFERRED_NETWORK_LIST, dispatchVoid, responseInts /*responsePreferredNetworkList*/}, // 10016
+    {RIL_REQUEST_SET_PREFERRED_NETWORK_LIST, dispatchPNList, responseVoid}, // 10015
+    {RIL_REQUEST_GET_PREFERRED_NETWORK_LIST, dispatchVoid, responsePNList}, // 10016
     {RIL_REQUEST_CHANGE_SIM_PERSO, dispatchStrings, responseInts}, // 10017
     {RIL_REQUEST_ENTER_SIM_PERSO, dispatchStrings, responseInts}, // 10018
-    {RIL_REQUEST_SEND_ENCODED_USSD, dispatchInts /*dispatchEncodedUSSD*/, responseVoid}, // 10019
+    {RIL_REQUEST_SEND_ENCODED_USSD, dispatchEncodedUSSD, responseVoid}, // 10019
     {RIL_REQUEST_CDMA_SEND_SMS_EXPECT_MORE, dispatchCdmaSms, responseSMS}, // 10020
     {RIL_REQUEST_HANGUP_VT, dispatchInts, responseVoid}, // 10021
     {RIL_REQUEST_REQUEST_HOLD, dispatchVoid, responseVoid}, // 10022
