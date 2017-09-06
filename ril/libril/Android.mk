@@ -8,8 +8,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES:= \
     ril.cpp \
     ril_event.cpp\
-    RilSocket.cpp \
-    RilSapSocket.cpp \
+    RilSocket.cpp
 
 LOCAL_SHARED_LIBRARIES := \
     liblog \
@@ -21,24 +20,6 @@ LOCAL_SHARED_LIBRARIES := \
 
 LOCAL_STATIC_LIBRARIES := \
     libprotobuf-c-nano-enable_malloc \
-
-ifeq ($(SIM_COUNT), 2)
-    LOCAL_CFLAGS += -DANDROID_SIM_COUNT_2
-endif
-
-ifneq ($(filter xmm6262 xmm6360,$(BOARD_MODEM_TYPE)),)
-LOCAL_CFLAGS := -DMODEM_TYPE_XMM6262
-endif
-ifeq ($(BOARD_MODEM_TYPE),xmm6260)
-LOCAL_CFLAGS := -DMODEM_TYPE_XMM6260
-endif
-#ifneq ($(filter m7450 mdm9x35 ss333 tss310 xmm7260,$(BOARD_MODEM_TYPE)),)
-LOCAL_CFLAGS := -DSAMSUNG_NEXT_GEN_MODEM
-#endif
-
-ifeq ($(BOARD_MODEM_NEEDS_VIDEO_CALL_FIELD), true)
-LOCAL_CFLAGS += -DNEEDS_VIDEO_CALL_FIELD
-endif
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 LOCAL_C_INCLUDES += external/nanopb-c
@@ -67,13 +48,6 @@ LOCAL_STATIC_LIBRARIES := \
     libprotobuf-c-nano-enable_malloc
 
 LOCAL_CFLAGS :=
-
-ifneq ($(filter xmm6262 xmm6360,$(BOARD_MODEM_TYPE)),)
-LOCAL_CFLAGS += -DMODEM_TYPE_XMM6262
-endif
-ifeq ($(BOARD_MODEM_TYPE),xmm6260)
-LOCAL_CFLAGS += -DMODEM_TYPE_XMM6260
-endif
 
 LOCAL_MODULE:= libril_static
 
