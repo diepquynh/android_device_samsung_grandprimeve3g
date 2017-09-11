@@ -6135,10 +6135,6 @@ void RIL_onUnsolicitedResponse(int unsolResponse, const void *data,
         return;
     }
 
-    unsolResponseIndex = unsolResponse - RIL_UNSOL_RESPONSE_BASE;
-    pRI = s_unsolResponses;
-    pRI_elements = (int32_t)NUM_ELEMS(s_unsolResponses);
-
     /* Hack to include Samsung responses */
     if (unsolResponse > RIL_VENDOR_COMMANDS_OFFSET + RIL_UNSOL_RESPONSE_BASE) {
         pRI = s_unsolResponses_v;
@@ -6156,10 +6152,13 @@ void RIL_onUnsolicitedResponse(int unsolResponse, const void *data,
         for (pRI_index = 0; pRI_index < pRI_elements; pRI_index++) {
             if (pRI[pRI_index].requestNumber == unsolResponse) {
                 unsolResponseIndex = pRI_index;
+                break;
             }
         }
-
-        RLOGD("SAMSUNG: unsolResponse=%d, unsolResponseIndex=%d", unsolResponse, unsolResponseIndex);
+    } else {
+        unsolResponseIndex = unsolResponse - RIL_UNSOL_RESPONSE_BASE;
+        pRI = s_unsolResponses;
+        pRI_elements = (int32_t)NUM_ELEMS(s_unsolResponses);
     }
 
     if (unsolResponseIndex >= 0 && unsolResponseIndex < pRI_elements) {
@@ -6167,6 +6166,7 @@ void RIL_onUnsolicitedResponse(int unsolResponse, const void *data,
     } else {
         RLOGE("could not map unsolResponse=%d to %s response array (index=%d)", unsolResponse,
                 pRI == s_unsolResponses ? "AOSP" : "Samsung", unsolResponseIndex);
+        return;
     }
 
     if (pRI == NULL || pRI->responseFunction == NULL) {
@@ -6641,6 +6641,64 @@ requestToString(int request) {
         case RIL_UNSOL_RADIO_CAPABILITY: return "RIL_UNSOL_RADIO_CAPABILITY";
         case RIL_RESPONSE_ACKNOWLEDGEMENT: return "RIL_RESPONSE_ACKNOWLEDGEMENT";
         case RIL_UNSOL_PCO_DATA: return "RIL_UNSOL_PCO_DATA";
+        /* Samsung */
+        case RIL_REQUEST_DIAL_EMERGENCY_CALL: return "DIAL_EMERGENCY_CALL";
+        case RIL_REQUEST_CALL_DEFLECTION: return "CALL_DEFLECTION";
+        case RIL_REQUEST_MODIFY_CALL_INITIATE: return "MODIFY_CALL_INITIATE";
+        case RIL_REQUEST_MODIFY_CALL_CONFIRM: return "MODIFY_CALL_CONFIRM";
+        case RIL_REQUEST_SET_VOICE_DOMAIN_PREF: return "SET_VOICE_DOMAIN_PREF";
+        case RIL_REQUEST_SAFE_MODE: return "SAFE_MODE";
+        case RIL_REQUEST_SET_TRANSMIT_POWER: return "SET_TRANSMIT_POWER";
+        case RIL_REQUEST_GET_CELL_BROADCAST_CONFIG: return "GET_CELL_BROADCAST_CONFIG";
+        case RIL_REQUEST_GET_PHONEBOOK_STORAGE_INFO: return "GET_PHONEBOOK_STORAGE_INFO";
+        case RIL_REQUEST_GET_PHONEBOOK_ENTRY: return "GET_PHONEBOOK_ENTRY";
+        case RIL_REQUEST_ACCESS_PHONEBOOK_ENTRY: return "ACCESS_PHONEBOOK_ENTRY";
+        case RIL_REQUEST_USIM_PB_CAPA: return "USIM_PB_CAPA";
+        case RIL_REQUEST_LOCK_INFO: return "LOCK_INFO";
+        case RIL_REQUEST_STK_SIM_INIT_EVENT: return "STK_SIM_INIT_EVENT";
+        case RIL_REQUEST_SET_PREFERRED_NETWORK_LIST: return "SET_PREFERRED_NETWORK_LIST";
+        case RIL_REQUEST_GET_PREFERRED_NETWORK_LIST: return "GET_PREFERRED_NETWORK_LIST";
+        case RIL_REQUEST_CHANGE_SIM_PERSO: return "CHANGE_SIM_PERSO";
+        case RIL_REQUEST_ENTER_SIM_PERSO: return "ENTER_SIM_PERSO";
+        case RIL_REQUEST_SEND_ENCODED_USSD: return "SEND_ENCODED_USSD";
+        case RIL_REQUEST_CDMA_SEND_SMS_EXPECT_MORE: return "CDMA_SEND_SMS_EXPECT_MORE";
+        case RIL_REQUEST_HANGUP_VT: return "HANGUP_VT";
+        case RIL_REQUEST_REQUEST_HOLD: return "REQUEST_HOLD";
+        case RIL_REQUEST_SET_SIM_POWER: return "SET_SIM_POWER";
+        case RIL_REQUEST_SET_LTE_BAND_MODE: return "SET_LTE_BAND_MODE";
+        case RIL_REQUEST_UICC_GBA_AUTHENTICATE_BOOTSTRAP: return "UICC_GBA_AUTHENTICATE_BOOTSTRAP";
+        case RIL_REQUEST_UICC_GBA_AUTHENTICATE_NAF: return "UICC_GBA_AUTHENTICATE_NAF";
+        case RIL_REQUEST_GET_INCOMING_COMMUNICATION_BARRING: return "GET_INCOMING_COMMUNICATION_BARRING";
+        case RIL_REQUEST_SET_INCOMING_COMMUNICATION_BARRING: return "SET_INCOMING_COMMUNICATION_BARRING";
+        case RIL_REQUEST_QUERY_CNAP: return "QUERY_CNAP";
+        case RIL_UNSOL_RESPONSE_NEW_CB_MSG: return "UNSOL_RESPONSE_NEW_CB_MSG";
+        case RIL_UNSOL_RELEASE_COMPLETE_MESSAGE: return "UNSOL_RELEASE_COMPLETE_MESSAGE";
+        case RIL_UNSOL_STK_SEND_SMS_RESULT: return "UNSOL_STK_SEND_SMS_RESULT";
+        case RIL_UNSOL_STK_CALL_CONTROL_RESULT: return "UNSOL_STK_CALL_CONTROL_RESULT";
+        case RIL_UNSOL_DEVICE_READY_NOTI: return "UNSOL_DEVICE_READY_NOTI";
+        case RIL_UNSOL_GPS_NOTI: return "UNSOL_GPS_NOTI";
+        case RIL_UNSOL_AM: return "UNSOL_AM";
+        case RIL_UNSOL_SAP: return "UNSOL_SAP";
+        case RIL_UNSOL_UART: return "UNSOL_UART";
+        case RIL_UNSOL_SIM_PB_READY: return "UNSOL_SIM_PB_READY";
+        case RIL_UNSOL_VE: return "UNSOL_VE";
+        case RIL_UNSOL_FACTORY_AM: return "UNSOL_FACTORY_AM";
+        case RIL_UNSOL_IMS_REGISTRATION_STATE_CHANGED: return "UNSOL_IMS_REGISTRATION_STATE_CHANGED";
+        case RIL_UNSOL_MODIFY_CALL: return "UNSOL_MODIFY_CALL";
+        case RIL_UNSOL_CS_FALLBACK: return "UNSOL_CS_FALLBACK";
+        case RIL_UNSOL_VOICE_SYSTEM_ID: return "UNSOL_VOICE_SYSTEM_ID";
+        case RIL_UNSOL_IMS_RETRYOVER: return "UNSOL_IMS_RETRYOVER";
+        case RIL_UNSOL_PB_INIT_COMPLETE: return "UNSOL_PB_INIT_COMPLETE";
+        case RIL_UNSOL_HYSTERESIS_DCN: return "UNSOL_HYSTERESIS_DCN";
+        case RIL_UNSOL_CP_POSITION: return "UNSOL_CP_POSITION";
+        case RIL_UNSOL_HOME_NETWORK_NOTI: return "UNSOL_HOME_NETWORK_NOTI";
+        case RIL_UNSOL_STK_CALL_STATUS: return "UNSOL_STK_CALL_STATUS";
+        case RIL_UNSOL_MODEM_CAP: return "UNSOL_MODEM_CAP";
+        case RIL_UNSOL_DUN: return "UNSOL_DUN";
+        case RIL_UNSOL_IMS_PREFERENCE_CHANGED: return "UNSOL_IMS_PREFERENCE_CHANGED";
+        case RIL_UNSOL_SIM_APPLICATION_REFRESH: return "UNSOL_SIM_APPLICATION_REFRESH";
+        case RIL_UNSOL_UNSOL_UICC_APPLICATION_STATUS: return "UNSOL_UNSOL_UICC_APPLICATION_STATUS";
+        case RIL_UNSOL_SIM_ICCID_NOTI: return "UNSOL_SIM_ICCID_NOTI";
         default: return "<unknown request>";
     }
 }
