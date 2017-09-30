@@ -1127,6 +1127,9 @@ dispatchCallForward(Parcel &p, RequestInfo *pRI) {
     status = p.readInt32(&t);
     cff.timeSeconds = (int)t;
 
+    cff.startTime = strdupReadString(p);
+    cff.endTime = strdupReadString(p);
+
     if (status != NO_ERROR) {
         goto invalid;
     }
@@ -1137,10 +1140,18 @@ dispatchCallForward(Parcel &p, RequestInfo *pRI) {
         cff.number = NULL;
     }
 
+    if (cff.startTime != NULL && strlen (cff.startTime) == 0) {
+        cff.startTime = NULL;
+    }
+
+    if (cff.endTime != NULL && strlen (cff.endTime) == 0) {
+        cff.endTime = NULL;
+    }
+
     startRequest;
-    appendPrintBuf("%sstat=%d,reason=%d,serv=%d,toa=%d,%s,tout=%d", printBuf,
+    appendPrintBuf("%sstat=%d,reason=%d,serv=%d,toa=%d,%s,tout=%d,start=%d,end=%d", printBuf,
         cff.status, cff.reason, cff.serviceClass, cff.toa,
-        (char*)cff.number, cff.timeSeconds);
+        (char*)cff.number, cff.timeSeconds, (char*)cff.startTime, (char*)cff.endTime);
     closeRequest;
     printRequest(pRI->token, pRI->pCI->requestNumber);
 
@@ -1148,9 +1159,13 @@ dispatchCallForward(Parcel &p, RequestInfo *pRI) {
 
 #ifdef MEMSET_FREED
     memsetString(cff.number);
+    memsetString(cff.startTime);
+    memsetString(cff.endTime);
 #endif
 
     free (cff.number);
+    free (cff.startTime);
+    free (cff.endTime);
 
 #ifdef MEMSET_FREED
     memset(&cff, 0, sizeof(cff));
@@ -2941,10 +2956,11 @@ static int responseSMS(Parcel &p, void *response, size_t responselen) {
     p.writeInt32(p_cur->messageRef);
     writeStringToParcel(p, p_cur->ackPDU);
     p.writeInt32(p_cur->errorCode);
+    p.writeInt32(p_cur->v3i);
 
     startResponse;
-    appendPrintBuf("%s%d,%s,%d", printBuf, p_cur->messageRef,
-        (char*)p_cur->ackPDU, p_cur->errorCode);
+    appendPrintBuf("%s%d,%s,%d,%d", printBuf, p_cur->messageRef,
+        (char*)p_cur->ackPDU, p_cur->errorCode, p_cur->v3i);
     closeResponse;
 
     return 0;
@@ -3250,11 +3266,13 @@ static int responseCallForwards(Parcel &p, void *response, size_t responselen) {
         p.writeInt32(p_cur->toa);
         writeStringToParcel(p, p_cur->number);
         p.writeInt32(p_cur->timeSeconds);
-        appendPrintBuf("%s[%s,reason=%d,cls=%d,toa=%d,%s,tout=%d],", printBuf,
+        writeStringToParcel(p, p_cur->startTime);
+        writeStringToParcel(p, p_cur->endTime);
+        appendPrintBuf("%s[%s,reason=%d,cls=%d,toa=%d,%s,tout=%d,start=%d,end=%d],", printBuf,
             (p_cur->status==1)?"enable":"disable",
             p_cur->reason, p_cur->serviceClass, p_cur->toa,
             (char*)p_cur->number,
-            p_cur->timeSeconds);
+            p_cur->timeSeconds, p_cur->startTime, p_cur->endTime);
     }
     removeLastChar;
     closeResponse;

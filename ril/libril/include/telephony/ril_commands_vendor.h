@@ -17,7 +17,7 @@
     {10000, NULL, NULL},
     {RIL_REQUEST_DIAL_EMERGENCY_CALL, dispatchDial, responseVoid}, // 10001
     {RIL_REQUEST_CALL_DEFLECTION, dispatchString, responseVoid}, // 10002
-    {RIL_REQUEST_MODIFY_CALL_INITIATE, dispatchModifyCall, responseInts}, // 10003
+    {RIL_REQUEST_MODIFY_CALL_INITIATE, dispatchModifyCall, responseFailCause}, // 10003
     {RIL_REQUEST_MODIFY_CALL_CONFIRM, dispatchModifyCall, responseVoid}, // 10004
     {RIL_REQUEST_SET_VOICE_DOMAIN_PREF, dispatchInts, responseVoid}, // 10005
     {RIL_REQUEST_SAFE_MODE, dispatchInts, responseVoid}, // 10006
@@ -38,9 +38,15 @@
     {RIL_REQUEST_HANGUP_VT, dispatchInts, responseVoid}, // 10021
     {RIL_REQUEST_REQUEST_HOLD, dispatchVoid, responseVoid}, // 10022
     {RIL_REQUEST_SET_SIM_POWER, dispatchInts, responseInts}, // 10023
-    {RIL_REQUEST_SET_LTE_BAND_MODE, dispatchInts, responseVoid}, // 10024
+    {RIL_REQUEST_SET_LTE_BAND_MODE, dispatchVoid, responseInts}, // 10024
     {RIL_REQUEST_UICC_GBA_AUTHENTICATE_BOOTSTRAP, NULL, NULL}, // 10025
     {RIL_REQUEST_UICC_GBA_AUTHENTICATE_NAF, NULL, NULL}, // 10026
     {RIL_REQUEST_GET_INCOMING_COMMUNICATION_BARRING, dispatchStrings, responseString}, // 10027
     {RIL_REQUEST_SET_INCOMING_COMMUNICATION_BARRING, dispatchStrings, responseInts}, // 10028
     {RIL_REQUEST_QUERY_CNAP, dispatchVoid, responseInts}, // 10029
+    {RIL_REQUEST_SET_TRANSFER_CALL, dispatchStrings, responseVoid}, // 10030
+    {RIL_REQUEST_GET_DISABLE_2G, dispatchVoid, responseInts}, // 10031
+    {RIL_REQUEST_SET_DISABLE_2G, dispatchInts, responseVoid}, // 10032
+    {RIL_REQUEST_REFRESH_NITZ_TIME, dispatchVoid, responseVoid}, // 10033
+    {RIL_REQUEST_ENABLE_UNSOL_RESPONSE, dispatchVoid, responseVoid}, // 10034
+    {RIL_REQUEST_CANCEL_TRANSFER_CALL, dispatchInts, responseVoid}, // 10035

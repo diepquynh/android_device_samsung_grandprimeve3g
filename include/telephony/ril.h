@@ -537,6 +537,7 @@ typedef struct {
     int errorCode;    /* See 3GPP 27.005, 3.2.5 for GSM/UMTS,
                          3GPP2 N.S0005 (IS-41C) Table 171 for CDMA,
                          -1 if unknown or not applicable*/
+    int v3i;          /* Samsung */
 } RIL_SMS_Response;
 
 /** Used by RIL_REQUEST_WRITE_SMS_TO_SIM */
@@ -640,6 +641,8 @@ typedef struct {
     int             toa;         /* "type" from TS 27.007 7.11 */
     char *          number;      /* "number" from TS 27.007 7.11. May be NULL */
     int             timeSeconds; /* for CF no reply only */
+    char*           startTime;
+    char*           endTime;
 }RIL_CallForwardInfo;
 
 typedef struct {
@@ -5943,6 +5946,12 @@ typedef struct {
 #define RIL_REQUEST_GET_INCOMING_COMMUNICATION_BARRING      10027
 #define RIL_REQUEST_SET_INCOMING_COMMUNICATION_BARRING      10028
 #define RIL_REQUEST_QUERY_CNAP                      10029
+#define RIL_REQUEST_SET_TRANSFER_CALL               10030
+#define RIL_REQUEST_GET_DISABLE_2G                  10031
+#define RIL_REQUEST_SET_DISABLE_2G                  10032
+#define RIL_REQUEST_REFRESH_NITZ_TIME               10033
+#define RIL_REQUEST_ENABLE_UNSOL_RESPONSE           10034
+#define RIL_REQUEST_CANCEL_TRANSFER_CALL            10035
 
 /***********************************************************************/
 
@@ -5952,6 +5961,7 @@ typedef struct {
 #define RIL_UNSOL_RELEASE_COMPLETE_MESSAGE          11001
 #define RIL_UNSOL_STK_SEND_SMS_RESULT               11002
 #define RIL_UNSOL_STK_CALL_CONTROL_RESULT           11003
+#define RIL_UNSOL_ACB_INFO_CHANGED                  11005
 #define RIL_UNSOL_DEVICE_READY_NOTI                 11008
 #define RIL_UNSOL_GPS_NOTI                          11009
 #define RIL_UNSOL_AM                                11010
@@ -5971,11 +5981,17 @@ typedef struct {
 #define RIL_UNSOL_HOME_NETWORK_NOTI                 11043
 #define RIL_UNSOL_STK_CALL_STATUS                   11054
 #define RIL_UNSOL_MODEM_CAP                         11056
+#define RIL_UNSOL_SIM_SWAP_STATE_CHANGED            11057
+#define RIL_UNSOL_SIM_COUNT_MISMATCHED              11058
 #define RIL_UNSOL_DUN                               11060
 #define RIL_UNSOL_IMS_PREFERENCE_CHANGED            11061
 #define RIL_UNSOL_SIM_APPLICATION_REFRESH           11062
 #define RIL_UNSOL_UNSOL_UICC_APPLICATION_STATUS     11063
+#define RIL_UNSOL_VOICE_RADIO_BEARER_HO_STATUS      11064
+#define RIL_UNSOL_CLM_NOTI                          11065
 #define RIL_UNSOL_SIM_ICCID_NOTI                    11066
+#define RIL_UNSOL_TIMER_STATUS_CHANGED_NOTI         11067
+#define RIL_UNSOL_PROSE_NOTI                        11068
 
 /***********************************************************************/
 
