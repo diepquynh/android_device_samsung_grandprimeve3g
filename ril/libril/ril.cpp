@@ -46,7 +46,7 @@
 #include <assert.h>
 #include <netinet/in.h>
 #include <cutils/properties.h>
-#include <RilSocket.h>
+#include <RilSapSocket.h>
 
 extern "C" void
 RIL_onRequestComplete(RIL_Token t, RIL_Errno e, void *response, size_t responselen);
@@ -5742,6 +5742,37 @@ RIL_register (const RIL_RadioFunctions *callbacks, RIL_SOCKET_ID socket_id) {
     rilEventAddWakeup (&s_debug_event);
 #endif
 
+}
+
+extern "C" void
+RIL_register_socket (RIL_RadioFunctions *(*Init)(const struct RIL_Env *, int, char **), RIL_SOCKET_TYPE socketType, 
+                     int argc, char **argv, RIL_SOCKET_ID socket_id) {
+
+    RIL_RadioFunctions* UimFuncs = NULL;
+
+    if(Init) {
+        UimFuncs = Init(&RilSapSocket::uimRilEnv, argc, argv);
+
+        switch(socketType) {
+            case RIL_SAP_SOCKET:
+                switch (socket_id) {
+                    case RIL_SOCKET_2:
+                        RilSapSocket::initSapSocket("sap_uim_socket2", UimFuncs);
+                        break;
+                    case RIL_SOCKET_3:
+                        RilSapSocket::initSapSocket("sap_uim_socket3", UimFuncs);
+                        break;
+                    case RIL_SOCKET_4:
+                        RilSapSocket::initSapSocket("sap_uim_socket4", UimFuncs);
+                        break;
+                    default:
+                        RilSapSocket::initSapSocket("sap_uim_socket1", UimFuncs);
+                        break;
+                }
+                break;
+            default:;
+        }
+    }
 }
 
 // Check and remove RequestInfo if its a response and not just ack sent back

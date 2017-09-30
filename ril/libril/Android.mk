@@ -7,8 +7,9 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:= \
     ril.cpp \
-    ril_event.cpp\
-    RilSocket.cpp
+    ril_event.cpp \
+    RilSocket.cpp \
+    RilSapSocket.cpp \
 
 LOCAL_SHARED_LIBRARIES := \
     liblog \
