@@ -51,6 +51,10 @@ PRODUCT_PACKAGES += \
 	init.sc8830.usb.rc \
 	ueventd.sc8830.rc
 
+# Camera
+PRODUCT_PACKAGES += \
+	camera.sc8830
+
 # Set those variables here to overwrite the inherited values.
 PRODUCT_NAME := full_grandprimeve3g
 PRODUCT_DEVICE := grandprimeve3g
