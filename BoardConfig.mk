@@ -49,7 +49,10 @@ WIFI_DRIVER_NVRAM_PATH := "/system/etc/wifi/nvram_net.txt"
 WIFI_BAND := 802_11_ABG
 BOARD_HAVE_SAMSUNG_WIFI := true
 
+################################################################################
 # Camera
+TARGET_CAMERA_OPEN_SOURCE := true
+
 #zsl capture
 TARGET_BOARD_CAMERA_CAPTURE_MODE := false
 
@@ -141,6 +144,7 @@ TARGET_BOARD_BACK_CAMERA_CCIR_PCLK := source0
 
 #hdr effect enable
 TARGET_BOARD_CAMERA_HDR_CAPTURE := true
+################################################################################
 
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/grandprimeve3g/bluetooth
