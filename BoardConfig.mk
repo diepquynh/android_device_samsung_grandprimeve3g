@@ -147,7 +147,7 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/grandprimeve3g/blu
 
 # Kernel
 TARGET_KERNEL_CONFIG := cyanogen_grandprimeve3g_defconfig
-TARGET_KERNEL_SOURCE := kernel/samsung/sprd
+TARGET_KERNEL_SOURCE := kernel/samsung/grandprimeve3g
 
 # Resolution
 TARGET_SCREEN_HEIGHT := 960
