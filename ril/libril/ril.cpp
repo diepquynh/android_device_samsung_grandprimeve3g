@@ -4400,8 +4400,8 @@ static void sendSimStatusAppInfo(Parcel &p, int num_apps, RIL_AppStatus appStatu
             p.writeInt32(appStatus[i].perso_unblock_retries);
             appendPrintBuf("%s[app_type=%d,app_state=%d,perso_substate=%d,\
                     aid_ptr=%s,app_label_ptr=%s,pin1_replaced=%d,pin1=%d,pin2=%d],\
-                    pin1_num_retries=%s,puk1_num_retries=%s,pin2_num_retries=%s,\
-                    puk2_num_retries=%s,perso_unblock_retries=%s,",
+                    pin1_num_retries=%d,puk1_num_retries=%d,pin2_num_retries=%d,\
+                    puk2_num_retries=%d,perso_unblock_retries=%d,",
                     printBuf,
                     appStatus[i].app_type,
                     appStatus[i].app_state,
@@ -4954,7 +4954,7 @@ static int responsePNList(Parcel &p, void *response, size_t responselen) {
         p.writeInt32(p_cur[i].v6i);
 
         appendPrintBuf("Preferred Network: %d, oper=%s, plmn=%s, %d, %d, %d, %d",
-                     p_cur[i].v0i, p_cur[i].v1c, p_cur[i].v2c, p_cur[i].v3i, 
+                     p_cur[i].v0i, p_cur[i].oper, p_cur[i].plmn, p_cur[i].v3i, 
                      p_cur[i].v4i, p_cur[i].v5i, p_cur[i].v6i);
     }
     
@@ -6136,7 +6136,7 @@ extern "C"
 void RIL_onUnsolicitedResponse(int unsolResponse, const void *data,
                                 size_t datalen, RIL_SOCKET_ID socket_id)
 {
-    int unsolResponseIndex;
+    int unsolResponseIndex = -1;
     int ret;
     int64_t timeReceived = 0;
     bool shouldScheduleTimeout = false;
