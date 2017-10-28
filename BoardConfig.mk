@@ -153,6 +153,10 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/grandprimeve3g/blu
 TARGET_KERNEL_CONFIG := cyanogen_grandprimeve3g_defconfig
 TARGET_KERNEL_SOURCE := kernel/samsung/grandprimeve3g
 
+# Gralloc
+TARGET_USES_GRALLOC1 := true
+TARGET_UPDATED_MALI := true
+
 # Resolution
 TARGET_SCREEN_HEIGHT := 960
 TARGET_SCREEN_WIDTH := 540
