@@ -49,6 +49,10 @@ PERMISSIONS_XML_FILES := \
 PRODUCT_COPY_FILES += \
 	$(foreach f,$(PERMISSIONS_XML_FILES),$(f):system/etc/permissions/$(notdir $(f)))
 
+# WiFi
+PRODUCT_PACKAGES += \
+	libwifi-hal-bcm
+
 # Set those variables here to overwrite the inherited values.
 PRODUCT_NAME := full_grandprimeve3g
 PRODUCT_DEVICE := grandprimeve3g
