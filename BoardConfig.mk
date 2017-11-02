@@ -163,3 +163,7 @@ TARGET_SCREEN_WIDTH := 540
 
 # Assert
 TARGET_OTA_ASSERT_DEVICE := SM-G531H,SM-G531BT,grandprimeve3g,grandprimeve3gdtv,grandprimeve3gub,grandprimeve3gxx,grandprimeve3gdtvvj
+
+# RIL
+TARGET_SPECIFIC_HEADER_PATH := device/samsung/grandprimeve3g/include
+SIM_COUNT := 2
