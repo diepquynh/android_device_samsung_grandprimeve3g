@@ -100,6 +100,7 @@ extern "C" {
 #define MAX_QEMU_PIPE_NAME_LENGTH  11
 #define MAX_UUID_LENGTH 64
 
+
 typedef void * RIL_Token;
 
 typedef enum {
@@ -229,17 +230,6 @@ typedef enum {
 typedef enum {
     RADIO_STATE_OFF = 0,                   /* Radio explictly powered off (eg CFUN=0) */
     RADIO_STATE_UNAVAILABLE = 1,           /* Radio unavailable (eg, resetting or not booted) */
-    /* States 2-9 below are deprecated. Just leaving them here for backward compatibility. */
-    RADIO_STATE_SIM_NOT_READY = 2,         /* Radio is on, but the SIM interface is not ready */
-    RADIO_STATE_SIM_LOCKED_OR_ABSENT = 3,  /* SIM PIN locked, PUK required, network
-                                              personalization locked, or SIM absent */
-    RADIO_STATE_SIM_READY = 4,             /* Radio is on and SIM interface is available */
-    RADIO_STATE_RUIM_NOT_READY = 5,        /* Radio is on, but the RUIM interface is not ready */
-    RADIO_STATE_RUIM_READY = 6,            /* Radio is on and the RUIM interface is available */
-    RADIO_STATE_RUIM_LOCKED_OR_ABSENT = 7, /* RUIM PIN locked, PUK required, network
-                                              personalization locked, or RUIM absent */
-    RADIO_STATE_NV_NOT_READY = 8,          /* Radio is on, but the NV interface is not available */
-    RADIO_STATE_NV_READY = 9,              /* Radio is on and the NV interface is available */
     RADIO_STATE_ON = 10                    /* Radio is on */
 } RIL_RadioState;
 
@@ -550,8 +540,6 @@ typedef struct {
                                    Value <= 0 means network has either not sent a value or
                                    sent an invalid value */
 } RIL_Data_Call_Response_v11;
-
-#define RIL_Data_Call_Response_Type RIL_Data_Call_Response_v9
 
 typedef enum {
     RADIO_TECH_3GPP = 1, /* 3GPP Technologies - GSM, WCDMA */
@@ -1101,11 +1089,6 @@ typedef struct
   int              pin1_replaced;   /* applicable to USIM, CSIM & ISIM */
   RIL_PinState     pin1;
   RIL_PinState     pin2;
-  int              foo1;            // pin1_num_retries
-  int              foo2;            // puk1_num_retries
-  int              foo3;            // pin2_num_retries
-  int              foo4;            // puk2_num_retries
-  int              foo5;            // perso_unblock_retries
 } RIL_AppStatus;
 
 /* Deprecated, use RIL_CardStatus_v6 */
@@ -5564,87 +5547,74 @@ typedef struct {
   *  INVALID_ARGUMENTS
   */
 #define RIL_REQUEST_SET_SIM_CARD_POWER 140
+
 /***********************************************************************/
 
-#define RIL_OEM_REQUEST_BASE 10000
-
-/*
- * You normally find these constants if you decompile RILConstants.class in
- * framework2.odex.
+/**
+ * SAMSUNG RIL REQUEST
  */
-#define RIL_REQUEST_DIAL_EMERGENCY_CALL 10001
-#define RIL_REQUEST_CALL_DEFLECTION 10002
-#define RIL_REQUEST_MODIFY_CALL_INITIATE 10003
-#define RIL_REQUEST_MODIFY_CALL_CONFIRM 10004
-#define RIL_REQUEST_SET_VOICE_DOMAIN_PREF 10005
-#define RIL_REQUEST_SAFE_MODE 10006
-#define RIL_REQUEST_SET_TRANSMIT_POWER 10007
-#define RIL_REQUEST_GET_CELL_BROADCAST_CONFIG 10008
-#define RIL_REQUEST_GET_PHONEBOOK_STORAGE_INFO 10009
-#define RIL_REQUEST_GET_PHONEBOOK_ENTRY 10010
-#define RIL_REQUEST_ACCESS_PHONEBOOK_ENTRY 10011
-#define RIL_REQUEST_USIM_PB_CAPA 10012
-#define RIL_REQUEST_LOCK_INFO 10013
-#define RIL_REQUEST_STK_SIM_INIT_EVENT 10014
-#define RIL_REQUEST_SET_PREFERRED_NETWORK_LIST 10015
-#define RIL_REQUEST_GET_PREFERRED_NETWORK_LIST 10016
-#define RIL_REQUEST_CHANGE_SIM_PERSO 10017
-#define RIL_REQUEST_ENTER_SIM_PERSO 10018
-#define RIL_REQUEST_SEND_ENCODED_USSD 10019
-#define RIL_REQUEST_CDMA_SEND_SMS_EXPECT_MORE 10020
-#define RIL_REQUEST_HANGUP_VT 10021
-#define RIL_REQUEST_HOLD 10022
-#define RIL_REQUEST_SET_SIM_POWER 10023
-#define RIL_REQUEST_UICC_GBA_AUTHENTICATE_BOOTSTRAP 10025
-#define RIL_REQUEST_UICC_GBA_AUTHENTICATE_NAF 10026
-#define RIL_REQUEST_GET_INCOMING_COMMUNICATION_BARRING 10027
-#define RIL_REQUEST_SET_INCOMING_COMMUNICATION_BARRING 10028
-#define RIL_REQUEST_QUERY_CNAP 10029
-#define RIL_REQUEST_SET_TRANSFER_CALL 10030
+#define RIL_OEM_REQUEST_BASE                        10000
+
+#define RIL_REQUEST_DIAL_EMERGENCY_CALL             10001
+#define RIL_REQUEST_CALL_DEFLECTION                 10002
+#define RIL_REQUEST_MODIFY_CALL_INITIATE            10003
+#define RIL_REQUEST_MODIFY_CALL_CONFIRM             10004
+#define RIL_REQUEST_SET_VOICE_DOMAIN_PREF           10005
+#define RIL_REQUEST_SAFE_MODE                       10006
+#define RIL_REQUEST_SET_TRANSMIT_POWER              10007
+#define RIL_REQUEST_GET_CELL_BROADCAST_CONFIG       10008
+#define RIL_REQUEST_GET_PHONEBOOK_STORAGE_INFO      10009
+#define RIL_REQUEST_GET_PHONEBOOK_ENTRY             10010
+#define RIL_REQUEST_ACCESS_PHONEBOOK_ENTRY          10011
+#define RIL_REQUEST_USIM_PB_CAPA                    10012
+#define RIL_REQUEST_LOCK_INFO                       10013
+#define RIL_REQUEST_STK_SIM_INIT_EVENT              10014
+#define RIL_REQUEST_SET_PREFERRED_NETWORK_LIST      10015
+#define RIL_REQUEST_GET_PREFERRED_NETWORK_LIST      10016
+#define RIL_REQUEST_CHANGE_SIM_PERSO                10017
+#define RIL_REQUEST_ENTER_SIM_PERSO                 10018
+#define RIL_REQUEST_SEND_ENCODED_USSD               10019
+#define RIL_REQUEST_CDMA_SEND_SMS_EXPECT_MORE       10020
+#define RIL_REQUEST_HANGUP_VT                       10021
+#define RIL_REQUEST_REQUEST_HOLD                    10022
+#define RIL_REQUEST_SET_SIM_POWER                   10023
+#define RIL_REQUEST_SET_LTE_BAND_MODE               10024
+#define RIL_REQUEST_UICC_GBA_AUTHENTICATE_BOOTSTRAP         10025
+#define RIL_REQUEST_UICC_GBA_AUTHENTICATE_NAF       10026
+#define RIL_REQUEST_GET_INCOMING_COMMUNICATION_BARRING      10027
+#define RIL_REQUEST_SET_INCOMING_COMMUNICATION_BARRING      10028
 
 /***********************************************************************/
 
-/**********************************************************
- * SAMSUNG RESPONSE
- **********************************************************/
+#define SAMSUNG_UNSOL_RESPONSE_BASE                 11000
 
-#define SAMSUNG_UNSOL_RESPONSE_BASE 11000
+#define RIL_UNSOL_RESPONSE_NEW_CB_MSG               11000
+#define RIL_UNSOL_RELEASE_COMPLETE_MESSAGE          11001
+#define RIL_UNSOL_STK_SEND_SMS_RESULT               11002
+#define RIL_UNSOL_STK_CALL_CONTROL_RESULT           11003
+#define RIL_UNSOL_DEVICE_READY_NOTI                 11008
+#define RIL_UNSOL_GPS_NOTI                          11009
+#define RIL_UNSOL_AM                                11010
+#define RIL_UNSOL_SAP                               11013
+#define RIL_UNSOL_UART                              11020
+#define RIL_UNSOL_SIM_PB_READY                      11021
+#define RIL_UNSOL_VE                                11024
+#define RIL_UNSOL_FACTORY_AM                        11026
+#define RIL_UNSOL_IMS_REGISTRATION_STATE_CHANGED    11027
+#define RIL_UNSOL_MODIFY_CALL                       11028
+#define RIL_UNSOL_CS_FALLBACK                       11030
+#define RIL_UNSOL_VOICE_SYSTEM_ID                   11032
+#define RIL_UNSOL_IMS_RETRYOVER                     11034
+#define RIL_UNSOL_PB_INIT_COMPLETE                  11035
+#define RIL_UNSOL_HYSTERESIS_DCN                    11037
+#define RIL_UNSOL_CP_POSITION                       11038
+#define RIL_UNSOL_HOME_NETWORK_NOTI                 11043
+#define RIL_UNSOL_STK_CALL_STATUS                   11054
+#define RIL_UNSOL_MODEM_CAP                         11056
+#define RIL_UNSOL_DUN                               11060
+#define RIL_UNSOL_IMS_PREFERENCE_CHANGED            11061
 
-#define RIL_UNSOL_RESPONSE_NEW_CB_MSG 11000
-#define RIL_UNSOL_RELEASE_COMPLETE_MESSAGE 11001
-#define RIL_UNSOL_STK_SEND_SMS_RESULT 11002
-#define RIL_UNSOL_STK_CALL_CONTROL_RESULT 11003
-#define RIL_UNSOL_DEVICE_READY_NOTI 11008
-#define RIL_UNSOL_GPS_NOTI 11009
-#define RIL_UNSOL_AM 11010
-#define RIL_UNSOL_DUN_PIN_CONTROL_SIGNAL 11011
-#define RIL_UNSOL_DATA_SUSPEND_RESUME 11012
-#define RIL_UNSOL_SAP 11013
-#define RIL_UNSOL_UART 11020
-#define RIL_UNSOL_SIM_PB_READY 11021
-#define RIL_UNSOL_VE 11024
-#define RIL_UNSOL_FACTORY_AM 11026
-#define RIL_UNSOL_IMS_REGISTRATION_STATE_CHANGED 11027
-#define RIL_UNSOL_MODIFY_CALL 11028
-#define RIL_UNSOL_CS_FALLBACK 11030
-#define RIL_UNSOL_VOICE_SYSTEM_ID 11032
-#define RIL_UNSOL_IMS_RETRYOVER 11034
-#define RIL_UNSOL_PB_INIT_COMPLETE 11035
-#define RIL_UNSOL_HYSTERESIS_DCN 11037
-#define RIL_UNSOL_CP_POSITION 11038
-#define RIL_UNSOL_HOME_NETWORK_NOTI 11043
-#define RIL_UNSOL_STK_CALL_STATUS 11054
-#define RIL_UNSOL_MODEM_CAP 11056
-#define RIL_UNSOL_SIM_SWAP_STATE_CHANGED 11057
-#define RIL_UNSOL_DUN 11060
-#define RIL_UNSOL_IMS_PREFERENCE_CHANGED 11061
-#define RIL_UNSOL_SIM_APPLICATION_REFRESH 11062
-#define RIL_UNSOL_UICC_APPLICATION_STATUS 11063
-#define RIL_UNSOL_VOICE_RADIO_BEARER_HO_STATUS 11064
-
-/* SNDMGR */
-#define RIL_UNSOL_SNDMGR_WB_AMR_REPORT 20017
-#define RIL_UNSOL_SNDMGR_CLOCK_CTRL 20022
+/***********************************************************************/
 
 /***********************************************************************/
 
