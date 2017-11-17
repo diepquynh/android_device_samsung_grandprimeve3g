@@ -144,6 +144,10 @@ TARGET_BOARD_BACK_CAMERA_CCIR_PCLK := source0
 
 #hdr effect enable
 TARGET_BOARD_CAMERA_HDR_CAPTURE := true
+
+# use media extensions
+TARGET_USES_MEDIA_EXTENSIONS := true
+
 ################################################################################
 
 # Bluetooth
