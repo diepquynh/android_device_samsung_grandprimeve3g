@@ -146,9 +146,6 @@ TARGET_BOARD_BACK_CAMERA_CCIR_PCLK := source0
 TARGET_BOARD_CAMERA_HDR_CAPTURE := true
 ################################################################################
 
-# Bluetooth
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/grandprimeve3g/bluetooth
-
 # Kernel
 TARGET_KERNEL_CONFIG := cyanogen_grandprimeve3g_defconfig
 TARGET_KERNEL_SOURCE := kernel/samsung/grandprimeve3g
