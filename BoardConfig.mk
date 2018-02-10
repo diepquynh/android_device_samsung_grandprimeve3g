@@ -53,9 +53,6 @@ BOARD_HAVE_SAMSUNG_WIFI := true
 # Camera
 TARGET_CAMERA_OPEN_SOURCE := true
 
-#zsl capture
-TARGET_BOARD_CAMERA_CAPTURE_MODE := false
-
 #back camera rotation capture
 TARGET_BOARD_BACK_CAMERA_ROTATION := false
 
@@ -81,9 +78,6 @@ TARGET_BOARD_CAMERA_FLASH_CTRL := false
 #read sensor otp to isp
 TARGET_BOARD_CAMERA_READOTP_TO_ISP := true
 
-# use sprd auto lens
-TARGET_BOARD_CAMERA_SPRD_AUTOLENS := false
-
 #otp version, v0(OTP on Grandprime, Z3) v1(OTP on J1MINI) v2(Without OTP on TabG)
 TARGET_BOARD_CAMERA_OTP_VERSION := 0
 
@@ -103,9 +97,7 @@ TARGET_BOARD_CAMERA_CAPTURE_MODE := true
 
 #select camera zsl force cap mode
 TARGET_BOARD_CAMERA_FORCE_ZSL_MODE := true
-
-#rotation capture
-TARGET_BOARD_CAMERA_ROTATION_CAPTURE := false
+TARGET_BOARD_CAMERA_SPRD_PRIVATE_ZSL := false
 
 #select camera not support autofocus
 TARGET_BOARD_CAMERA_NO_AUTOFOCUS_DEV := false
@@ -141,6 +133,15 @@ TARGET_BOARD_BACK_CAMERA_MIPI := phyab
 #select ccir pclk src(source0, source1)
 TARGET_BOARD_FRONT_CAMERA_CCIR_PCLK := source0
 TARGET_BOARD_BACK_CAMERA_CCIR_PCLK := source0
+
+#third lib
+TARGET_BOARD_USE_THRID_LIB := true
+TARGET_BOARD_USE_THIRD_AWB_LIB_A := true
+TARGET_BOARD_USE_ALC_AE_AWB := false
+TARGET_BOARD_USE_THIRD_AF_LIB_A := true
+
+#face beauty
+TARGET_BOARD_CAMERA_FACE_BEAUTY := false
 
 #hdr effect enable
 TARGET_BOARD_CAMERA_HDR_CAPTURE := true
