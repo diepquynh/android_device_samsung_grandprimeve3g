@@ -145,6 +145,9 @@ TARGET_BOARD_CAMERA_FACE_BEAUTY := false
 
 #hdr effect enable
 TARGET_BOARD_CAMERA_HDR_CAPTURE := true
+
+#use media extensions
+TARGET_USES_MEDIA_EXTENSIONS := true
 ################################################################################
 
 # Kernel
