@@ -38,6 +38,10 @@ PRODUCT_PACKAGES += \
 	Snap \
 	camera.sc8830
 
+# sdcardfs
+PRODUCT_PROPERTY_OVERRIDES += \
+	ro.sys.sdcardfs=true
+
 # Media config
 PRODUCT_PACKAGES += \
 	media_profiles.xml
