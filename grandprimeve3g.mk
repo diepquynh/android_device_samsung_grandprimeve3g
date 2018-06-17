@@ -31,7 +31,7 @@ TARGET_SCREEN_WIDTH := 540
 
 # Keylayouts
 PRODUCT_COPY_FILES += \
-	$(LOCAL_PATH)/keylayout/sec_touchscreen.kl:system/usr/keylayout/sec_touchscreen.kl
+	$(LOCAL_PATH)/keylayout/sec_touchscreen.kl:$(TARGET_COPY_OUT_VENDOR)/usr/keylayout/sec_touchscreen.kl
 
 # Camera
 PRODUCT_PACKAGES += \
@@ -47,7 +47,7 @@ PERMISSIONS_XML_FILES := \
 	frameworks/native/data/etc/android.hardware.sensor.compass.xml
 
 PRODUCT_COPY_FILES += \
-	$(foreach f,$(PERMISSIONS_XML_FILES),$(f):system/etc/permissions/$(notdir $(f)))
+	$(foreach f,$(PERMISSIONS_XML_FILES),$(f):$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/$(notdir $(f)))
 
 # Set those variables here to overwrite the inherited values.
 PRODUCT_NAME := full_grandprimeve3g
