@@ -58,7 +58,6 @@ TARGET_RECOVERY_FSTAB := device/samsung/grandprimeve3g/twrp.fstab
 TW_CUSTOM_CPU_TEMP_PATH := /sys/devices/virtual/thermal/thermal_zone1/temp
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 TW_THEME := portrait_mdpi
-TW_FLASH_FROM_STORAGE := true
 RECOVERY_SDCARD_ON_DATA := true
 BOARD_HAS_NO_REAL_SDCARD := true
 TW_NO_REBOOT_BOOTLOADER := true
