@@ -35,7 +35,7 @@ BOARD_HAS_LARGE_FILESYSTEM := true
 
 # Kernel
 TARGET_KERNEL_CONFIG := cyanogen_grandprimeve3g_defconfig
-TARGET_KERNEL_SOURCE := kernel/samsung/sprd
+TARGET_KERNEL_SOURCE := kernel/samsung/grandprimeve3g
 
 # Resolution
 TARGET_SCREEN_HEIGHT := 960
